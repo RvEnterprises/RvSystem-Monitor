@@ -31,6 +31,10 @@ fun AppNavigation(isSetupCompleted: Boolean) {
     NavHost(
         navController = navController,
         startDestination = startDestination,
+        enterTransition = { aospSharedAxisEnter() },
+            exitTransition = { aospSharedAxisExit() },
+            popEnterTransition = { aospSharedAxisPopEnter() },
+            popExitTransition = { aospSharedAxisPopExit() },
         modifier = Modifier.background(MaterialTheme.colorScheme.background),
     ) {
         composable<Route.Setup>(
@@ -83,7 +87,7 @@ fun AppNavigation(isSetupCompleted: Boolean) {
                 )
             },
         ) {
-            ScreenWrapper(navController = navController) {
+            ScreenWrapper(navController = navController, animatedVisibilityScope = this) {
                 RvSystemMonitorApp(
                     onNavigateToSettings = { navController.navigateSafely(Route.Settings) },
                     onNavigateToGPU = { navController.navigateSafely(Route.GPU) },
@@ -91,25 +95,15 @@ fun AppNavigation(isSetupCompleted: Boolean) {
             }
         }
 
-        composable<Route.GPU>(
-            enterTransition = { enterTransition() },
-            exitTransition = { exitTransition() },
-            popEnterTransition = { popEnterTransition() },
-            popExitTransition = { popExitTransition() },
-        ) {
+        composable<Route.GPU> {
             GPUScreen(
                 navController = navController,
                 onNavigateBack = { navController.popBackStack() },
             )
         }
 
-        composable<Route.Settings>(
-            enterTransition = { enterTransition() },
-            exitTransition = { exitTransition() },
-            popEnterTransition = { popEnterTransition() },
-            popExitTransition = { popExitTransition() },
-        ) {
-            ScreenWrapper(navController = navController) {
+        composable<Route.Settings> {
+            ScreenWrapper(navController = navController, animatedVisibilityScope = this) {
                 SettingsScreen(
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToApp = { navController.navigateSafely(Route.AppSettings) },
@@ -122,26 +116,16 @@ fun AppNavigation(isSetupCompleted: Boolean) {
             }
         }
 
-        composable<Route.RustLibrary>(
-            enterTransition = { enterTransition() },
-            exitTransition = { exitTransition() },
-            popEnterTransition = { popEnterTransition() },
-            popExitTransition = { popExitTransition() },
-        ) {
-            ScreenWrapper(navController = navController) {
+        composable<Route.RustLibrary> {
+            ScreenWrapper(navController = navController, animatedVisibilityScope = this) {
                 RustLibraryScreen(
                     onNavigateBack = { navController.popBackStack() },
                 )
             }
         }
 
-        composable<Route.AppSettings>(
-            enterTransition = { enterTransition() },
-            exitTransition = { exitTransition() },
-            popEnterTransition = { popEnterTransition() },
-            popExitTransition = { popExitTransition() },
-        ) {
-            ScreenWrapper(navController = navController) {
+        composable<Route.AppSettings> {
+            ScreenWrapper(navController = navController, animatedVisibilityScope = this) {
                 AppSettingsScreen(
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToSetup = { navController.navigateSafely(Route.Setup(isTestFlow = true)) },
@@ -149,52 +133,32 @@ fun AppNavigation(isSetupCompleted: Boolean) {
             }
         }
 
-        composable<Route.About>(
-            enterTransition = { enterTransition() },
-            exitTransition = { exitTransition() },
-            popEnterTransition = { popEnterTransition() },
-            popExitTransition = { popExitTransition() },
-        ) {
-            ScreenWrapper(navController = navController) {
+        composable<Route.About> {
+            ScreenWrapper(navController = navController, animatedVisibilityScope = this) {
                 AboutScreen(
                     onNavigateBack = { navController.popBackStack() },
                 )
             }
         }
 
-        composable<Route.AppearanceSettings>(
-            enterTransition = { enterTransition() },
-            exitTransition = { exitTransition() },
-            popEnterTransition = { popEnterTransition() },
-            popExitTransition = { popExitTransition() },
-        ) {
-            ScreenWrapper(navController = navController) {
+        composable<Route.AppearanceSettings> {
+            ScreenWrapper(navController = navController, animatedVisibilityScope = this) {
                 AppearanceSettingsScreen(
                     onNavigateBack = { navController.popBackStack() },
                 )
             }
         }
 
-        composable<Route.MonitoringSettings>(
-            enterTransition = { enterTransition() },
-            exitTransition = { exitTransition() },
-            popEnterTransition = { popEnterTransition() },
-            popExitTransition = { popExitTransition() },
-        ) {
-            ScreenWrapper(navController = navController) {
+        composable<Route.MonitoringSettings> {
+            ScreenWrapper(navController = navController, animatedVisibilityScope = this) {
                 MonitoringSettingsScreen(
                     onNavigateBack = { navController.popBackStack() },
                 )
             }
         }
 
-        composable<Route.OverlaySettings>(
-            enterTransition = { enterTransition() },
-            exitTransition = { exitTransition() },
-            popEnterTransition = { popEnterTransition() },
-            popExitTransition = { popExitTransition() },
-        ) {
-            ScreenWrapper(navController = navController) {
+        composable<Route.OverlaySettings> {
+            ScreenWrapper(navController = navController, animatedVisibilityScope = this) {
                 OverlaySettingsScreen(
                     onNavigateBack = { navController.popBackStack() },
                 )
