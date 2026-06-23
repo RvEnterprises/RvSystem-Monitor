@@ -35,8 +35,11 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @AndroidEntryPoint
@@ -76,20 +79,6 @@ class SystemOverlayService : Service() {
     )
 
     private fun startDataPipeline() {
-        val tickerFlow = overlayRepository.overlayUpdateInterval
-            .flatMapLatest { interval ->
-                flow {
-                    while (true) {
-                        emit(Unit)
-                        delay(interval)
-                    }
-                }
-            }
-            .flowOn(Dispatchers.Default)
-
-        val hardwareFlow = tickerFlow.onEach {
-        }
-
         val visibilityFlow = combine(
             overlayRepository.isFpsEnabled,
             overlayRepository.isRamPercentageEnabled,
@@ -110,14 +99,32 @@ class SystemOverlayService : Service() {
             emit(VisibilitySettings())
         }
 
-        combine(
-            hardwareFlow,
+        val stateFlow = combine(
             fpsMonitor.framesPerSecond,
             BatteryUtils.getBatteryFlow(this).onStart {
                 BatteryUtils.getBatteryIntent(this@SystemOverlayService)?.let { emit(it) }
             },
             visibilityFlow,
-        ) { _, fps, batteryIntent, vis ->
+        ) { fps, batteryIntent, vis ->
+            Triple(fps, batteryIntent, vis)
+        }.stateIn(
+            scope = serviceScope,
+            started = SharingStarted.Eagerly,
+            initialValue = Triple(0, BatteryUtils.getBatteryIntent(this), VisibilitySettings())
+        )
+
+        overlayRepository.overlayUpdateInterval
+            .flatMapLatest { interval ->
+                flow {
+                    while (true) {
+                        emit(Unit)
+                        delay(interval)
+                    }
+                }
+            }
+            .map { stateFlow.value }
+            .flowOn(Dispatchers.Default)
+            .map { (fps, batteryIntent, vis) ->
 
             val metrics = mutableListOf<String>()
 
@@ -144,7 +151,7 @@ class SystemOverlayService : Service() {
                 if (ramText.isNotEmpty()) metrics.add(ramText)
             }
 
-            if (vis.showBatTemp) {
+            if (vis.showBatTemp && batteryIntent != null) {
                 val temp = BatteryUtils.getTemperature(batteryIntent)
                 metrics.add(getString(R.string.overlay_format_battery_temp, temp))
             }
