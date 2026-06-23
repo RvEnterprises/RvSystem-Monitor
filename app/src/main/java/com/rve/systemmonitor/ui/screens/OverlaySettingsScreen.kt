@@ -108,6 +108,7 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
     val textColor by viewModel.overlayTextColor.collectAsStateWithLifecycle()
     val isVerticalLayout by viewModel.isVerticalLayout.collectAsStateWithLifecycle()
     val cornerRadius by viewModel.overlayCornerRadius.collectAsStateWithLifecycle()
+    val overlayPosition by viewModel.overlayPosition.collectAsStateWithLifecycle()
 
     val isShizukuAvailable by viewModel.isShizukuAvailable.collectAsStateWithLifecycle()
     val hasShizukuPermission by viewModel.hasShizukuPermission.collectAsStateWithLifecycle()
@@ -569,6 +570,151 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
                                             .fillMaxWidth()
                                             .clip(RoundedCornerShape(2.dp))
                                             .background(indicatorColor),
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .graphicsLayer { alpha = appearanceAlpha },
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.overlay_position),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(start = 8.dp),
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            LayoutOptionCard(
+                                title = stringResource(R.string.overlay_position_free),
+                                isSelected = overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.FREE,
+                                enabled = isOverlayActive,
+                                onClick = {
+                                    if (isOverlayActive) {
+                                        viewModel.setOverlayPosition(com.rve.systemmonitor.domain.model.OverlayPosition.FREE)
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                            ) {
+                                val indicatorColor by animateColorAsState(
+                                    targetValue = if (overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.FREE)
+                                        MaterialTheme.colorScheme.onPrimary
+                                    else
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
+                                    label = "Free Indicator",
+                                    animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
+                                )
+                                Box(modifier = Modifier.fillMaxSize().padding(12.dp)) {
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
+                                            .size(24.dp, 12.dp)
+                                            .clip(RoundedCornerShape(2.dp))
+                                            .background(indicatorColor)
+                                    )
+                                }
+                            }
+
+                            LayoutOptionCard(
+                                title = stringResource(R.string.overlay_position_top_center),
+                                isSelected = overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.TOP_CENTER,
+                                enabled = isOverlayActive,
+                                onClick = {
+                                    if (isOverlayActive) {
+                                        viewModel.setOverlayPosition(com.rve.systemmonitor.domain.model.OverlayPosition.TOP_CENTER)
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                            ) {
+                                val indicatorColor by animateColorAsState(
+                                    targetValue = if (overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.TOP_CENTER)
+                                        MaterialTheme.colorScheme.onPrimary
+                                    else
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
+                                    label = "Top Center Indicator",
+                                    animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
+                                )
+                                Box(modifier = Modifier.fillMaxSize().padding(12.dp)) {
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.TopCenter)
+                                            .size(24.dp, 12.dp)
+                                            .clip(RoundedCornerShape(2.dp))
+                                            .background(indicatorColor)
+                                    )
+                                }
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            LayoutOptionCard(
+                                title = stringResource(R.string.overlay_position_top_left),
+                                isSelected = overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.TOP_LEFT,
+                                enabled = isOverlayActive,
+                                onClick = {
+                                    if (isOverlayActive) {
+                                        viewModel.setOverlayPosition(com.rve.systemmonitor.domain.model.OverlayPosition.TOP_LEFT)
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                            ) {
+                                val indicatorColor by animateColorAsState(
+                                    targetValue = if (overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.TOP_LEFT)
+                                        MaterialTheme.colorScheme.onPrimary
+                                    else
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
+                                    label = "Top Left Indicator",
+                                    animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
+                                )
+                                Box(modifier = Modifier.fillMaxSize().padding(12.dp)) {
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.TopStart)
+                                            .size(24.dp, 12.dp)
+                                            .clip(RoundedCornerShape(2.dp))
+                                            .background(indicatorColor)
+                                    )
+                                }
+                            }
+
+                            LayoutOptionCard(
+                                title = stringResource(R.string.overlay_position_top_right),
+                                isSelected = overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.TOP_RIGHT,
+                                enabled = isOverlayActive,
+                                onClick = {
+                                    if (isOverlayActive) {
+                                        viewModel.setOverlayPosition(com.rve.systemmonitor.domain.model.OverlayPosition.TOP_RIGHT)
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                            ) {
+                                val indicatorColor by animateColorAsState(
+                                    targetValue = if (overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.TOP_RIGHT)
+                                        MaterialTheme.colorScheme.onPrimary
+                                    else
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
+                                    label = "Top Right Indicator",
+                                    animationSpec = MaterialTheme.motionScheme.defaultEffectsSpec(),
+                                )
+                                Box(modifier = Modifier.fillMaxSize().padding(12.dp)) {
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .size(24.dp, 12.dp)
+                                            .clip(RoundedCornerShape(2.dp))
+                                            .background(indicatorColor)
                                     )
                                 }
                             }

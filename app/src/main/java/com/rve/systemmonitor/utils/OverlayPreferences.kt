@@ -8,8 +8,11 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.rve.systemmonitor.domain.model.OverlayPosition
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 val Context.overlayDataStore: DataStore<Preferences> by preferencesDataStore(name = "overlay_settings")
 
@@ -29,6 +32,9 @@ class OverlayPreferences(private val context: Context) {
         val OVERLAY_TEXT_COLOR_KEY = intPreferencesKey("overlay_text_color")
         val IS_VERTICAL_LAYOUT_KEY = booleanPreferencesKey("is_vertical_layout")
         val OVERLAY_CORNER_RADIUS_KEY = intPreferencesKey("overlay_corner_radius")
+        val OVERLAY_POSITION_KEY = stringPreferencesKey("overlay_position")
+        val OVERLAY_X_KEY = intPreferencesKey("overlay_x")
+        val OVERLAY_Y_KEY = intPreferencesKey("overlay_y")
     }
 
     val isOverlayEnabledFlow: Flow<Boolean> = context.overlayDataStore.getValueFlow(IS_OVERLAY_ENABLED_KEY, false)
@@ -45,6 +51,15 @@ class OverlayPreferences(private val context: Context) {
     val overlayTextColorFlow: Flow<Int> = context.overlayDataStore.getValueFlow(OVERLAY_TEXT_COLOR_KEY, Color.GREEN)
     val isVerticalLayoutFlow: Flow<Boolean> = context.overlayDataStore.getValueFlow(IS_VERTICAL_LAYOUT_KEY, false)
     val overlayCornerRadiusFlow: Flow<Int> = context.overlayDataStore.getValueFlow(OVERLAY_CORNER_RADIUS_KEY, 8)
+    val overlayPositionFlow: Flow<OverlayPosition> = context.overlayDataStore.data.map { preferences ->
+        try {
+            OverlayPosition.valueOf(preferences[OVERLAY_POSITION_KEY] ?: OverlayPosition.FREE.name)
+        } catch (e: IllegalArgumentException) {
+            OverlayPosition.FREE
+        }
+    }
+    val overlayXFlow: Flow<Int> = context.overlayDataStore.getValueFlow(OVERLAY_X_KEY, 100)
+    val overlayYFlow: Flow<Int> = context.overlayDataStore.getValueFlow(OVERLAY_Y_KEY, 100)
 
     suspend fun saveIsOverlayEnabled(enabled: Boolean) = context.overlayDataStore.setValue(IS_OVERLAY_ENABLED_KEY, enabled)
     suspend fun saveIsFpsEnabled(enabled: Boolean) = context.overlayDataStore.setValue(IS_FPS_ENABLED_KEY, enabled)
@@ -60,4 +75,7 @@ class OverlayPreferences(private val context: Context) {
     suspend fun saveOverlayTextColor(color: Int) = context.overlayDataStore.setValue(OVERLAY_TEXT_COLOR_KEY, color)
     suspend fun saveIsVerticalLayout(vertical: Boolean) = context.overlayDataStore.setValue(IS_VERTICAL_LAYOUT_KEY, vertical)
     suspend fun saveOverlayCornerRadius(radius: Int) = context.overlayDataStore.setValue(OVERLAY_CORNER_RADIUS_KEY, radius)
+    suspend fun saveOverlayPosition(position: OverlayPosition) = context.overlayDataStore.setValue(OVERLAY_POSITION_KEY, position.name)
+    suspend fun saveOverlayX(x: Int) = context.overlayDataStore.setValue(OVERLAY_X_KEY, x)
+    suspend fun saveOverlayY(y: Int) = context.overlayDataStore.setValue(OVERLAY_Y_KEY, y)
 }

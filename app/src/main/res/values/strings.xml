@@ -341,6 +341,11 @@
     <string name="help_default_title">Data Sources</string>
 
     <!-- SystemOverlayService -->
+    <string name="overlay_position">Position</string>
+    <string name="overlay_position_free">Free (Draggable)</string>
+    <string name="overlay_position_top_left">Top Left</string>
+    <string name="overlay_position_top_center">Top Center</string>
+    <string name="overlay_position_top_right">Top Right</string>
     <string name="notification_channel_overlay">Floating Overlay Service</string>
     <string name="notification_title_overlay_active">Floating Overlay Active</string>
     <string name="notification_text_overlay">Monitoring system performance (FPS &amp; RAM)</string>

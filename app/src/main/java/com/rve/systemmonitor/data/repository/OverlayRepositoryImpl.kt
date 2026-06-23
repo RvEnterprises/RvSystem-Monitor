@@ -1,6 +1,7 @@
 package com.rve.systemmonitor.data.repository
 
 import android.app.Application
+import com.rve.systemmonitor.domain.model.OverlayPosition
 import com.rve.systemmonitor.domain.repository.OverlayRepository
 import com.rve.systemmonitor.utils.OverlayPreferences
 import javax.inject.Inject
@@ -26,6 +27,9 @@ class OverlayRepositoryImpl @Inject constructor(application: Application) : Over
     override val overlayTextColor: Flow<Int> = overlayPreferences.overlayTextColorFlow
     override val isVerticalLayout: Flow<Boolean> = overlayPreferences.isVerticalLayoutFlow
     override val overlayCornerRadius: Flow<Int> = overlayPreferences.overlayCornerRadiusFlow
+    override val overlayPosition: Flow<OverlayPosition> = overlayPreferences.overlayPositionFlow
+    override val overlayX: Flow<Int> = overlayPreferences.overlayXFlow
+    override val overlayY: Flow<Int> = overlayPreferences.overlayYFlow
 
     override suspend fun setOverlayEnabled(enabled: Boolean) {
         overlayPreferences.saveIsOverlayEnabled(enabled)
@@ -81,5 +85,17 @@ class OverlayRepositoryImpl @Inject constructor(application: Application) : Over
 
     override suspend fun setOverlayCornerRadius(radius: Int) {
         overlayPreferences.saveOverlayCornerRadius(radius)
+    }
+
+    override suspend fun setOverlayPosition(position: OverlayPosition) {
+        overlayPreferences.saveOverlayPosition(position)
+    }
+
+    override suspend fun setOverlayX(x: Int) {
+        overlayPreferences.saveOverlayX(x)
+    }
+
+    override suspend fun setOverlayY(y: Int) {
+        overlayPreferences.saveOverlayY(y)
     }
 }

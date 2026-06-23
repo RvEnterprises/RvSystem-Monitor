@@ -3,6 +3,7 @@ package com.rve.systemmonitor.ui.viewmodel
 import android.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rve.systemmonitor.domain.model.OverlayPosition
 import com.rve.systemmonitor.domain.repository.OverlayRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -125,6 +126,13 @@ class OverlaySettingsViewModel @Inject constructor(
             initialValue = 8,
         )
 
+    val overlayPosition: StateFlow<OverlayPosition> = overlayRepository.overlayPosition
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = OverlayPosition.FREE,
+        )
+
     fun setOverlayEnabled(enabled: Boolean) {
         viewModelScope.launch {
             overlayRepository.setOverlayEnabled(enabled)
@@ -206,6 +214,12 @@ class OverlaySettingsViewModel @Inject constructor(
     fun setOverlayCornerRadius(radius: Int) {
         viewModelScope.launch {
             overlayRepository.setOverlayCornerRadius(radius)
+        }
+    }
+
+    fun setOverlayPosition(position: OverlayPosition) {
+        viewModelScope.launch {
+            overlayRepository.setOverlayPosition(position)
         }
     }
 

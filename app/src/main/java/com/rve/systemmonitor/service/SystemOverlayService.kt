@@ -29,6 +29,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -67,6 +68,7 @@ class SystemOverlayService : Service() {
         showOverlay()
         startDataPipeline()
         startStylePipeline()
+        startPositionPipeline()
     }
 
     private data class VisibilitySettings(
@@ -191,6 +193,60 @@ class SystemOverlayService : Service() {
             .launchIn(serviceScope)
     }
 
+    private fun startPositionPipeline() {
+        combine(
+            overlayRepository.overlayPosition,
+            overlayRepository.overlayX,
+            overlayRepository.overlayY
+        ) { position, x, y ->
+            Triple(position, x, y)
+        }
+            .distinctUntilChanged()
+            .onEach { (pos, x, y) ->
+                updateOverlayPosition(pos, x, y)
+            }
+            .launchIn(serviceScope)
+    }
+
+    private fun updateOverlayPosition(position: com.rve.systemmonitor.domain.model.OverlayPosition, repoX: Int, repoY: Int) {
+        val params = overlayView?.layoutParams as? WindowManager.LayoutParams ?: return
+        var changed = false
+
+        when (position) {
+            com.rve.systemmonitor.domain.model.OverlayPosition.FREE -> {
+                params.gravity = Gravity.TOP or Gravity.START
+                params.x = repoX
+                params.y = repoY
+                params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
+                changed = true
+            }
+            com.rve.systemmonitor.domain.model.OverlayPosition.TOP_LEFT -> {
+                params.gravity = Gravity.TOP or Gravity.START
+                params.x = 0
+                params.y = 0
+                params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                changed = true
+            }
+            com.rve.systemmonitor.domain.model.OverlayPosition.TOP_CENTER -> {
+                params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+                params.x = 0
+                params.y = 0
+                params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                changed = true
+            }
+            com.rve.systemmonitor.domain.model.OverlayPosition.TOP_RIGHT -> {
+                params.gravity = Gravity.TOP or Gravity.END
+                params.x = 0
+                params.y = 0
+                params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                changed = true
+            }
+        }
+        if (changed) {
+            windowManager?.updateViewLayout(overlayView, params)
+        }
+    }
+
     private data class OverlayStyle(val size: Float, val opacity: Float, val padding: Int, val color: Int, val radius: Int)
 
     private fun applyStyle(style: OverlayStyle) {
@@ -261,6 +317,10 @@ class SystemOverlayService : Service() {
                     }
 
                     MotionEvent.ACTION_UP -> {
+                        serviceScope.launch {
+                            overlayRepository.setOverlayX(params.x)
+                            overlayRepository.setOverlayY(params.y)
+                        }
                         v.performClick()
                         return true
                     }

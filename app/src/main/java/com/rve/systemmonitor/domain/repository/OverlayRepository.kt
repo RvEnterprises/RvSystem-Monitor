@@ -1,5 +1,6 @@
 package com.rve.systemmonitor.domain.repository
 
+import com.rve.systemmonitor.domain.model.OverlayPosition
 import kotlinx.coroutines.flow.Flow
 
 interface OverlayRepository {
@@ -17,6 +18,9 @@ interface OverlayRepository {
     val overlayTextColor: Flow<Int>
     val isVerticalLayout: Flow<Boolean>
     val overlayCornerRadius: Flow<Int>
+    val overlayPosition: Flow<OverlayPosition>
+    val overlayX: Flow<Int>
+    val overlayY: Flow<Int>
 
     suspend fun setOverlayEnabled(enabled: Boolean)
     suspend fun setFpsEnabled(enabled: Boolean)
@@ -32,4 +36,7 @@ interface OverlayRepository {
     suspend fun setOverlayTextColor(color: Int)
     suspend fun setVerticalLayout(vertical: Boolean)
     suspend fun setOverlayCornerRadius(radius: Int)
+    suspend fun setOverlayPosition(position: OverlayPosition)
+    suspend fun setOverlayX(x: Int)
+    suspend fun setOverlayY(y: Int)
 }
