@@ -1,0 +1,354 @@
+<resources>
+    <!-- App -->
+    <string name="app_title">RvSystem Monitor</string>
+
+    <!-- Common / Shared -->
+    <string name="value_unknown">Неизвестно</string>
+    <string name="label_by">от %1$s</string>
+    <string name="cd_help">Справка</string>
+    <string name="cd_settings">Настройки</string>
+    <string name="cd_back">Назад</string>
+    <string name="cd_reset_to_default">Сбросить по умолчанию</string>
+    <string name="cd_avatar">Аватар</string>
+    <string name="cd_update_icon">Иконка обновления</string>
+    <string name="cd_setup_icon">Иконка настройки</string>
+    <string name="cd_open_setup_flow">Открыть мастер настройки</string>
+    <string name="cd_theme_icon">Иконка темы</string>
+    <string name="cd_amoled_icon">Иконка Amoled</string>
+    <string name="cd_haptic_icon">Иконка отклика</string>
+    <string name="cd_metric_icon">Иконка %1$s</string>
+    <string name="button_close">Закрыть</string>
+    <string name="button_cancel">Отмена</string>
+    <string name="button_pause">Пауза</string>
+    <string name="button_later">Позже</string>
+    <string name="button_download">Скачать</string>
+    <string name="button_install">Установить</string>
+    <string name="button_keep">Оставить</string>
+
+    <!-- Theme -->
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Тёмная</string>
+    <string name="theme_system">Системная</string>
+
+    <!-- Vibration Intensity -->
+    <string name="vibration_light">Легкая</string>
+    <string name="vibration_medium">Средняя</string>
+    <string name="vibration_strong">Сильная</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_label_home">Главная</string>
+    <string name="nav_label_cpu">Процессор</string>
+    <string name="nav_label_memory">Память</string>
+    <string name="nav_label_battery">Батарея</string>
+
+    <!-- Home Screen -->
+    <string name="home_title_device">Устройство</string>
+    <string name="home_title_os">Операционная система</string>
+    <string name="home_title_display">Экран</string>
+    <string name="home_title_processor">Процессор</string>
+    <string name="home_title_graphics">Графика</string>
+    <string name="home_os_name_version">%1$s %2$s</string>
+    <string name="home_badge_api">API %1$s</string>
+    <string name="home_badge_patch">Патч: %1$s</string>
+    <string name="home_screen_size">Экран %1$s\"</string>
+    <string name="home_badge_refresh_rate">%1$s Гц</string>
+    <string name="home_badge_density">%1$s dpi</string>
+    <string name="home_badge_hdr">HDR</string>
+    <string name="home_cores_count">Ядер: %1$s</string>
+    <string name="home_badge_opengl_es">OpenGL ES %1$s</string>
+    <string name="home_badge_vulkan">Vulkan %1$s</string>
+    <!-- Home Screen Help -->
+    <string name="home_help_device_os_title">Устройство и ОС</string>
+    <string name="home_help_device_os_desc">Информация о модели, производителе и версии Android извлекается из свойств сборки (Build) системы и уровней патчей безопасности.</string>
+    <string name="home_help_display_title">Экран</string>
+    <string name="home_help_display_desc">Разрешение экрана, частота обновления и плотность пикселей запрашиваются через Android API WindowManager и Display.</string>
+    <string name="home_help_processor_title">Процессор (CPU)</string>
+    <string name="home_help_processor_desc">Подробные данные о железе, включая количество ядер и архитектуру, считываются из файлов ядра Linux (/proc/cpuinfo) с помощью высокопроизводительного бэкенда на Rust.</string>
+    <string name="home_help_graphics_title">Графика (GPU)</string>
+    <string name="home_help_graphics_desc">Рендерер графики, производитель и версия OpenGL ES запрашиваются напрямую у GPU устройства через EGL-контекст.</string>
+
+    <!-- CPU Screen -->
+    <string name="cpu_cores_section_title">Ядра</string>
+    <string name="cpu_cores_count">Ядер: %1$d</string>
+    <string name="cpu_peak_frequency">Пик: %1$s</string>
+    <string name="cpu_label_architecture">Архитектура</string>
+    <string name="cpu_label_board">Плата</string>
+    <string name="cpu_label_hardware">Оборудование</string>
+    <string name="cpu_core_label">Ядро CPU %1$d</string>
+    <string name="cpu_label_minimum">Минимум</string>
+    <string name="cpu_label_maximum">Максимум</string>
+
+    <!-- GPU Screen -->
+    <string name="title_graphics_info">Инфо о графике</string>
+    <string name="gpu_opengl_es">OpenGL ES</string>
+    <string name="gpu_label_version">Версия</string>
+    <string name="gpu_label_shader_version">Версия шейдеров</string>
+    <string name="gpu_label_max_texture_size">Макс. размер текстуры</string>
+    <string name="gpu_label_extensions">Расширения</string>
+    <string name="gpu_vulkan">Vulkan</string>
+    <string name="gpu_label_api_version">Версия API</string>
+    <string name="gpu_label_driver_version">Версия драйвера</string>
+    <string name="gpu_label_device_type">Тип устройства</string>
+    <string name="gpu_memory_information">Информация о памяти</string>
+    <string name="gpu_label_shared_memory">Общая память</string>
+    <string name="gpu_max_texture_size_format">%1$d px</string>
+    <string name="gpu_shared_memory_format">%1$d МБ</string>
+
+    <!-- Memory Screen -->
+    <string name="memory_label_ram">ОЗУ (RAM)</string>
+    <string name="memory_label_zram">ZRAM</string>
+    <string name="memory_detailed_breakdown">Подробная структура</string>
+    <string name="memory_internal_storage">Внутренняя память</string>
+    <string name="memory_label_cached">Кэш</string>
+    <string name="memory_cached_description">Память, используемая для кэша файловой системы для ускорения доступа к файлам. Эта память может быть освобождена системой при необходимости.</string>
+    <string name="memory_label_buffers">Буферы</string>
+    <string name="memory_buffers_description">Память, используемая для блоков необработанного диска и метаданных. Обычно имеет очень малый размер на Android-устройствах.</string>
+    <string name="memory_label_active">Активная</string>
+    <string name="memory_active_description">Память, которая используется в данный момент или использовалась совсем недавно. Маловероятно, что эта память будет освобождена в ближайшее время.</string>
+    <string name="memory_label_inactive">Неактивная</string>
+    <string name="memory_inactive_description">Память, которая не использовалась некоторое время. Она является главным кандидатом на перенос в Swap/ZRAM или освобождение.</string>
+    <string name="memory_label_slab">Slab</string>
+    <string name="memory_slab_description">Память, используемая внутренними структурами данных и объектами ядра.</string>
+    <string name="memory_label_mount_path">Путь монтирования</string>
+    <string name="memory_label_filesystem">Файловая система</string>
+    <string name="memory_storage_used_format">%1$s / %2$s ГБ</string>
+    <string name="memory_free_format">%1$s ГБ свободно</string>
+
+    <!-- Battery Screen -->
+    <string name="battery_charging_speed">Скорость зарядки</string>
+    <string name="battery_discharging_speed">Скорость разрядки</string>
+    <string name="battery_current_speed">Текущая скорость</string>
+    <string name="battery_hyper_charging">Гипер-зарядка</string>
+    <string name="battery_fast_charging">Быстрая зарядка</string>
+    <string name="battery_charging">Зарядка</string>
+    <string name="battery_details_title">Сведения о батарее</string>
+    <string name="battery_label_voltage">Напряжение</string>
+    <string name="battery_label_temperature">Температура</string>
+    <string name="battery_label_power_source">Источник питания</string>
+    <string name="battery_label_cycle_count">Количество циклов</string>
+    <string name="battery_label_design_capacity">Номинальная емкость</string>
+    <string name="battery_label_uptime">Время работы</string>
+    <string name="battery_label_deep_sleep">Глубокий сон</string>
+    <string name="battery_graph_max">МАКС: %1$s мА</string>
+    <string name="battery_graph_min">МИН: %1$s мА</string>
+    <string name="battery_status_charging_label">ЗАРЯДКА</string>
+    <string name="battery_status_discharging_label">РАЗРЯДКА</string>
+    <!-- Battery Screen Help -->
+    <string name="battery_help_voltage_temp_title">Напряжение и температура</string>
+    <string name="battery_help_voltage_temp_desc">Получено из системных трансляций в реальном времени через Android BatteryManager API.</string>
+    <string name="battery_help_power_source_title">Источник питания и статус</string>
+    <string name="battery_help_power_source_desc">Определяется на основе текущего состояния зарядки (сеть, USB или беспроводная) через системные интенты.</string>
+    <string name="battery_help_charging_speed_title">Скорость зарядки</string>
+    <string name="battery_help_charging_speed_desc">Оценивается на основе мощности в реальном времени: быстрая зарядка (15 Вт+) и гипер-зарядка (25 Вт+).</string>
+    <string name="battery_help_wattage_title">Мощность (Ватты)</string>
+    <string name="battery_help_wattage_desc">Вычисляется в реальном времени путем умножения напряжения (В) на силу тока (А).</string>
+    <string name="battery_help_current_title">Ток (мА)</string>
+    <string name="battery_help_current_desc">Прямое считывание показателей оборудования из свойств счетчика заряда батареи.</string>
+    <string name="battery_help_design_capacity_title">Номинальная емкость</string>
+    <string name="battery_help_design_capacity_desc">Извлекается из системного профиля Android PowerProfile. Указывает заводскую емкость батареи.</string>
+    <string name="battery_help_cycle_count_title">Количество циклов</string>
+    <string name="battery_help_cycle_count_desc">Родное свойство Android 14+, показывающее общее число выполненных циклов зарядки.</string>
+    <string name="battery_help_uptime_title">Время работы и глубокий сон</string>
+    <string name="battery_help_uptime_desc">Время работы — это общее время с момента загрузки. Глубокий сон — это время, в течение которого процессор находился в состоянии низкого энергопотребления.</string>
+
+    <!-- Settings Screen -->
+    <string name="title_settings">Настройки</string>
+    <string name="settings_item_app">Приложение</string>
+    <string name="settings_item_app_desc">Общие настройки приложения</string>
+    <string name="settings_item_appearance">Внешний вид</string>
+    <string name="settings_item_appearance_desc">Тема, виброотклик и визуальный стиль</string>
+    <string name="settings_item_overlay">Плавающий виджет</string>
+    <string name="settings_item_overlay_desc">Глобальный плавающий оверлей для мониторинга системы</string>
+    <string name="settings_item_monitoring">Мониторинг</string>
+    <string name="settings_item_monitoring_desc">Интервалы обновления и история графиков</string>
+    <string name="settings_item_rust_library">Библиотека Rust</string>
+    <string name="settings_item_rust_library_desc">Нативные основные спецификации и справочник API</string>
+    <string name="settings_item_about">О приложении</string>
+    <string name="settings_item_about_desc">Информация о разработчике и проекте</string>
+
+    <!-- About Screen -->
+    <string name="title_about">О приложении</string>
+    <string name="label_project_owner">Владелец проекта</string>
+    <string name="about_owner_name">Radika</string>
+    <string name="about_owner_role">Ведущий разработчик и архитектор</string>
+    <string name="label_contributors">Участники</string>
+    <string name="error_no_internet">Нет подключения к интернету</string>
+    <string name="action_try_again">Повторить</string>
+    <string name="contributors_empty">Других участников пока не найдено.</string>
+    <string name="badge_free">Бесплатно</string>
+    <string name="badge_open_source">Open Source</string>
+    <string name="badge_rust">Rust</string>
+    <string name="badge_kotlin">Kotlin</string>
+    <string name="badge_material3_expressive">Material 3 Expressive</string>
+    <string name="about_app_description">Высокопроизводительный мониторинг системы для Android</string>
+    <string name="contributors_count">Вклад: %1$d</string>
+    <string name="error_fetch_contributors">Нет подключения к интернету или не удалось загрузить список участников</string>
+
+    <!-- App Settings Screen -->
+    <string name="title_app">Приложение</string>
+    <string name="label_updates">Обновления</string>
+    <string name="settings_check_for_updates">Проверить обновления</string>
+    <string name="settings_check_updates_description">Автоматически проверять обновления при запуске</string>
+    <string name="label_testing">Тестирование</string>
+    <string name="settings_test_setup_flow">Тест мастера настройки</string>
+    <string name="settings_test_setup_description">Запустить первоначальную настройку без сброса параметров приложения</string>
+
+    <!-- Appearance Settings Screen -->
+    <string name="title_appearance">Внешний вид</string>
+    <string name="label_visual_style">Визуальный стиль</string>
+    <string name="settings_app_theme">Тема приложения</string>
+    <string name="settings_app_theme_description">Выберите предпочитаемый визуальный стиль</string>
+    <string name="settings_amoled_mode">Режим Amoled</string>
+    <string name="settings_amoled_description_enabled">Чистый черный фон для OLED-экранов</string>
+    <string name="settings_amoled_description_disabled">Для включения режима Amoled требуется тёмная тема</string>
+    <string name="settings_haptic_feedback">Виброотклик</string>
+    <string name="settings_haptic_description">Легкая вибрация при взаимодействии</string>
+    <string name="settings_vibration_intensity">Интенсивность вибрации</string>
+    <string name="appearance_hero_subtitle">Сделайте интерфейс достаточно красивым, чтобы хвастаться им на скриншотах.</string>
+
+    <!-- Monitoring Settings Screen -->
+    <string name="title_monitoring">Мониторинг</string>
+    <string name="monitoring_refresh_intervals">Интервалы обновления</string>
+    <string name="monitoring_cpu_interval">Интервал обновления CPU</string>
+    <string name="monitoring_cpu_interval_desc">Настройка частоты обновления статистики процессора</string>
+    <string name="monitoring_gpu_interval">Интервал обновления GPU</string>
+    <string name="monitoring_gpu_interval_desc">Настройка частоты обновления статистики видеочипа</string>
+    <string name="monitoring_memory_interval">Интервал обновления памяти</string>
+    <string name="monitoring_memory_interval_desc">Настройка частоты обновления статистики памяти</string>
+    <string name="monitoring_battery_interval">Интервал обновления батареи</string>
+    <string name="monitoring_battery_interval_desc">Настройка частоты обновления времени работы и тока (мА)</string>
+    <string name="monitoring_battery_graph_history">История графика батареи</string>
+    <string name="monitoring_battery_graph_desc">Укажите объем данных для отображения на графике</string>
+    <string name="monitoring_history_duration">Длительность истории</string>
+
+    <!-- Overlay Settings Screen -->
+    <string name="title_floating_overlay_settings">Настройки плавающего виджета</string>
+    <string name="overlay_enable_title">Включить плавающий виджет</string>
+    <string name="overlay_label_metrics">Метрики</string>
+    <string name="overlay_fps">FPS</string>
+    <string name="overlay_fps_desc">Показывать кадровую частоту в реальном времени</string>
+    <string name="overlay_ram_gb">Использование ОЗУ (ГБ)</string>
+    <string name="overlay_ram_gb_desc">Показывать занятую и общую память ОЗУ в ГБ в реальном времени</string>
+    <string name="overlay_ram_percentage">ОЗУ в процентах</string>
+    <string name="overlay_ram_percentage_desc">Показывать процент использования ОЗУ в реальном времени</string>
+    <string name="overlay_battery_temp">Температура батареи</string>
+    <string name="overlay_battery_temp_desc">Показывать температуру батареи в реальном времени</string>
+    <string name="overlay_cpu_temp">Температура процессора</string>
+    <string name="overlay_cpu_temp_desc">Показывать температуру процессора в реальном времени</string>
+    <string name="overlay_label_layout">Макет</string>
+    <string name="overlay_layout_horizontal">Горизонтальный</string>
+    <string name="overlay_layout_vertical">Вертикальный</string>
+    <string name="overlay_label_configuration">Конфигурация</string>
+    <string name="overlay_update_interval">Интервал обновления</string>
+    <string name="overlay_update_interval_desc">Настройка частоты обновления метрик в плавающем виджете</string>
+    <string name="overlay_label_appearance">Внешний вид</string>
+    <string name="overlay_text_color">Цвет текста</string>
+    <string name="overlay_text_size">Размер текста</string>
+    <string name="overlay_bg_opacity">Прозрачность фона</string>
+    <string name="overlay_padding">Отступы (Padding)</string>
+    <string name="overlay_corner_radius">Радиус скругления углов</string>
+    <string name="overlay_permission_required">Требуется разрешение «Поверх других приложений»</string>
+
+    <!-- Rust Library Screen -->
+    <string name="title_rust_library">Библиотека Rust</string>
+    <string name="rust_library_name">librvsystem_monitor.so</string>
+    <string name="rust_library_version">Версия: v%1$s</string>
+    <string name="rust_public_methods">Публичные методы</string>
+    <string name="rust_public_method_detail">Детали публичного метода</string>
+    <string name="rust_method_desc_get_version">Возвращает семантическую версию нативной библиотеки, определенную в Cargo.toml.</string>
+    <string name="rust_method_desc_get_vulkan">Запрашивает системный драйвер Vulkan и возвращает отформатированные версии API и драйвера.</string>
+    <string name="rust_method_desc_get_gpu_temp">Считывает данные с термодатчиков GPU через узлы sysfs ядра.</string>
+    <string name="rust_method_desc_get_memory">Получает комплексный пакет метрик ОЗУ и ZRAM за один вызов JNI.</string>
+    <string name="rust_method_desc_get_ram">Возвращает подробную статистику ОЗУ (всего, доступно, кэш и т.д.).</string>
+    <string name="rust_method_desc_get_zram">Возвращает специфичные метрики ZRAM, включая коэффициент сжатия и использование файла подкачки.</string>
+    <string name="rust_method_desc_get_all_freq">Получает текущие тактовые частоты для всех активных ядер процессора.</string>
+    <string name="rust_method_desc_get_core_count">Возвращает общее количество ядер процессора, обнаруженных ядром.</string>
+    <string name="rust_method_desc_get_core_freq">Возвращает определенный тип частоты (текущая, мин, макс) для указанного ID ядра.</string>
+    <string name="rust_method_desc_get_governor">Возвращает активный регулятор частоты (scaling governor) для указанного ядра процессора.</string>
+    <string name="rust_method_desc_get_cpu_temp">Получает общую/композитную температуру процессора.</string>
+    <string name="rust_method_desc_get_all_temps">Возвращает массив температур для каждого отдельного ядра процессора.</string>
+    <string name="rust_method_desc_get_dynamic">Пакетное получение температур и частот для синхронизации с интерфейсом.</string>
+
+    <!-- Setup Screen -->
+    <string name="setup_continue">Продолжить</string>
+    <string name="setup_grant_permission">Предоставить разрешение</string>
+    <string name="setup_finish">Завершить настройку</string>
+    <string name="setup_permission_granted_footer">Разрешение предоставлено. Переходите к следующему шагу.</string>
+    <string name="setup_permission_required_footer">Необходимо для отображения плавающего виджета</string>
+    <string name="setup_updates_footer">Всегда оставайтесь в курсе обновлений</string>
+    <string name="setup_theme_footer">Вы можете изменить это позже в настройках</string>
+    <string name="setup_overlay_title">Поверх других окон</string>
+    <string name="setup_overlay_description">Чтобы показывать FPS, использование оперативной памяти и температуру во время работы с другими приложениями, монитору RvSystem требуется разрешение на отображение поверх них.</string>
+    <string name="setup_updates_title">Проверка обновлений</string>
+    <string name="setup_updates_description">Автоматически проверять наличие обновлений приложения при запуске, чтобы всегда использовать новейшие функции.</string>
+    <string name="setup_auto_update">Автообновление</string>
+    <string name="setup_check_on_startup">Проверять при запуске</string>
+    <string name="setup_theme_title">Выберите тему</string>
+    <string name="setup_theme_description">Выберите предпочтительный визуальный стиль для приложения.</string>
+
+    <!-- Update Dialog -->
+    <string name="update_available_title">Доступно обновление</string>
+    <string name="downloading_update_title">Скачивание обновления</string>
+    <string name="downloading_update_subtitle">Не закрывайте приложение, пока APK-файл не будет готов.</string>
+    <string name="download_progress_label">Прогресс скачивания</string>
+    <string name="update_ready_title">Обновление готово</string>
+    <string name="update_ready_subtitle">Файл APK успешно загружен и теперь может быть установлен.</string>
+    <string name="install_description">Android откроет установщик пакетов для этого файла.</string>
+    <string name="update_failed_title">Ошибка обновления</string>
+    <string name="update_failed_subtitle">Не удалось завершить обновление.</string>
+    <string name="error_details_title">Сведения об ошибке</string>
+    <string name="cancel_download_dialog_title">Отменить скачивание?</string>
+    <string name="cancel_download_dialog_message">Загрузка обновления все еще выполняется. Если вы отмените её сейчас, вам придется начать её заново позже.</string>
+    <string name="whats_new_title">Что нового</string>
+    <string name="no_changelog_message">Для этой версии список изменений не предоставлен.</string>
+    <string name="pause_for_dialog_title">Приостановить на…</string>
+    <string name="pause_3_hours">3 часа</string>
+    <string name="pause_6_hours">6 часов</string>
+    <string name="pause_12_hours">12 часов</string>
+    <string name="pause_24_hours">24 часа</string>
+    <string name="error_no_apk_in_release">В последнем релизе не найден APK-файл</string>
+
+    <!-- SettingsSliderCard -->
+    <string name="default_value_label_refresh_rate">Частота обновления</string>
+
+    <!-- HelpBottomSheet -->
+    <string name="help_default_title">Источники данных</string>
+
+    <!-- SystemOverlayService -->
+    <string name="notification_channel_overlay">Служба плавающего виджета</string>
+    <string name="notification_title_overlay_active">Плавающий виджет активен</string>
+    <string name="notification_text_overlay">Мониторинг производительности системы (FPS и ОЗУ)</string>
+    <string name="overlay_format_fps">FPS: %1$d</string>
+    <string name="overlay_format_ram_gb_percent">RAM: %1$.1f/%2$.1f ГБ (%3$.0f%%)</string>
+    <string name="overlay_format_ram_gb">RAM: %1$.1f/%2$.1f ГБ</string>
+    <string name="overlay_format_ram_percent">RAM: %1$.0f%%</string>
+    <string name="overlay_format_cpu_temp">CPU: %1$.1f°C</string>
+    <string name="overlay_format_battery_temp">BATT: %1$.1f°C</string>
+
+    <!-- BatteryUtils -->
+    <string name="battery_health_good">Отличное</string>
+    <string name="battery_health_overheat">Перегрев</string>
+    <string name="battery_health_dead">Неисправна</string>
+    <string name="battery_health_over_voltage">Перенапряжение</string>
+    <string name="battery_health_unspecified_failure">Неизвестный сбой</string>
+    <string name="battery_health_cold">Переохлаждение</string>
+    <string name="battery_status_charging">Заряжается</string>
+    <string name="battery_status_discharging">Разряжается</string>
+    <string name="battery_status_full">Заряжена полностью</string>
+    <string name="battery_status_not_charging">Не заряжается</string>
+    <string name="battery_power_source_ac">Сетевое ЗУ</string>
+    <string name="battery_power_source_usb">Порт USB</string>
+    <string name="battery_power_source_wireless">Беспроводная зарядка</string>
+    <string name="battery_power_source_battery">Батарея</string>
+
+    <!-- DisplayUtils -->
+    <string name="hdr_type_dolby_vision">Dolby Vision</string>
+    <string name="hdr_type_hdr10">HDR10</string>
+    <string name="hdr_type_hlg">HLG</string>
+    <string name="hdr_type_hdr10_plus">HDR10+</string>
+
+    <!-- OSUtils -->
+    <string name="dessert_name_baklava">Baklava</string>
+    <string name="dessert_name_vanilla_ice_cream">Vanilla Ice Cream</string>
+    <string name="dessert_name_upside_down_cake">Upside Down Cake</string>
+</resources>
