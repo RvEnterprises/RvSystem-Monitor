@@ -17,7 +17,7 @@ class FpsMonitor @Inject constructor(
 ) {
     val framesPerSecond: Flow<Int> = flow {
         var initialized = false
-        var lastKnownFps = 0
+        var lastTotalFrames = -1L
         emit(0)
 
         while (true) {
@@ -30,7 +30,7 @@ class FpsMonitor @Inject constructor(
                 try {
                     if (!initialized) {
                         shizukuManager.executeCommand(
-                            "dumpsys SurfaceFlinger --timestats -clear -enable",
+                            "dumpsys SurfaceFlinger --timestats -enable",
                         )
                         initialized = true
                     } else {
@@ -38,20 +38,20 @@ class FpsMonitor @Inject constructor(
                             "dumpsys SurfaceFlinger --timestats -dump",
                         )
 
-                        val parsed = Regex("averageFPS\\s*=\\s*([0-9.]+)")
+                        val currentTotalFrames = Regex("totalFrames\\s*=\\s*([0-9]+)")
                             .find(output)
                             ?.groupValues?.get(1)
-                            ?.toFloatOrNull()
-                            ?.toInt()
-                            ?: 0
+                            ?.toLongOrNull()
+                            ?: -1L
 
-                        if (parsed > 0) lastKnownFps = parsed
-                        emit(lastKnownFps)
-
-                        if (System.currentTimeMillis() % 3000L < 1000L) {
-                            shizukuManager.executeCommand(
-                                "dumpsys SurfaceFlinger --timestats -clear -enable",
-                            )
+                        if (currentTotalFrames != -1L) {
+                            if (lastTotalFrames != -1L) {
+                                val fps = (currentTotalFrames - lastTotalFrames).toInt()
+                                emit(fps.coerceAtLeast(0))
+                            }
+                            lastTotalFrames = currentTotalFrames
+                        } else {
+                            emit(0)
                         }
                     }
                 } catch (e: Exception) {
