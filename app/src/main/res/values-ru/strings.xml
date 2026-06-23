@@ -111,8 +111,6 @@
     <string name="memory_slab_description">Память, используемая внутренними структурами данных и объектами ядра.</string>
     <string name="memory_label_mount_path">Путь монтирования</string>
     <string name="memory_label_filesystem">Файловая система</string>
-    <string name="memory_storage_used_format">%1$s / %2$s ГБ</string>
-    <string name="memory_free_format">%1$s ГБ свободно</string>
 
     <!-- Battery Screen -->
     <string name="battery_charging_speed">Скорость зарядки</string>
@@ -182,7 +180,6 @@
     <string name="badge_material3_expressive">Material 3 Expressive</string>
     <string name="about_app_description">Высокопроизводительный мониторинг системы для Android</string>
     <string name="contributors_count">Вклад: %1$d</string>
-    <string name="error_fetch_contributors">Нет подключения к интернету или не удалось загрузить список участников</string>
 
     <!-- App Settings Screen -->
     <string name="title_app">Приложение</string>
@@ -306,7 +303,6 @@
     <string name="pause_6_hours">6 часов</string>
     <string name="pause_12_hours">12 часов</string>
     <string name="pause_24_hours">24 часа</string>
-    <string name="error_no_apk_in_release">В последнем релизе не найден APK-файл</string>
 
     <!-- SettingsSliderCard -->
     <string name="default_value_label_refresh_rate">Частота обновления</string>

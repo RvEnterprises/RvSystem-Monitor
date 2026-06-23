@@ -111,8 +111,6 @@
     <string name="memory_slab_description">Пам\'ять, що використовується внутрішніми структурами даних та об\'єктами ядра.</string>
     <string name="memory_label_mount_path">Шлях монтування</string>
     <string name="memory_label_filesystem">Файлова система</string>
-    <string name="memory_storage_used_format">%1$s / %2$s ГБ</string>
-    <string name="memory_free_format">%1$s ГБ вільно</string>
 
     <!-- Battery Screen -->
     <string name="battery_charging_speed">Швидкість заряджання</string>
@@ -182,7 +180,6 @@
     <string name="badge_material3_expressive">Material 3 Expressive</string>
     <string name="about_app_description">Високопродуктивний моніторинг системи для Android</string>
     <string name="contributors_count">Внесок: %1$d</string>
-    <string name="error_fetch_contributors">Немає підключення до інтернету або не вдалося завантажити список учасників</string>
 
     <!-- App Settings Screen -->
     <string name="title_app">Додаток</string>
@@ -198,7 +195,6 @@
     <string name="label_visual_style">Візуальний стиль</string>
     <string name="settings_app_theme">Тема додатка</string>
     <string name="settings_app_theme_description">Виберіть бажаний візуальний стиль</string>
-    <string name="settings_amoled_mode">Режим Amoled</string>
     <string name="settings_amoled_mode">Режим Amoled</string>
     <string name="settings_amoled_description_enabled">Чистий чорний фон для OLED-екранів</string>
     <string name="settings_amoled_description_disabled">Для увімкнення режиму Amoled потрібна темна тема</string>
@@ -307,7 +303,6 @@
     <string name="pause_6_hours">6 годин</string>
     <string name="pause_12_hours">12 годин</string>
     <string name="pause_24_hours">24 години</string>
-    <string name="error_no_apk_in_release">У останньому релізі не знайдено APK-файл</string>
 
     <!-- SettingsSliderCard -->
     <string name="default_value_label_refresh_rate">Частота оновлення</string>
