@@ -1,1 +1,1 @@
-High-performance system monitoring for Android, powered by a native Rust backend and Jetpack Compose.
+High-performance system monitoring for Android.
