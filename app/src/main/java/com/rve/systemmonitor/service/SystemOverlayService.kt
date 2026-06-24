@@ -29,7 +29,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -40,7 +40,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @AndroidEntryPoint
@@ -54,7 +54,7 @@ class SystemOverlayService : Service() {
 
     private var windowManager: WindowManager? = null
     private var overlayView: View? = null
-    private var metricsTextView: TextView? = null
+    private var metricsView: MetricsSurfaceView? = null
 
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
@@ -112,7 +112,7 @@ class SystemOverlayService : Service() {
         }.stateIn(
             scope = serviceScope,
             started = SharingStarted.Eagerly,
-            initialValue = Triple(0, BatteryUtils.getBatteryIntent(this), VisibilitySettings())
+            initialValue = Triple(0, BatteryUtils.getBatteryIntent(this), VisibilitySettings()),
         )
 
         overlayRepository.overlayUpdateInterval
@@ -128,50 +128,50 @@ class SystemOverlayService : Service() {
             .flowOn(Dispatchers.Default)
             .map { (fps, batteryIntent, vis) ->
 
-            val metrics = mutableListOf<String>()
+                val metrics = mutableListOf<String>()
 
-            if (vis.showFps) {
-                metrics.add(getString(R.string.overlay_format_fps, fps.toLong()))
-            }
-
-            if (vis.showRamGb || vis.showRamPercent) {
-                val ram = MemoryUtils.getRamData()
-                val ramText = when {
-                    vis.showRamGb && vis.showRamPercent -> getString(
-                        R.string.overlay_format_ram_gb_percent,
-                        ram.used,
-                        ram.total,
-                        ram.usedPercentage,
-                    )
-
-                    vis.showRamGb -> getString(R.string.overlay_format_ram_gb, ram.used, ram.total)
-
-                    vis.showRamPercent -> getString(R.string.overlay_format_ram_percent, ram.usedPercentage)
-
-                    else -> ""
+                if (vis.showFps) {
+                    metrics.add(getString(R.string.overlay_format_fps, fps.toLong()))
                 }
-                if (ramText.isNotEmpty()) metrics.add(ramText)
-            }
 
-            if (vis.showBatTemp && batteryIntent != null) {
-                val temp = BatteryUtils.getTemperature(batteryIntent)
-                metrics.add(getString(R.string.overlay_format_battery_temp, temp))
-            }
+                if (vis.showRamGb || vis.showRamPercent) {
+                    val ram = MemoryUtils.getRamData()
+                    val ramText = when {
+                        vis.showRamGb && vis.showRamPercent -> getString(
+                            R.string.overlay_format_ram_gb_percent,
+                            ram.used,
+                            ram.total,
+                            ram.usedPercentage,
+                        )
 
-            if (vis.showCpuTemp) {
-                val cpuData = CpuUtils.getCpuDynamicData()
-                if (cpuData.isNotEmpty()) {
-                    metrics.add(getString(R.string.overlay_format_cpu_temp, cpuData[0]))
+                        vis.showRamGb -> getString(R.string.overlay_format_ram_gb, ram.used, ram.total)
+
+                        vis.showRamPercent -> getString(R.string.overlay_format_ram_percent, ram.usedPercentage)
+
+                        else -> ""
+                    }
+                    if (ramText.isNotEmpty()) metrics.add(ramText)
                 }
-            }
 
-            val separator = if (vis.isVertical) "\n" else " | "
-            metrics.joinToString(separator)
-        }
+                if (vis.showBatTemp && batteryIntent != null) {
+                    val temp = BatteryUtils.getTemperature(batteryIntent)
+                    metrics.add(getString(R.string.overlay_format_battery_temp, temp))
+                }
+
+                if (vis.showCpuTemp) {
+                    val cpuData = CpuUtils.getCpuDynamicData()
+                    if (cpuData.isNotEmpty()) {
+                        metrics.add(getString(R.string.overlay_format_cpu_temp, cpuData[0]))
+                    }
+                }
+
+                val separator = if (vis.isVertical) "\n" else " | "
+                metrics.joinToString(separator)
+            }
             .flowOn(Dispatchers.Default)
             .distinctUntilChanged()
             .onEach { formattedText ->
-                metricsTextView?.text = formattedText
+                metricsView?.text = formattedText
             }
             .launchIn(serviceScope)
     }
@@ -197,7 +197,7 @@ class SystemOverlayService : Service() {
         combine(
             overlayRepository.overlayPosition,
             overlayRepository.overlayX,
-            overlayRepository.overlayY
+            overlayRepository.overlayY,
         ) { position, x, y ->
             Triple(position, x, y)
         }
@@ -220,6 +220,7 @@ class SystemOverlayService : Service() {
                 params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
                 changed = true
             }
+
             com.rve.systemmonitor.domain.model.OverlayPosition.TOP_LEFT -> {
                 params.gravity = Gravity.TOP or Gravity.START
                 params.x = 0
@@ -227,6 +228,7 @@ class SystemOverlayService : Service() {
                 params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                 changed = true
             }
+
             com.rve.systemmonitor.domain.model.OverlayPosition.TOP_CENTER -> {
                 params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
                 params.x = 0
@@ -234,6 +236,7 @@ class SystemOverlayService : Service() {
                 params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
                 changed = true
             }
+
             com.rve.systemmonitor.domain.model.OverlayPosition.TOP_RIGHT -> {
                 params.gravity = Gravity.TOP or Gravity.END
                 params.x = 0
@@ -250,19 +253,7 @@ class SystemOverlayService : Service() {
     private data class OverlayStyle(val size: Float, val opacity: Float, val padding: Int, val color: Int, val radius: Int)
 
     private fun applyStyle(style: OverlayStyle) {
-        metricsTextView?.apply {
-            textSize = style.size
-            setTextColor(style.color)
-            val alphaInt = (style.opacity * 255).toInt()
-
-            val shape = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                setColor(Color.argb(alphaInt, 0, 0, 0))
-                cornerRadius = style.radius.toFloat()
-            }
-            background = shape
-            setPadding(style.padding, style.padding / 2, style.padding, style.padding / 2)
-        }
+        metricsView?.style = style
     }
 
     override fun onDestroy() {
@@ -289,11 +280,9 @@ class SystemOverlayService : Service() {
             y = 100
         }
 
-        val textView = TextView(this).apply {
-            text = ""
-        }
+        val surfaceView = MetricsSurfaceView(this)
 
-        textView.setOnTouchListener(object : View.OnTouchListener {
+        surfaceView.setOnTouchListener(object : View.OnTouchListener {
             private var initialX = 0
             private var initialY = 0
             private var initialTouchX = 0f
@@ -329,8 +318,8 @@ class SystemOverlayService : Service() {
             }
         })
 
-        metricsTextView = textView
-        overlayView = textView
+        metricsView = surfaceView
+        overlayView = surfaceView
         windowManager?.addView(overlayView, params)
     }
 
@@ -355,5 +344,146 @@ class SystemOverlayService : Service() {
     companion object {
         private const val NOTIFICATION_ID = 1001
         var isRunning = false
+    }
+
+    private inner class MetricsSurfaceView(context: android.content.Context) :
+        android.view.SurfaceView(context),
+        android.view.SurfaceHolder.Callback {
+        private var lastMeasuredWidth = 0
+        private var lastMeasuredHeight = 0
+
+        var style: OverlayStyle? = null
+            set(value) {
+                field = value
+                post { requestLayout() }
+                drawMetrics()
+            }
+
+        var text: String = ""
+            set(value) {
+                val oldLines = field.split("\n").size
+                val newLines = value.split("\n").size
+                field = value
+                if (oldLines != newLines) {
+                    post { requestLayout() }
+                } else {
+                    val s = style
+                    if (s != null) {
+                        val scaledDensity = context.resources.displayMetrics.scaledDensity
+                        textPaint.textSize = s.size * scaledDensity
+                        var maxWidth = 0f
+                        val lines = value.split("\n")
+                        for (line in lines) {
+                            val w = textPaint.measureText(line)
+                            if (w > maxWidth) maxWidth = w
+                        }
+                        val paddingX = s.padding.toFloat()
+                        val neededWidth = (maxWidth + paddingX * 2).toInt()
+                        if (neededWidth > lastMeasuredWidth) {
+                            post { requestLayout() }
+                        } else {
+                            drawMetrics()
+                        }
+                    } else {
+                        drawMetrics()
+                    }
+                }
+            }
+
+        private val textPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+        private val bgPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+        private val bgRect = android.graphics.RectF()
+
+        init {
+            holder.addCallback(this)
+            setZOrderOnTop(true)
+            holder.setFormat(android.graphics.PixelFormat.TRANSLUCENT)
+        }
+
+        override fun surfaceCreated(holder: android.view.SurfaceHolder) {
+            drawMetrics()
+        }
+
+        override fun surfaceChanged(holder: android.view.SurfaceHolder, format: Int, width: Int, height: Int) {
+            drawMetrics()
+        }
+
+        override fun surfaceDestroyed(holder: android.view.SurfaceHolder) {}
+
+        private fun drawMetrics() {
+            val s = style ?: return
+            val canvas = holder.lockCanvas() ?: return
+            try {
+                canvas.drawColor(android.graphics.Color.TRANSPARENT, android.graphics.PorterDuff.Mode.CLEAR)
+
+                textPaint.color = s.color
+                val scaledDensity = context.resources.displayMetrics.scaledDensity
+                textPaint.textSize = s.size * scaledDensity
+
+                val alphaInt = (s.opacity * 255).toInt()
+                bgPaint.color = android.graphics.Color.argb(alphaInt, 0, 0, 0)
+
+                val lines = text.split("\n")
+                var maxWidth = 0f
+                for (line in lines) {
+                    val w = textPaint.measureText(line)
+                    if (w > maxWidth) maxWidth = w
+                }
+
+                val fm = textPaint.fontMetrics
+                val lineHeight = fm.descent - fm.ascent
+
+                val paddingX = s.padding.toFloat()
+                val paddingY = (s.padding / 2).toFloat()
+
+                val totalWidth = maxWidth + paddingX * 2
+                val totalHeight = (lineHeight * lines.size) + paddingY * 2
+
+                bgRect.set(0f, 0f, totalWidth, totalHeight)
+                val radius = s.radius.toFloat()
+                canvas.drawRoundRect(bgRect, radius, radius, bgPaint)
+
+                var y = paddingY - fm.ascent
+                for (line in lines) {
+                    canvas.drawText(line, paddingX, y, textPaint)
+                    y += lineHeight
+                }
+            } finally {
+                holder.unlockCanvasAndPost(canvas)
+            }
+        }
+
+        override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+            val s = style
+            if (s == null) {
+                super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+                return
+            }
+
+            val scaledDensity = context.resources.displayMetrics.scaledDensity
+            textPaint.textSize = s.size * scaledDensity
+
+            val lines = text.split("\n")
+            var maxWidth = 0f
+            for (line in lines) {
+                val w = textPaint.measureText(line)
+                if (w > maxWidth) maxWidth = w
+            }
+
+            val fm = textPaint.fontMetrics
+            val lineHeight = fm.descent - fm.ascent
+
+            val paddingX = s.padding.toFloat()
+            val paddingY = (s.padding / 2).toFloat()
+
+            // add a buffer to width to prevent frequent resizing if numbers change
+            val totalWidth = (maxWidth + paddingX * 2 + 50f).toInt()
+            val totalHeight = ((lineHeight * lines.size) + paddingY * 2).toInt()
+
+            lastMeasuredWidth = totalWidth
+            lastMeasuredHeight = totalHeight
+
+            setMeasuredDimension(totalWidth, totalHeight)
+        }
     }
 }
