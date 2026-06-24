@@ -15,15 +15,15 @@ class AboutRepositoryImpl @Inject constructor() : AboutRepository {
                 avatarUrl = "https://github.com/Rve27.png",
                 contributions = 287,
                 htmlUrl = "https://github.com/Rve27",
-                name = "Radika"
+                name = "Radika",
             ),
             GitHubContributor(
                 login = "pavelc4",
                 avatarUrl = "https://github.com/pavelc4.png",
                 contributions = 4,
                 htmlUrl = "https://github.com/pavelc4",
-                name = "Dimas Dwi Ariyanto"
-            )
+                name = "Dimas Dwi Ariyanto",
+            ),
         )
         return Result.success(contributors)
     }

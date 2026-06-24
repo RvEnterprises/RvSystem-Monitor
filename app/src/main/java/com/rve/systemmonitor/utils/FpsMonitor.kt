@@ -20,7 +20,7 @@ class FpsMonitor @Inject constructor(
     val framesPerSecond: Flow<Int> = combine(
         settingsRepository.useShizuku,
         shizukuManager.isShizukuAvailable,
-        shizukuManager.hasPermission
+        shizukuManager.hasPermission,
     ) { use, avail, perm ->
         use && avail && perm
     }.flatMapLatest { shizukuReady ->

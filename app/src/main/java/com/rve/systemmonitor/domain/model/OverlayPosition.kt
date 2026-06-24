@@ -4,5 +4,5 @@ enum class OverlayPosition {
     FREE,
     TOP_LEFT,
     TOP_CENTER,
-    TOP_RIGHT
+    TOP_RIGHT,
 }

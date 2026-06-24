@@ -619,7 +619,7 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
                                             .align(Alignment.Center)
                                             .size(24.dp, 12.dp)
                                             .clip(RoundedCornerShape(2.dp))
-                                            .background(indicatorColor)
+                                            .background(indicatorColor),
                                     )
                                 }
                             }
@@ -649,7 +649,7 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
                                             .align(Alignment.TopCenter)
                                             .size(24.dp, 12.dp)
                                             .clip(RoundedCornerShape(2.dp))
-                                            .background(indicatorColor)
+                                            .background(indicatorColor),
                                     )
                                 }
                             }
@@ -684,7 +684,7 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
                                             .align(Alignment.TopStart)
                                             .size(24.dp, 12.dp)
                                             .clip(RoundedCornerShape(2.dp))
-                                            .background(indicatorColor)
+                                            .background(indicatorColor),
                                     )
                                 }
                             }
@@ -714,7 +714,7 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
                                             .align(Alignment.TopEnd)
                                             .size(24.dp, 12.dp)
                                             .clip(RoundedCornerShape(2.dp))
-                                            .background(indicatorColor)
+                                            .background(indicatorColor),
                                     )
                                 }
                             }
