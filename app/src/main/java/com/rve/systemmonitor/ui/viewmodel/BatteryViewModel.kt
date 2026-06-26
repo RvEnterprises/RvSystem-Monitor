@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.flow.stateIn
 
 @OptIn(FlowPreview::class)
@@ -72,7 +71,6 @@ class BatteryViewModel @Inject constructor(private val batteryRepository: Batter
     private val _historyList = mutableListOf<BatteryDataPoint>()
 
     val batteryHistory: StateFlow<ImmutableList<BatteryDataPoint>> = batteryInfo
-        .sample(1000)
         .map { info ->
             _historyList.add(BatteryDataPoint(info.current, info.status))
             val maxHistory = graphHistorySeconds.value
