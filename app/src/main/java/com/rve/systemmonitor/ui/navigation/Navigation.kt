@@ -32,9 +32,9 @@ fun AppNavigation(isSetupCompleted: Boolean) {
         navController = navController,
         startDestination = startDestination,
         enterTransition = { aospSharedAxisEnter() },
-            exitTransition = { aospSharedAxisExit() },
-            popEnterTransition = { aospSharedAxisPopEnter() },
-            popExitTransition = { aospSharedAxisPopExit() },
+        exitTransition = { aospSharedAxisExit() },
+        popEnterTransition = { aospSharedAxisPopEnter() },
+        popExitTransition = { aospSharedAxisPopExit() },
         modifier = Modifier.background(MaterialTheme.colorScheme.background),
     ) {
         composable<Route.Setup>(

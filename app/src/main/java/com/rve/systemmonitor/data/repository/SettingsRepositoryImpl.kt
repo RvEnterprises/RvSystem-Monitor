@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.edit
 import com.rve.systemmonitor.domain.model.AppSettings
 import com.rve.systemmonitor.domain.model.BackupSettings
 import com.rve.systemmonitor.domain.model.MonitoringSettings
+import com.rve.systemmonitor.domain.model.OverlayPosition
 import com.rve.systemmonitor.domain.model.OverlaySettings
 import com.rve.systemmonitor.domain.repository.SettingsRepository
 import com.rve.systemmonitor.utils.OverlayPreferences
@@ -137,6 +138,7 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
                 batteryGraphHistorySeconds = appPrefs[SettingsPreferences.BATTERY_GRAPH_HISTORY_KEY] ?: 60,
             ),
             overlay = OverlaySettings(
+                isOverlayEnabled = overlayPrefs[OverlayPreferences.IS_OVERLAY_ENABLED_KEY] ?: false,
                 isFpsEnabled = overlayPrefs[OverlayPreferences.IS_FPS_ENABLED_KEY] ?: false,
                 isRamEnabled = overlayPrefs[OverlayPreferences.IS_RAM_ENABLED_KEY] ?: false,
                 isRamPercentageEnabled = overlayPrefs[OverlayPreferences.IS_RAM_PERCENTAGE_ENABLED_KEY] ?: false,
@@ -150,6 +152,11 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
                 textColor = String.format("#%08X", overlayPrefs[OverlayPreferences.OVERLAY_TEXT_COLOR_KEY] ?: -16711936),
                 isVerticalLayout = overlayPrefs[OverlayPreferences.IS_VERTICAL_LAYOUT_KEY] ?: false,
                 cornerRadius = overlayPrefs[OverlayPreferences.OVERLAY_CORNER_RADIUS_KEY] ?: 8,
+                position = overlayPrefs[OverlayPreferences.OVERLAY_POSITION_KEY]?.let {
+                    runCatching { OverlayPosition.valueOf(it) }.getOrNull()
+                } ?: OverlayPosition.FREE,
+                x = overlayPrefs[OverlayPreferences.OVERLAY_X_KEY] ?: 100,
+                y = overlayPrefs[OverlayPreferences.OVERLAY_Y_KEY] ?: 100,
             ),
         )
         return json.encodeToString(backup)
@@ -176,6 +183,7 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
         }
 
         application.overlayDataStore.edit { prefs ->
+            prefs[OverlayPreferences.IS_OVERLAY_ENABLED_KEY] = backup.overlay.isOverlayEnabled
             prefs[OverlayPreferences.IS_FPS_ENABLED_KEY] = backup.overlay.isFpsEnabled
             prefs[OverlayPreferences.IS_RAM_ENABLED_KEY] = backup.overlay.isRamEnabled
             prefs[OverlayPreferences.IS_RAM_PERCENTAGE_ENABLED_KEY] = backup.overlay.isRamPercentageEnabled
@@ -190,6 +198,9 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
                 runCatching { android.graphics.Color.parseColor(backup.overlay.textColor) }.getOrDefault(-16711936)
             prefs[OverlayPreferences.IS_VERTICAL_LAYOUT_KEY] = backup.overlay.isVerticalLayout
             prefs[OverlayPreferences.OVERLAY_CORNER_RADIUS_KEY] = backup.overlay.cornerRadius
+            prefs[OverlayPreferences.OVERLAY_POSITION_KEY] = backup.overlay.position.name
+            prefs[OverlayPreferences.OVERLAY_X_KEY] = backup.overlay.x
+            prefs[OverlayPreferences.OVERLAY_Y_KEY] = backup.overlay.y
         }
     }
 }

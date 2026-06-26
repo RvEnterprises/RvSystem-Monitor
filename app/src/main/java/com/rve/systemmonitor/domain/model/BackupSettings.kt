@@ -34,6 +34,7 @@ data class MonitoringSettings(
 
 @Serializable
 data class OverlaySettings(
+    val isOverlayEnabled: Boolean = false,
     val isFpsEnabled: Boolean = false,
     val isRamEnabled: Boolean = false,
     val isRamPercentageEnabled: Boolean = false,
@@ -47,4 +48,7 @@ data class OverlaySettings(
     val textColor: String = "#FF00FF00", // Default Green
     val isVerticalLayout: Boolean = false,
     val cornerRadius: Int = 8,
+    val position: OverlayPosition = OverlayPosition.FREE,
+    val x: Int = 100,
+    val y: Int = 100,
 )

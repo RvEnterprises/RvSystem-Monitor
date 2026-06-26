@@ -372,7 +372,7 @@ class SystemOverlayService : Service() {
                         textPaint.textSize = android.util.TypedValue.applyDimension(
                             android.util.TypedValue.COMPLEX_UNIT_SP,
                             s.size,
-                            context.resources.displayMetrics
+                            context.resources.displayMetrics,
                         )
                         var maxWidth = 0f
                         val lines = value.split("\n")
@@ -423,7 +423,7 @@ class SystemOverlayService : Service() {
                 textPaint.textSize = android.util.TypedValue.applyDimension(
                     android.util.TypedValue.COMPLEX_UNIT_SP,
                     s.size,
-                    context.resources.displayMetrics
+                    context.resources.displayMetrics,
                 )
 
                 val alphaInt = (s.opacity * 255).toInt()
@@ -469,7 +469,7 @@ class SystemOverlayService : Service() {
             textPaint.textSize = android.util.TypedValue.applyDimension(
                 android.util.TypedValue.COMPLEX_UNIT_SP,
                 s.size,
-                context.resources.displayMetrics
+                context.resources.displayMetrics,
             )
 
             val lines = text.split("\n")
