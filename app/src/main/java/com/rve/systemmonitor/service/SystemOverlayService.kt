@@ -369,8 +369,11 @@ class SystemOverlayService : Service() {
                 } else {
                     val s = style
                     if (s != null) {
-                        val scaledDensity = context.resources.displayMetrics.scaledDensity
-                        textPaint.textSize = s.size * scaledDensity
+                        textPaint.textSize = android.util.TypedValue.applyDimension(
+                            android.util.TypedValue.COMPLEX_UNIT_SP,
+                            s.size,
+                            context.resources.displayMetrics
+                        )
                         var maxWidth = 0f
                         val lines = value.split("\n")
                         for (line in lines) {
@@ -417,8 +420,11 @@ class SystemOverlayService : Service() {
                 canvas.drawColor(android.graphics.Color.TRANSPARENT, android.graphics.PorterDuff.Mode.CLEAR)
 
                 textPaint.color = s.color
-                val scaledDensity = context.resources.displayMetrics.scaledDensity
-                textPaint.textSize = s.size * scaledDensity
+                textPaint.textSize = android.util.TypedValue.applyDimension(
+                    android.util.TypedValue.COMPLEX_UNIT_SP,
+                    s.size,
+                    context.resources.displayMetrics
+                )
 
                 val alphaInt = (s.opacity * 255).toInt()
                 bgPaint.color = android.graphics.Color.argb(alphaInt, 0, 0, 0)
@@ -460,8 +466,11 @@ class SystemOverlayService : Service() {
                 return
             }
 
-            val scaledDensity = context.resources.displayMetrics.scaledDensity
-            textPaint.textSize = s.size * scaledDensity
+            textPaint.textSize = android.util.TypedValue.applyDimension(
+                android.util.TypedValue.COMPLEX_UNIT_SP,
+                s.size,
+                context.resources.displayMetrics
+            )
 
             val lines = text.split("\n")
             var maxWidth = 0f
