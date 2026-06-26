@@ -57,13 +57,14 @@ class MainActivity : ComponentActivity() {
                 val isSetupCompleted = successState.isSetupCompleted
                 val hapticEnabled = successState.hapticFeedbackEnabled
                 val vibrationIntensity = successState.vibrationIntensity
+                val blurEffectEnabled = successState.blurEffectEnabled
                 val darkTheme = when (themeMode) {
                     ThemeMode.LIGHT -> false
                     ThemeMode.DARK -> true
                     ThemeMode.SYSTEM -> isSystemInDarkTheme()
                 }
 
-                RvSystemMonitorTheme(darkTheme, amoledMode, hapticEnabled, vibrationIntensity) {
+                RvSystemMonitorTheme(darkTheme, amoledMode, hapticEnabled, vibrationIntensity, blurEffectEnabled) {
                     if (BuildConfig.ENABLE_UPDATER) {
                         val updateUiState by updateViewModel.uiState.collectAsStateWithLifecycle()
 

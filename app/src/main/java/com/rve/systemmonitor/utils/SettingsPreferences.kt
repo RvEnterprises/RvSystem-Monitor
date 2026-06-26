@@ -27,11 +27,13 @@ class SettingsPreferences(private val context: Context) {
         val AUTO_UPDATE_ENABLED_KEY = booleanPreferencesKey("auto_update_enabled")
         val USE_SHIZUKU_KEY = booleanPreferencesKey("use_shizuku")
         val UPDATES_PAUSED_UNTIL_KEY = longPreferencesKey("updates_paused_until")
+        val BLUR_EFFECT_ENABLED_KEY = booleanPreferencesKey("blur_effect_enabled")
     }
 
     val autoUpdateEnabledFlow: Flow<Boolean> = context.dataStore.getValueFlow(AUTO_UPDATE_ENABLED_KEY, true)
     val useShizukuFlow: Flow<Boolean> = context.dataStore.getValueFlow(USE_SHIZUKU_KEY, false)
     val updatesPausedUntilFlow: Flow<Long> = context.dataStore.getValueFlow(UPDATES_PAUSED_UNTIL_KEY, 0L)
+    val blurEffectEnabledFlow: Flow<Boolean> = context.dataStore.getValueFlow(BLUR_EFFECT_ENABLED_KEY, true)
     val themeModeFlow: Flow<ThemeMode> = context.dataStore.getEnumFlow(THEME_MODE_KEY, ThemeMode.SYSTEM) { ThemeMode.valueOf(it) }
     val amoledModeFlow: Flow<Boolean> = context.dataStore.getValueFlow(AMOLED_MODE_KEY, false)
     val vibrationIntensityFlow: Flow<VibrationIntensity> = context.dataStore.getEnumFlow(
@@ -59,4 +61,5 @@ class SettingsPreferences(private val context: Context) {
     suspend fun saveAutoUpdateEnabled(enabled: Boolean) = context.dataStore.setValue(AUTO_UPDATE_ENABLED_KEY, enabled)
     suspend fun saveUseShizuku(enabled: Boolean) = context.dataStore.setValue(USE_SHIZUKU_KEY, enabled)
     suspend fun saveUpdatesPausedUntil(timestamp: Long) = context.dataStore.setValue(UPDATES_PAUSED_UNTIL_KEY, timestamp)
+    suspend fun saveBlurEffectEnabled(enabled: Boolean) = context.dataStore.setValue(BLUR_EFFECT_ENABLED_KEY, enabled)
 }

@@ -61,6 +61,13 @@ class SettingsViewModel @Inject constructor(
             initialValue = VibrationIntensity.LIGHT,
         )
 
+    val blurEffectEnabled: StateFlow<Boolean> = settingsRepository.blurEffectEnabled
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = true,
+        )
+
     val cpuRefreshDelay: StateFlow<Long> = settingsRepository.cpuRefreshDelay
         .stateIn(
             scope = viewModelScope,
@@ -131,6 +138,12 @@ class SettingsViewModel @Inject constructor(
     fun setVibrationIntensity(intensity: VibrationIntensity) {
         viewModelScope.launch {
             settingsRepository.setVibrationIntensity(intensity)
+        }
+    }
+
+    fun setBlurEffectEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setBlurEffectEnabled(enabled)
         }
     }
 

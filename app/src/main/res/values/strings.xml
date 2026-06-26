@@ -223,6 +223,8 @@
     <string name="settings_haptic_feedback">Haptic Feedback</string>
     <string name="settings_haptic_description">Subtle vibrations on interaction</string>
     <string name="settings_vibration_intensity">Vibration Intensity</string>
+    <string name="settings_blur_effect">Blur Effect</string>
+    <string name="settings_blur_description">Applies a blur effect to the background during screen transitions</string>
     <string name="appearance_hero_subtitle">Make it pretty enough to flex in screenshots.</string>
 
     <!-- Monitoring Settings Screen -->

@@ -22,6 +22,7 @@ class MainViewModel @Inject constructor(settingsRepository: SettingsRepository) 
         settingsRepository.hapticFeedbackEnabled,
         settingsRepository.vibrationIntensity,
         settingsRepository.autoUpdateEnabled,
+        settingsRepository.blurEffectEnabled,
     ) { args ->
         MainUiState.Success(
             themeMode = args[0] as ThemeMode,
@@ -30,6 +31,7 @@ class MainViewModel @Inject constructor(settingsRepository: SettingsRepository) 
             hapticFeedbackEnabled = args[3] as Boolean,
             vibrationIntensity = args[4] as VibrationIntensity,
             autoUpdateEnabled = args[5] as Boolean,
+            blurEffectEnabled = args[6] as Boolean,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -49,5 +51,6 @@ sealed interface MainUiState {
         val hapticFeedbackEnabled: Boolean,
         val vibrationIntensity: VibrationIntensity,
         val autoUpdateEnabled: Boolean,
+        val blurEffectEnabled: Boolean,
     ) : MainUiState
 }

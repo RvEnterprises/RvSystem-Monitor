@@ -21,6 +21,7 @@ data class AppSettings(
     val autoUpdateEnabled: Boolean = true,
     val useShizuku: Boolean = false,
     val updatesPausedUntil: Long = 0L,
+    val blurEffectEnabled: Boolean = true,
 )
 
 @Serializable

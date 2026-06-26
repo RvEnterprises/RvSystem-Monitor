@@ -95,7 +95,9 @@ fun ScreenWrapper(
     val previousEntryId = navController.previousBackStackEntry?.id.also { _ -> currentBackStackEntryState }
     val shouldDim = myEntry != null && previousEntryId == myEntry.id
 
-    val disableBlurAllOver = false
+    val blurEffectEnabled = com.rve.systemmonitor.ui.theme.LocalBlurEffectEnabled.current
+
+    val disableBlurAllOver = !blurEffectEnabled
 
     val transition = animatedVisibilityScope?.transition
 

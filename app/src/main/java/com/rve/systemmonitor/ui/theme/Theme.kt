@@ -21,6 +21,9 @@ import androidx.core.view.WindowCompat
 import com.rve.systemmonitor.ui.components.haptic.LocalHapticEnabled
 import com.rve.systemmonitor.ui.components.haptic.LocalVibrationIntensity
 import com.rve.systemmonitor.utils.VibrationIntensity
+import androidx.compose.runtime.compositionLocalOf
+
+val LocalBlurEffectEnabled = compositionLocalOf { true }
 
 @Composable
 fun RvSystemMonitorTheme(
@@ -28,6 +31,7 @@ fun RvSystemMonitorTheme(
     amoledMode: Boolean = false,
     hapticEnabled: Boolean = true,
     vibrationIntensity: VibrationIntensity = VibrationIntensity.LIGHT,
+    blurEffectEnabled: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
@@ -60,6 +64,7 @@ fun RvSystemMonitorTheme(
             CompositionLocalProvider(
                 LocalHapticEnabled provides hapticEnabled,
                 LocalVibrationIntensity provides vibrationIntensity,
+                LocalBlurEffectEnabled provides blurEffectEnabled,
             ) {
                 content()
             }

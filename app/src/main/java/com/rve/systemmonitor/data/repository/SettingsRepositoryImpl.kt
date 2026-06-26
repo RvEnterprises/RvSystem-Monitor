@@ -57,6 +57,8 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
 
     override val updatesPausedUntil: Flow<Long> = settingsPreferences.updatesPausedUntilFlow
 
+    override val blurEffectEnabled: Flow<Boolean> = settingsPreferences.blurEffectEnabledFlow
+
     override suspend fun setThemeMode(mode: ThemeMode) {
         settingsPreferences.saveThemeMode(mode)
     }
@@ -109,6 +111,10 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
         settingsPreferences.saveUpdatesPausedUntil(timestampMillis)
     }
 
+    override suspend fun setBlurEffectEnabled(enabled: Boolean) {
+        settingsPreferences.saveBlurEffectEnabled(enabled)
+    }
+
     override suspend fun exportSettings(): String {
         val appPrefs = application.dataStore.data.first()
         val overlayPrefs = application.overlayDataStore.data.first()
@@ -129,6 +135,7 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
                 autoUpdateEnabled = appPrefs[SettingsPreferences.AUTO_UPDATE_ENABLED_KEY] ?: true,
                 useShizuku = appPrefs[SettingsPreferences.USE_SHIZUKU_KEY] ?: false,
                 updatesPausedUntil = appPrefs[SettingsPreferences.UPDATES_PAUSED_UNTIL_KEY] ?: 0L,
+                blurEffectEnabled = appPrefs[SettingsPreferences.BLUR_EFFECT_ENABLED_KEY] ?: true,
             ),
             monitoring = MonitoringSettings(
                 cpuRefreshDelay = appPrefs[SettingsPreferences.CPU_REFRESH_DELAY_KEY] ?: 3000L,
@@ -174,6 +181,7 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
             prefs[SettingsPreferences.AUTO_UPDATE_ENABLED_KEY] = backup.app.autoUpdateEnabled
             prefs[SettingsPreferences.USE_SHIZUKU_KEY] = backup.app.useShizuku
             prefs[SettingsPreferences.UPDATES_PAUSED_UNTIL_KEY] = backup.app.updatesPausedUntil
+            prefs[SettingsPreferences.BLUR_EFFECT_ENABLED_KEY] = backup.app.blurEffectEnabled
 
             prefs[SettingsPreferences.CPU_REFRESH_DELAY_KEY] = backup.monitoring.cpuRefreshDelay
             prefs[SettingsPreferences.MEMORY_REFRESH_DELAY_KEY] = backup.monitoring.memoryRefreshDelay

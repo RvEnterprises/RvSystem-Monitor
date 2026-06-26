@@ -18,6 +18,7 @@ interface SettingsRepository {
     val autoUpdateEnabled: Flow<Boolean>
     val useShizuku: Flow<Boolean>
     val updatesPausedUntil: Flow<Long>
+    val blurEffectEnabled: Flow<Boolean>
     suspend fun setThemeMode(mode: ThemeMode)
     suspend fun setAmoledMode(enabled: Boolean)
     suspend fun setHapticFeedbackEnabled(enabled: Boolean)
@@ -31,6 +32,7 @@ interface SettingsRepository {
     suspend fun setAutoUpdateEnabled(enabled: Boolean)
     suspend fun setUseShizuku(enabled: Boolean)
     suspend fun setUpdatesPausedUntil(timestampMillis: Long)
+    suspend fun setBlurEffectEnabled(enabled: Boolean)
     suspend fun exportSettings(): String
     suspend fun importSettings(json: String)
 }

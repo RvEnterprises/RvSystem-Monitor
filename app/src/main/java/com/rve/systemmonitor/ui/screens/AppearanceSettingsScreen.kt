@@ -85,6 +85,7 @@ fun AppearanceSettingsScreen(viewModel: SettingsViewModel = hiltViewModel(), onN
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val currentTheme by viewModel.themeMode.collectAsStateWithLifecycle()
     val amoledMode by viewModel.amoledMode.collectAsStateWithLifecycle()
+    val blurEffectEnabled by viewModel.blurEffectEnabled.collectAsStateWithLifecycle()
     val hapticEnabled by viewModel.hapticFeedbackEnabled.collectAsStateWithLifecycle()
     val vibrationIntensity by viewModel.vibrationIntensity.collectAsStateWithLifecycle()
 
@@ -286,6 +287,81 @@ fun AppearanceSettingsScreen(viewModel: SettingsViewModel = hiltViewModel(), onN
                                             targetState = amoledMode && amoledEnabled,
                                             animationSpec = MaterialTheme.motionScheme.slowEffectsSpec(),
                                             label = "Amoled Switch Icon",
+                                        ) { enabled ->
+                                            Icon(
+                                                painter = painterResource(
+                                                    if (enabled) R.drawable.check_rounded else R.drawable.close_rounded,
+                                                ),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                                            )
+                                        }
+                                    },
+                                )
+                            }
+                        }
+
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .hapticClickable { viewModel.setBlurEffectEnabled(!blurEffectEnabled) }
+                                    .padding(horizontal = 20.dp, vertical = 20.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                    modifier = Modifier.weight(1f),
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .background(MaterialTheme.colorScheme.primary),
+                                        contentAlignment = Alignment.Center,
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.layers_filled),
+                                            contentDescription = stringResource(R.string.settings_blur_effect),
+                                            tint = MaterialTheme.colorScheme.onPrimary,
+                                        )
+                                    }
+
+                                    Column {
+                                        Text(
+                                            text = stringResource(R.string.settings_blur_effect),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                        )
+                                        Text(
+                                            text = stringResource(R.string.settings_blur_description),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
+                                    }
+                                }
+
+                                Switch(
+                                    checked = blurEffectEnabled,
+                                    onCheckedChange = { viewModel.setBlurEffectEnabled(it) },
+                                    colors = SwitchDefaults.colors(
+                                        checkedIconColor = MaterialTheme.colorScheme.primary,
+                                    ),
+                                    thumbContent = {
+                                        Crossfade(
+                                            targetState = blurEffectEnabled,
+                                            animationSpec = MaterialTheme.motionScheme.slowEffectsSpec(),
+                                            label = "Blur Switch Icon",
                                         ) { enabled ->
                                             Icon(
                                                 painter = painterResource(
