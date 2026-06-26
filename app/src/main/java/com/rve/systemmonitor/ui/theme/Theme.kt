@@ -14,6 +14,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -21,7 +22,6 @@ import androidx.core.view.WindowCompat
 import com.rve.systemmonitor.ui.components.haptic.LocalHapticEnabled
 import com.rve.systemmonitor.ui.components.haptic.LocalVibrationIntensity
 import com.rve.systemmonitor.utils.VibrationIntensity
-import androidx.compose.runtime.compositionLocalOf
 
 val LocalBlurEffectEnabled = compositionLocalOf { true }
 

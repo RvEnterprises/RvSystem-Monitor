@@ -482,6 +482,8 @@ fun ContributorRow(contributor: GitHubContributor, onClick: () -> Unit) {
         when (contributor.login.lowercase()) {
             "rve27" -> R.drawable.avatar_rve27
             "pavelc4" -> R.drawable.avatar_pavelc4
+            "kugumin" -> R.drawable.avatar_kugumin
+            "theovilardo" -> R.drawable.avatar_theovilardo
             else -> contributor.avatarUrl
         }
     }

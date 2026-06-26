@@ -13,7 +13,7 @@ class AboutRepositoryImpl @Inject constructor() : AboutRepository {
             GitHubContributor(
                 login = "Rve27",
                 avatarUrl = "https://github.com/Rve27.png",
-                contributions = 287,
+                contributions = 320,
                 htmlUrl = "https://github.com/Rve27",
                 name = "Radika",
             ),
@@ -23,6 +23,20 @@ class AboutRepositoryImpl @Inject constructor() : AboutRepository {
                 contributions = 4,
                 htmlUrl = "https://github.com/pavelc4",
                 name = "Dimas Dwi Ariyanto",
+            ),
+            GitHubContributor(
+                login = "Kugumin",
+                avatarUrl = "https://github.com/Kugumin.png",
+                contributions = 1,
+                htmlUrl = "https://github.com/Kugumin",
+                name = "Key",
+            ),
+            GitHubContributor(
+                login = "theovilardo",
+                avatarUrl = "https://github.com/theovilardo.png",
+                contributions = 1,
+                htmlUrl = "https://github.com/theovilardo",
+                name = null,
             ),
         )
         return Result.success(contributors)
