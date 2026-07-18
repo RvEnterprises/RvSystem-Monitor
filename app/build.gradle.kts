@@ -139,6 +139,7 @@ dependencies {
     implementation(libs.lottie.compose)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    compileOnly(libs.errorprone.annotations)
     ksp(libs.kotlin.metadata.jvm)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.backdrop)
