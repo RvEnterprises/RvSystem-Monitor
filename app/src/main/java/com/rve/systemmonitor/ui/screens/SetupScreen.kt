@@ -332,7 +332,26 @@ fun SetupScreen(viewModel: SetupViewModel = hiltViewModel(), onSetupCompleted: (
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    if (setupStep == SetupStep.OverlayPermission && !isOverlayPermissionGranted) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        androidx.compose.material3.TextButton(
+                            onClick = rememberHapticOnClick {
+                                setupStep = if (BuildConfig.ENABLE_UPDATER) SetupStep.Updates else SetupStep.Theme
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
+                        ) {
+                            Text(
+                                text = stringResource(R.string.setup_skip),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    } else {
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
 
                     val footerText = when (setupStep) {
                         SetupStep.OverlayPermission -> if (isOverlayPermissionGranted) {
