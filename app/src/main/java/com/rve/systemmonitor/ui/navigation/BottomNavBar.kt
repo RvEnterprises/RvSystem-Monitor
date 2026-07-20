@@ -126,19 +126,8 @@ object BottomNavBar {
     private fun BottomNavItem(backdrop: Backdrop, item: NavItem, isSelected: Boolean, onClick: () -> Unit) {
         val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
 
-        val backgroundColor by animateColorAsState(
-            targetValue = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else Color.Transparent,
-            label = "Background Color Animation",
-        )
-
-        val contentColor by animateColorAsState(
-            targetValue = when {
-                isSelected && isDark -> MaterialTheme.colorScheme.onPrimaryContainer
-                isSelected -> MaterialTheme.colorScheme.onPrimary
-                else -> MaterialTheme.colorScheme.onPrimaryContainer
-            },
-            label = "Content Color Animation",
-        )
+        val backgroundColor = MaterialTheme.colorScheme.surface
+        val contentColor = MaterialTheme.colorScheme.primary
 
         val animationScope = rememberCoroutineScope()
         val progressAnimation = remember { Animatable(0f) }
@@ -167,7 +156,6 @@ object BottomNavBar {
                                 progressAnimation.animateTo(1f, animationSpec)
                             }
                         }
-
                         waitForUpOrCancellation()
                         animationScope.launch {
                             progressAnimation.animateTo(0f, animationSpec)
@@ -182,17 +170,12 @@ object BottomNavBar {
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .matchParentSize()
-                    .background(backgroundColor),
+                    .matchParentSize(),
             )
             AnimatedVisibility(
                 visible = isSelected,
-                enter = fadeIn(
-                    animationSpec = MaterialTheme.motionScheme.slowEffectsSpec(),
-                ),
-                exit = fadeOut(
-                    animationSpec = MaterialTheme.motionScheme.slowEffectsSpec(),
-                ),
+                enter = fadeIn(),
+                exit = fadeOut(),
                 modifier = Modifier.matchParentSize(),
             ) {
                 Box(
