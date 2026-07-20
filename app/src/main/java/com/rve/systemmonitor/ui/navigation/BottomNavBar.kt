@@ -116,6 +116,7 @@ object BottomNavBar {
                                 pagerState.animateScrollToPage(index)
                             }
                         },
+                        modifier = if (isSelected) Modifier.weight(1f, fill = false) else Modifier,
                     )
                 }
             }
@@ -123,7 +124,7 @@ object BottomNavBar {
     }
 
     @Composable
-    private fun BottomNavItem(backdrop: Backdrop, item: NavItem, isSelected: Boolean, onClick: () -> Unit) {
+    private fun BottomNavItem(backdrop: Backdrop, item: NavItem, isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
         val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
 
         val backgroundColor = MaterialTheme.colorScheme.surface
@@ -133,7 +134,7 @@ object BottomNavBar {
         val progressAnimation = remember { Animatable(0f) }
 
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .graphicsLayer {
                     val progress = progressAnimation.value
                     val maxScale = (size.width + 16.dp.toPx()) / size.width
@@ -219,7 +220,8 @@ object BottomNavBar {
                         text = item.label,
                         color = contentColor,
                         maxLines = 1,
-                        softWrap = true,
+                        softWrap = false,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                     )
                 }
             }
