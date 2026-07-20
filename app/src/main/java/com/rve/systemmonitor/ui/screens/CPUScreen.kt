@@ -121,11 +121,17 @@ private fun CPUOverviewCard(cpu: CPU) {
                     containerColor = MaterialTheme.colorScheme.primary,
                     textColor = MaterialTheme.colorScheme.onPrimary,
                 )
-                BadgeChip(
-                    text = String.format(Locale.US, "%.1f °C", cpu.temperature),
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    textColor = MaterialTheme.colorScheme.onPrimary,
-                )
+                AnimatedVisibility(
+                    visible = cpu.temperature > 0.0,
+                    enter = fadeIn() + scaleIn(),
+                    exit = fadeOut() + scaleOut(),
+                ) {
+                    BadgeChip(
+                        text = String.format(Locale.US, "%.1f °C", cpu.temperature),
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        textColor = MaterialTheme.colorScheme.onPrimary,
+                    )
+                }
                 AnimatedVisibility(
                     visible = cpu.isLoadAvailable && cpu.load >= 0.0,
                     enter = fadeIn() + scaleIn(),
@@ -227,17 +233,29 @@ private fun CoreDetailCard(core: CoreDetail, isLoadAvailable: Boolean) {
                 )
             }
 
-            BadgeChip(
-                text = String.format(Locale.US, "%.1f °C", core.temperature),
-                containerColor = MaterialTheme.colorScheme.primary,
-                textColor = MaterialTheme.colorScheme.onPrimary,
-            )
+            AnimatedVisibility(
+                visible = core.temperature > 0.0,
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut(),
+            ) {
+                BadgeChip(
+                    text = String.format(Locale.US, "%.1f °C", core.temperature),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    textColor = MaterialTheme.colorScheme.onPrimary,
+                )
+            }
 
-            BadgeChip(
-                text = core.governor.uppercase(),
-                containerColor = MaterialTheme.colorScheme.tertiary,
-                textColor = MaterialTheme.colorScheme.onTertiary,
-            )
+            AnimatedVisibility(
+                visible = core.governor != "N/A",
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut(),
+            ) {
+                BadgeChip(
+                    text = core.governor.uppercase(),
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    textColor = MaterialTheme.colorScheme.onTertiary,
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
