@@ -185,6 +185,18 @@ fn get_core_thermal_fds() -> &'static Mutex<Vec<Option<File>>> {
                         qc_zones.push((c, n, key.clone()));
                     }
                 }
+            } else if key.starts_with("cpu_") {
+                // Format: cpu_littleN, cpu_bigN
+                let is_little = key.starts_with("cpu_little");
+                let is_big = key.starts_with("cpu_big");
+                if is_little || is_big {
+                    let prefix_len = if is_little { "cpu_little".len() } else { "cpu_big".len() };
+                    if let Ok(n) = key[prefix_len..].parse::<i32>() {
+                        let core_idx = n - 1;
+                        let c = if is_little { 0 } else { 1 };
+                        qc_zones.push((c, core_idx, key.clone()));
+                    }
+                }
             } else if key.starts_with("cpu") {
                 // Format: cpuN-silver-S, cpuN-gold-S
                 if let Some(dash_idx) = key.find('-') {
