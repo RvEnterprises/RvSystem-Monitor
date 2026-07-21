@@ -178,11 +178,29 @@ fn get_core_thermal_fds() -> &'static Mutex<Vec<Option<File>>> {
         let mut qc_zones: Vec<(i32, i32, String)> = Vec::new();
         for key in map.keys() {
             if key.starts_with("cpu-") {
-                // Format: cpu-C-N-S
+                // Format: cpu-C-N-S or cpu-<type>-core<N>
                 let parts: Vec<&str> = key.split('-').collect();
                 if parts.len() >= 3 {
                     if let (Ok(c), Ok(n)) = (parts[1].parse::<i32>(), parts[2].parse::<i32>()) {
                         qc_zones.push((c, n, key.clone()));
+                    } else {
+                        // Dimensity format: cpu-little-core0
+                        let cluster_type = parts[1];
+                        let core_str = parts[2];
+                        if core_str.starts_with("core") {
+                            if let Ok(n) = core_str[4..].parse::<i32>() {
+                                let c = match cluster_type {
+                                    "little" => 0,
+                                    "medium" => 1,
+                                    "big" => 2,
+                                    "prime" => 3,
+                                    _ => -1,
+                                };
+                                if c != -1 {
+                                    qc_zones.push((c, n, key.clone()));
+                                }
+                            }
+                        }
                     }
                 }
             } else if key.starts_with("cpu_") {
