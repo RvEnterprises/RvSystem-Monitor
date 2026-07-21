@@ -39,7 +39,9 @@ fn get_cpu_fds() -> &'static Mutex<CpuFds> {
     CPU_FDS.get_or_init(|| {
         let cores = get_core_count() as usize;
 
-        let open_opt = |path: String| -> Option<File> { File::open(&path).ok() };
+        let open_opt = |path1: String, path2: String| -> Option<File> {
+            File::open(&path1).or_else(|_| File::open(&path2)).ok()
+        };
 
         let mut cur_freq = Vec::with_capacity(cores);
         let mut max_freq = Vec::with_capacity(cores);
@@ -47,22 +49,34 @@ fn get_cpu_fds() -> &'static Mutex<CpuFds> {
         let mut governor = Vec::with_capacity(cores);
 
         for i in 0..cores {
-            cur_freq.push(open_opt(format!(
-                "/sys/devices/system/cpu/cpu{}/cpufreq/scaling_cur_freq",
-                i
-            )));
-            max_freq.push(open_opt(format!(
-                "/sys/devices/system/cpu/cpu{}/cpufreq/cpuinfo_max_freq",
-                i
-            )));
-            min_freq.push(open_opt(format!(
-                "/sys/devices/system/cpu/cpu{}/cpufreq/cpuinfo_min_freq",
-                i
-            )));
-            governor.push(open_opt(format!(
-                "/sys/devices/system/cpu/cpu{}/cpufreq/scaling_governor",
-                i
-            )));
+            cur_freq.push(open_opt(
+                format!("/sys/devices/system/cpu/cpu{}/cpufreq/scaling_cur_freq", i),
+                format!(
+                    "/sys/devices/system/cpu/cpufreq/policy{}/scaling_cur_freq",
+                    i
+                ),
+            ));
+            max_freq.push(open_opt(
+                format!("/sys/devices/system/cpu/cpu{}/cpufreq/cpuinfo_max_freq", i),
+                format!(
+                    "/sys/devices/system/cpu/cpufreq/policy{}/cpuinfo_max_freq",
+                    i
+                ),
+            ));
+            min_freq.push(open_opt(
+                format!("/sys/devices/system/cpu/cpu{}/cpufreq/cpuinfo_min_freq", i),
+                format!(
+                    "/sys/devices/system/cpu/cpufreq/policy{}/cpuinfo_min_freq",
+                    i
+                ),
+            ));
+            governor.push(open_opt(
+                format!("/sys/devices/system/cpu/cpu{}/cpufreq/scaling_governor", i),
+                format!(
+                    "/sys/devices/system/cpu/cpufreq/policy{}/scaling_governor",
+                    i
+                ),
+            ));
         }
 
         Mutex::new(CpuFds {
@@ -216,11 +230,17 @@ pub fn get_core_frequency(core_id: i32, freq_type: &str) -> i64 {
         "cur" => "scaling_cur_freq",
         _ => return 0,
     };
-    let path = format!(
+    let path1 = format!(
         "/sys/devices/system/cpu/cpu{}/cpufreq/{}",
         core_id, file_name
     );
-    read_path_parsed::<i64>(&path, &mut buf).unwrap_or(0)
+    let path2 = format!(
+        "/sys/devices/system/cpu/cpufreq/policy{}/{}",
+        core_id, file_name
+    );
+    read_path_parsed::<i64>(&path1, &mut buf)
+        .or_else(|| read_path_parsed::<i64>(&path2, &mut buf))
+        .unwrap_or(0)
 }
 
 pub fn get_core_governor(core_id: i32) -> String {
@@ -240,11 +260,16 @@ pub fn get_core_governor(core_id: i32) -> String {
     }
 
     // Fallback
-    let path = format!(
+    let path1 = format!(
         "/sys/devices/system/cpu/cpu{}/cpufreq/scaling_governor",
         core_id
     );
-    fs::read_to_string(&path)
+    let path2 = format!(
+        "/sys/devices/system/cpu/cpufreq/policy{}/scaling_governor",
+        core_id
+    );
+    fs::read_to_string(&path1)
+        .or_else(|_| fs::read_to_string(&path2))
         .map(|mut s| {
             let l = s.trim_end().len();
             s.truncate(l);
