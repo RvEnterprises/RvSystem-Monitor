@@ -15,7 +15,6 @@
 ## 📖 Table of Contents
 - [🚀 Overview](#-overview)
 - [📸 Screenshots](#-screenshots)
-- [✨ Key Features](#-key-features)
 - [🛠️ Tech Stack](#-tech-stack)
 - [📂 Project Structure](#-project-structure)
 - [🏗️ Architecture](#-architecture)
@@ -48,21 +47,6 @@ Built with **Material 3 Expressive**, the application offers a visually rich exp
 
 ---
 
-## ✨ Key Features
-
-- **🔋 Battery Intelligence**: Live tracking of Wattage (W), cycle counts (Android 14+), health percentage, and precise Deep Sleep vs. Uptime metrics.
-- **🖥️ Floating Overlay**: A draggable, high-performance floating monitor powered by Android's `Choreographer` for accurate frame-timing.
-  - **Metrics**: Real-time FPS tracking, RAM usage (GB/Percentage), and live CPU & Battery temperatures.
-  - **Customization**: Fully configurable via dedicated settings including update intervals (down to 0.5s), text size, colors, background opacity, padding, and corner radius.
-  - **Adaptive Layout**: Supports both horizontal (piped) and vertical (stacked) orientations to fit any screen usage scenario.
-- **🎮 GPU & Graphics**: Retrieval of GPU renderer, vendor, and supported OpenGL ES & Vulkan versions directly through the EGL context and native drivers.
-- **⚙️ CPU Dynamics**: Detailed per-core monitoring including current, minimum, and maximum frequencies and scaling governors.
-- **🧠 Memory & ZRAM**: High-precision tracking of RAM and ZRAM usage, including cached, buffers, and kernel slab memory.
-- **💾 Backup & Restore**: Easily export and import your app settings and overlay configurations to keep your setup safe.
-- **⚡ Native Performance**: Optimized Rust backend that parses kernel files and interacts with hardware drivers directly with efficient JNI batching.
-- **🎨 Expressive UI**: Built with Material 3 Expressive, featuring adaptive layouts, sophisticated screen transitions (MD3 Expressive), and optimized recomposition.
-
----
 
 ## 🛠️ Tech Stack
 
