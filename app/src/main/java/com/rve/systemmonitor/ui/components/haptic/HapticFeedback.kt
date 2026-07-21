@@ -74,6 +74,7 @@ fun <T> rememberHapticOnValueChange(onValueChange: (T) -> Unit): (T) -> Unit {
  */
 fun Modifier.hapticClickable(
     enabled: Boolean = true,
+    ripple: Boolean = true,
     onClickLabel: String? = null,
     role: Role? = null,
     indication: Indication? = null,
@@ -96,7 +97,7 @@ fun Modifier.hapticClickable(
         enabled = enabled,
         onClickLabel = onClickLabel,
         role = role,
-        indication = indication ?: ripple(),
+        indication = indication ?: if (ripple) ripple() else null,
         interactionSource = interactionSource ?: remember { MutableInteractionSource() },
         onClick = hapticOnClick,
     )
