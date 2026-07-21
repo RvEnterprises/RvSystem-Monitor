@@ -174,11 +174,44 @@ fn get_core_thermal_fds() -> &'static Mutex<Vec<Option<File>>> {
         let cores = get_core_count() as usize;
         let map = get_thermal_map();
         let mut fds = Vec::with_capacity(cores);
-        for i in 0..cores {
-            let key = format!("cpu{}-thermal", i);
-            let file = map.get(&key).and_then(|p| File::open(p).ok());
-            fds.push(file);
+
+        let mut qc_zones: Vec<(i32, i32, String)> = Vec::new();
+        for key in map.keys() {
+            if key.starts_with("cpu-") {
+                let parts: Vec<&str> = key.split('-').collect();
+                if parts.len() >= 3 {
+                    if let (Ok(c), Ok(n)) = (parts[1].parse::<i32>(), parts[2].parse::<i32>()) {
+                        qc_zones.push((c, n, key.clone()));
+                    }
+                }
+            }
         }
+
+        let mut unique_cn: HashMap<(i32, i32), String> = HashMap::new();
+        for (c, n, key) in qc_zones {
+            if !unique_cn.contains_key(&(c, n)) || key.ends_with("-0") || key.ends_with("-0-0") {
+                unique_cn.insert((c, n), key);
+            }
+        }
+
+        let mut sorted_cn: Vec<(&(i32, i32), &String)> = unique_cn.iter().collect();
+        sorted_cn.sort_by(|a, b| {
+            if a.0.0 != b.0.0 {
+                a.0.0.cmp(&b.0.0)
+            } else {
+                a.0.1.cmp(&b.0.1)
+            }
+        });
+
+        for i in 0..cores {
+            if i < sorted_cn.len() {
+                let key = sorted_cn[i].1;
+                fds.push(map.get(key).and_then(|p| File::open(p).ok()));
+            } else {
+                fds.push(None);
+            }
+        }
+
         Mutex::new(fds)
     })
 }
