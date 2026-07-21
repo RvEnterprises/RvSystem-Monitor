@@ -234,6 +234,17 @@ fn get_core_thermal_fds() -> &'static Mutex<Vec<Option<File>>> {
                         }
                     }
                 }
+            } else if key.starts_with("tsens_tz_sensor") {
+                if let Ok(n) = key[15..].parse::<i32>() {
+                    let core_idx = if n >= 1 && n <= 8 {
+                        n - 1
+                    } else if n == 0 {
+                        99
+                    } else {
+                        n
+                    };
+                    qc_zones.push((99, core_idx, key.clone()));
+                }
             }
         }
 
