@@ -121,11 +121,6 @@ private fun CPUOverviewCard(cpu: CPU) {
                     containerColor = MaterialTheme.colorScheme.primary,
                     textColor = MaterialTheme.colorScheme.onPrimary,
                 )
-                BadgeChip(
-                    text = String.format(Locale.US, "%.1f °C", cpu.temperature),
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    textColor = MaterialTheme.colorScheme.onPrimary,
-                )
                 AnimatedVisibility(
                     visible = cpu.isLoadAvailable && cpu.load >= 0.0,
                     enter = fadeIn() + scaleIn(),
