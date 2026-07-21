@@ -1,10 +1,5 @@
 package com.rve.systemmonitor.ui.screens
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -88,17 +83,11 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                         )
                     }
 
-                    AnimatedVisibility(
-                        visible = gpuInfo.temperature > 0.0,
-                        enter = fadeIn() + scaleIn(),
-                        exit = fadeOut() + scaleOut(),
-                    ) {
-                        BadgeChip(
-                            text = String.format(Locale.US, "%.1f °C", gpuInfo.temperature),
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            textColor = MaterialTheme.colorScheme.onPrimary,
-                        )
-                    }
+                    BadgeChip(
+                        text = String.format(Locale.US, "%.1f °C", gpuInfo.temperature),
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        textColor = MaterialTheme.colorScheme.onPrimary,
+                    )
                 }
             }
         }

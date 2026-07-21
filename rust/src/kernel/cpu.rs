@@ -39,16 +39,7 @@ fn get_cpu_fds() -> &'static Mutex<CpuFds> {
     CPU_FDS.get_or_init(|| {
         let cores = get_core_count() as usize;
 
-
-        // Try per-core path first, fall back to cpufreq policy directory
-        let open_with_fallback = |core: usize, file: &str| -> Option<File> {
-            let per_core = format!("/sys/devices/system/cpu/cpu{}/cpufreq/{}", core, file);
-            if let Some(f) = File::open(&per_core).ok() {
-                return Some(f);
-            }
-            let policy = format!("/sys/devices/system/cpu/cpufreq/policy{}/{}", core, file);
-            File::open(&policy).ok()
-        };
+        let open_opt = |path: String| -> Option<File> { File::open(&path).ok() };
 
         let mut cur_freq = Vec::with_capacity(cores);
         let mut max_freq = Vec::with_capacity(cores);
@@ -56,10 +47,22 @@ fn get_cpu_fds() -> &'static Mutex<CpuFds> {
         let mut governor = Vec::with_capacity(cores);
 
         for i in 0..cores {
-            cur_freq.push(open_with_fallback(i, "scaling_cur_freq"));
-            max_freq.push(open_with_fallback(i, "cpuinfo_max_freq"));
-            min_freq.push(open_with_fallback(i, "cpuinfo_min_freq"));
-            governor.push(open_with_fallback(i, "scaling_governor"));
+            cur_freq.push(open_opt(format!(
+                "/sys/devices/system/cpu/cpu{}/cpufreq/scaling_cur_freq",
+                i
+            )));
+            max_freq.push(open_opt(format!(
+                "/sys/devices/system/cpu/cpu{}/cpufreq/cpuinfo_max_freq",
+                i
+            )));
+            min_freq.push(open_opt(format!(
+                "/sys/devices/system/cpu/cpu{}/cpufreq/cpuinfo_min_freq",
+                i
+            )));
+            governor.push(open_opt(format!(
+                "/sys/devices/system/cpu/cpu{}/cpufreq/scaling_governor",
+                i
+            )));
         }
 
         Mutex::new(CpuFds {
@@ -86,14 +89,9 @@ fn get_thermal_map() -> &'static HashMap<String, PathBuf> {
                 let type_path = entry.path().join("type");
                 let temp_path = entry.path().join("temp");
                 if let Ok(tz_type) = fs::read_to_string(&type_path) {
-                    let key = tz_type.trim().to_lowercase();
-                    log::debug!("thermal zone: {} -> {}", key, temp_path.display());
-                    map.insert(key, temp_path);
+                    map.insert(tz_type.trim().to_lowercase(), temp_path);
                 }
             }
-        }
-        if map.is_empty() {
-            log::warn!("No thermal zones found in /sys/class/thermal");
         }
         map
     })
@@ -127,45 +125,16 @@ fn get_thermal_fd_from_priority(
 
 fn get_cpu_thermal_fd() -> &'static Mutex<Option<File>> {
     CPU_THERMAL_FD.get_or_init(|| {
-        let map = get_thermal_map();
-        let fd = get_thermal_fd_from_priority(
-            map,
+        get_thermal_fd_from_priority(
+            get_thermal_map(),
             &[
-                // Generic
                 "cpu-thermal",
                 "soc-thermal",
                 "cpu",
                 "soc",
                 "thermal-cpufreq",
-                // MediaTek
-                "mtktscpu",
-                "mtktsap",
-                "mtk_thermal",
-                "cpu_big_thermal",
-                "cpu_little_thermal",
-                // Qualcomm
-                "cpuss-0-usr",
-                "cpuss-1-usr",
-                "cpu-0-0-usr",
-                "aoss0-usr",
-                // Samsung Exynos
-                "big_thermal",
-                "little_thermal",
-                "mid_thermal",
-                // UNISOC
-                "cluster0-thermal",
-                "cluster1-thermal",
             ],
-        );
-        // Last-resort fallback: if no thermal zone was found, try thermal_zone0
-        // which is typically the main CPU/SoC sensor on most Android devices
-        if fd.lock().unwrap().is_none() {
-            let fallback_path = PathBuf::from("/sys/class/thermal/thermal_zone0/temp");
-            if fallback_path.exists() {
-                return Mutex::new(File::open(fallback_path).ok());
-            }
-        }
-        fd
+        )
     })
 }
 
@@ -174,18 +143,11 @@ fn get_gpu_thermal_fd() -> &'static Mutex<Option<File>> {
         get_thermal_fd_from_priority(
             get_thermal_map(),
             &[
-                // Generic
                 "gpu-thermal",
                 "gpu0-thermal",
-                "gpu",
-                // Qualcomm
                 "gpuss-0-usr",
+                "gpu",
                 "tsens_tz_sensor9",
-                // MediaTek
-                "mtkts_gpu",
-                "gpu_thermal",
-                // Samsung Exynos
-                "g3d-thermal",
             ],
         )
     })
@@ -258,15 +220,7 @@ pub fn get_core_frequency(core_id: i32, freq_type: &str) -> i64 {
         "/sys/devices/system/cpu/cpu{}/cpufreq/{}",
         core_id, file_name
     );
-    if let Some(val) = read_path_parsed::<i64>(&path, &mut buf) {
-        return val;
-    }
-    // Fallback: cpufreq policy directory
-    let policy_path = format!(
-        "/sys/devices/system/cpu/cpufreq/policy{}/{}",
-        core_id, file_name
-    );
-    read_path_parsed::<i64>(&policy_path, &mut buf).unwrap_or(0)
+    read_path_parsed::<i64>(&path, &mut buf).unwrap_or(0)
 }
 
 pub fn get_core_governor(core_id: i32) -> String {
@@ -285,33 +239,18 @@ pub fn get_core_governor(core_id: i32) -> String {
         }
     }
 
-    // Fallback 1: direct path read (in case FD was stale)
+    // Fallback
     let path = format!(
         "/sys/devices/system/cpu/cpu{}/cpufreq/scaling_governor",
         core_id
     );
-    if let Ok(s) = fs::read_to_string(&path) {
-        let trimmed = s.trim().to_string();
-        if !trimmed.is_empty() {
-            return trimmed;
-        }
-    }
-
-    // Fallback 2: try reading from cpufreq policy directory
-    // On some devices (MediaTek, UNISOC), per-core cpufreq dirs are symlinks
-    // to shared policy directories which may have different SELinux labels
-    let policy_path = format!(
-        "/sys/devices/system/cpu/cpufreq/policy{}/scaling_governor",
-        core_id
-    );
-    if let Ok(s) = fs::read_to_string(&policy_path) {
-        let trimmed = s.trim().to_string();
-        if !trimmed.is_empty() {
-            return trimmed;
-        }
-    }
-
-    "N/A".to_string()
+    fs::read_to_string(&path)
+        .map(|mut s| {
+            let l = s.trim_end().len();
+            s.truncate(l);
+            s
+        })
+        .unwrap_or_else(|_| "N/A".to_string())
 }
 
 pub fn get_cpu_temperature() -> f64 {
