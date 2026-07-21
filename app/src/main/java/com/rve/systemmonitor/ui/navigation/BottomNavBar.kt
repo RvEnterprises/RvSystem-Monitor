@@ -127,7 +127,12 @@ object BottomNavBar {
     private fun BottomNavItem(backdrop: Backdrop, item: NavItem, isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
         val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
 
-        val backgroundColor = MaterialTheme.colorScheme.surface
+        val baseSurface = MaterialTheme.colorScheme.surface
+        val backgroundColor = if (isDark) {
+            androidx.compose.ui.graphics.lerp(baseSurface, Color.White, 0.16f)
+        } else {
+            androidx.compose.ui.graphics.lerp(baseSurface, Color.Black, 0.08f)
+        }
         val contentColor = MaterialTheme.colorScheme.primary
 
         val animationScope = rememberCoroutineScope()
