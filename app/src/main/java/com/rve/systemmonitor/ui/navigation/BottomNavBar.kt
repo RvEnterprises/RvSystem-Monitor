@@ -143,7 +143,7 @@ object BottomNavBar {
                     scaleY = scale
                 }
                 .clip(CircleShape)
-                .hapticClickable(onClick = onClick)
+                .hapticClickable(onClick = onClick, ripple = false)
                 .pointerInput(isSelected) {
                     val animationSpec = spring(
                         dampingRatio = 0.5f,
