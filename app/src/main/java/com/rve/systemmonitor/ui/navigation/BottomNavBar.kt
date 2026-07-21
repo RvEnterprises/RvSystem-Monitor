@@ -133,7 +133,14 @@ object BottomNavBar {
         } else {
             androidx.compose.ui.graphics.lerp(baseSurface, Color.Black, 0.08f)
         }
-        val contentColor = MaterialTheme.colorScheme.primary
+        val contentColor by animateColorAsState(
+            targetValue = if (isSelected) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            },
+            label = "ContentColorAnimation",
+        )
 
         val animationScope = rememberCoroutineScope()
         val progressAnimation = remember { Animatable(0f) }
