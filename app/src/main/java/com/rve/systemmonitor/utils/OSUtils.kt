@@ -23,6 +23,7 @@ object OSUtils {
 
     fun getDessertNameRes(sdkInt: Int): Int {
         return when (sdkInt) {
+            37 -> R.string.dessert_name_cinnamon_bun
             36 -> R.string.dessert_name_baklava
             35 -> R.string.dessert_name_vanilla_ice_cream
             34 -> R.string.dessert_name_upside_down_cake

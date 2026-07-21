@@ -381,6 +381,7 @@
     <string name="hdr_type_hdr10_plus">HDR10+</string>
 
     <!-- OSUtils -->
+    <string name="dessert_name_cinnamon_bun">Cinnamon Bun</string>
     <string name="dessert_name_baklava">Baklava</string>
     <string name="dessert_name_vanilla_ice_cream">Vanilla Ice Cream</string>
     <string name="dessert_name_upside_down_cake">Upside Down Cake</string>
