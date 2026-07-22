@@ -1,24 +1,27 @@
 package com.rve.systemmonitor.ui.navigation
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -26,9 +29,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -99,40 +105,96 @@ object BottomNavBar {
                     onDrawSurface = { drawRect(backgroundColor) },
                 ),
         ) {
-            Row(
-                modifier = Modifier.padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            Box(
+                modifier = Modifier.padding(4.dp),
             ) {
-                items.forEachIndexed { index, item ->
-                    val isSelected = pagerState.currentPage == index
+                val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+                val baseSurface = MaterialTheme.colorScheme.surface
+                val indicatorBackgroundColor = if (isDark) {
+                    androidx.compose.ui.graphics.lerp(baseSurface, Color.White, 0.16f)
+                } else {
+                    androidx.compose.ui.graphics.lerp(baseSurface, Color.Black, 0.08f)
+                }
 
-                    BottomNavItem(
-                        backdrop = backdrop,
-                        item = item,
-                        isSelected = isSelected,
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(index)
+                BoxWithConstraints(modifier = Modifier.matchParentSize()) {
+                    val spacing = 4.dp
+                    val itemWidth = (maxWidth - spacing * (items.size - 1)) / items.size
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(itemWidth)
+                            .graphicsLayer {
+                                val spacingPx = spacing.toPx()
+                                val itemWidthPx = itemWidth.toPx()
+                                val offset = pagerState.currentPage + pagerState.currentPageOffsetFraction
+                                translationX = offset * (itemWidthPx + spacingPx)
                             }
-                        },
-                        modifier = if (isSelected) Modifier.weight(1f, fill = false) else Modifier,
+                            .clip(CircleShape)
+                            .drawBackdrop(
+                                backdrop = backdrop,
+                                shape = { CircleShape },
+                                effects = {
+                                    blur(2f.dp.toPx())
+                                    lens(10f.dp.toPx(), 14f.dp.toPx())
+                                },
+                                onDrawSurface = {
+                                    drawRect(indicatorBackgroundColor, blendMode = BlendMode.Hue)
+                                    drawRect(indicatorBackgroundColor.copy(alpha = 0.75f))
+                                },
+                            ),
                     )
+                }
+
+                var lastTargetIndex by remember { mutableIntStateOf(pagerState.currentPage) }
+
+                LaunchedEffect(pagerState.currentPage) {
+                    if (!pagerState.isScrollInProgress) {
+                        lastTargetIndex = pagerState.currentPage
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.pointerInput(Unit) {
+                        detectHorizontalDragGestures(
+                            onDragEnd = { lastTargetIndex = pagerState.currentPage },
+                            onDragCancel = { lastTargetIndex = pagerState.currentPage },
+                            onHorizontalDrag = { change, _ ->
+                                val x = change.position.x
+                                val targetIndex = (x / (size.width.toFloat() / items.size)).toInt().coerceIn(0, items.size - 1)
+                                if (targetIndex != lastTargetIndex) {
+                                    lastTargetIndex = targetIndex
+                                    coroutineScope.launch {
+                                        pagerState.animateScrollToPage(targetIndex)
+                                    }
+                                }
+                            },
+                        )
+                    },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    items.forEachIndexed { index, item ->
+                        val isSelected = pagerState.currentPage == index
+
+                        BottomNavItem(
+                            item = item,
+                            isSelected = isSelected,
+                            onClick = {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                            },
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
                 }
             }
         }
     }
 
     @Composable
-    private fun BottomNavItem(backdrop: Backdrop, item: NavItem, isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
-        val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
-
-        val baseSurface = MaterialTheme.colorScheme.surface
-        val backgroundColor = if (isDark) {
-            androidx.compose.ui.graphics.lerp(baseSurface, Color.White, 0.16f)
-        } else {
-            androidx.compose.ui.graphics.lerp(baseSurface, Color.Black, 0.08f)
-        }
+    private fun BottomNavItem(item: NavItem, isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
         val contentColor by animateColorAsState(
             targetValue = if (isSelected) {
                 MaterialTheme.colorScheme.primary
@@ -146,74 +208,12 @@ object BottomNavBar {
         val progressAnimation = remember { Animatable(0f) }
 
         Box(
-            modifier = modifier
-                .graphicsLayer {
-                    val progress = progressAnimation.value
-                    val maxScale = (size.width + 16.dp.toPx()) / size.width
-                    val scale = lerp(1f, maxScale, progress)
-                    scaleX = scale
-                    scaleY = scale
-                }
-                .clip(CircleShape)
-                .hapticClickable(onClick = onClick, ripple = false)
-                .pointerInput(isSelected) {
-                    val animationSpec = spring(
-                        dampingRatio = 0.5f,
-                        stiffness = 300f,
-                        visibilityThreshold = 0.001f,
-                    )
-                    awaitEachGesture {
-                        awaitFirstDown(requireUnconsumed = false)
-                        if (isSelected) {
-                            animationScope.launch {
-                                progressAnimation.animateTo(1f, animationSpec)
-                            }
-                        }
-                        waitForUpOrCancellation()
-                        animationScope.launch {
-                            progressAnimation.animateTo(0f, animationSpec)
-                        }
-                    }
-                }
-                .animateContentSize(
-                    animationSpec = MaterialTheme.motionScheme.slowSpatialSpec(),
-                ),
+            modifier = modifier.hapticClickable(onClick = onClick, ripple = false),
             contentAlignment = Alignment.Center,
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .matchParentSize(),
-            )
-            AnimatedVisibility(
-                visible = isSelected,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                modifier = Modifier.matchParentSize(),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .drawBackdrop(
-                            backdrop = backdrop,
-                            shape = { CircleShape },
-                            effects = {
-                                vibrancy()
-                                blur(4f.dp.toPx())
-                                lens(16f.dp.toPx(), 32f.dp.toPx())
-                            },
-                            onDrawSurface = {
-                                drawRect(backgroundColor, blendMode = BlendMode.Hue)
-                                drawRect(backgroundColor.copy(alpha = 0.75f))
-                            },
-                        ),
-                )
-            }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
                 Crossfade(
                     targetState = isSelected,
@@ -227,15 +227,14 @@ object BottomNavBar {
                     )
                 }
 
-                if (isSelected) {
-                    Text(
-                        text = item.label,
-                        color = contentColor,
-                        maxLines = 1,
-                        softWrap = false,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                    )
-                }
+                Text(
+                    text = item.label,
+                    color = contentColor,
+                    maxLines = 1,
+                    softWrap = false,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.labelMedium,
+                )
             }
         }
     }
