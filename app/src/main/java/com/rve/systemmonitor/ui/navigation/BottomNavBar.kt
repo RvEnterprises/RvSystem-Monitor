@@ -100,7 +100,7 @@ object BottomNavBar {
                     effects = {
                         vibrancy()
                         blur(4f.dp.toPx())
-                        lens(16f.dp.toPx(), 32f.dp.toPx())
+                        lens(16f.dp.toPx(), 32f.dp.toPx(), chromaticAberration = true)
                     },
                     onDrawSurface = { drawRect(backgroundColor) },
                 ),
@@ -135,8 +135,8 @@ object BottomNavBar {
                                 backdrop = backdrop,
                                 shape = { CircleShape },
                                 effects = {
-                                    blur(2f.dp.toPx())
-                                    lens(10f.dp.toPx(), 14f.dp.toPx())
+                                    blur(4f.dp.toPx())
+                                    lens(10f.dp.toPx(), 14f.dp.toPx(), chromaticAberration = true)
                                 },
                                 onDrawSurface = {
                                     drawRect(indicatorBackgroundColor, blendMode = BlendMode.Hue)
