@@ -37,4 +37,45 @@ object OSUtils {
         Log.e(TAG, "getSecurityPatch: ${it.message}", it)
         "unknown"
     }
+
+    fun getHyperOSVersion(): String? = runCatching {
+        val manufacturer = Build.MANUFACTURER.lowercase()
+        if (manufacturer !in listOf("xiaomi", "redmi", "poco")) {
+            return@runCatching null
+        }
+
+        val process = Runtime.getRuntime().exec("getprop ro.build.version.incremental")
+        val version = process.inputStream.bufferedReader().use { it.readText().trim() }
+
+        if (version.isNotEmpty() && (version.startsWith("V816") || version.startsWith("OS"))) {
+            return@runCatching formatHyperOSVersion(version)
+        }
+        null
+    }.getOrNull()
+
+    private fun formatHyperOSVersion(version: String): String {
+        var cleanVersion = version.removePrefix("OS").removePrefix("V816").removePrefix(".")
+        val codeRegex = "\\.([A-Z]{7})$".toRegex()
+        val match = codeRegex.find(cleanVersion)
+        
+        if (match != null) {
+            val code = match.groupValues[1]
+            val regionCode = code.substring(3, 5)
+            val regionName = when (regionCode) {
+                "MI" -> "Global"
+                "EU" -> "EEA"
+                "IN" -> "India"
+                "ID" -> "Indonesia"
+                "RU" -> "Russia"
+                "TW" -> "Taiwan"
+                "TR" -> "Turkey"
+                "JP" -> "Japan"
+                "CN" -> "China"
+                "KR" -> "Korea"
+                else -> regionCode
+            }
+            cleanVersion = cleanVersion.replace(".$code", " $regionName")
+        }
+        return cleanVersion
+    }
 }

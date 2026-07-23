@@ -50,6 +50,7 @@ class HardwareRepositoryImpl @Inject constructor(
             dessertName = "unknown", // We will use dessertNameRes for display
             dessertNameRes = OSUtils.getDessertNameRes(currentSdk),
             securityPatch = OSUtils.getSecurityPatch(),
+            hyperOSVersion = OSUtils.getHyperOSVersion(),
         )
     }
 

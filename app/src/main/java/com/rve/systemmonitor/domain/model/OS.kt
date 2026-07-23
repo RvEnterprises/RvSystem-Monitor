@@ -11,4 +11,5 @@ data class OS(
     val dessertName: String = "unknown",
     val dessertNameRes: Int = R.string.value_unknown,
     val securityPatch: String = "unknown",
+    val hyperOSVersion: String? = null,
 )

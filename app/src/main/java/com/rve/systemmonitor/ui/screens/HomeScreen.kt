@@ -61,8 +61,8 @@ private fun HomeScreenContent(uiState: HomeUiState, onNavigateToGPU: () -> Unit)
             ),
             InfoCardData(
                 title = context.getString(R.string.home_title_os),
-                headline = context.getString(R.string.home_os_name_version, uiState.os.name, uiState.os.version),
-                subhead = context.getString(uiState.os.dessertNameRes),
+                headline = "${context.getString(R.string.home_os_name_version, uiState.os.name, uiState.os.version)} (${context.getString(uiState.os.dessertNameRes)})",
+                subhead = uiState.os.hyperOSVersion?.let { "HyperOS $it" } ?: "",
                 iconRes = R.drawable.android_filled,
                 backgroundIconOffset = 45.dp,
                 badges = listOf(
