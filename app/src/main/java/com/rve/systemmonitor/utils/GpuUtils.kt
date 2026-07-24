@@ -36,6 +36,7 @@ object GpuUtils {
     private var cachedVulkanExtensionsCount: Int? = null
     private var cachedVulkanExtensions: List<String>? = null
     private var cachedShadingLanguageVersion: String? = null
+    private var cachedOpenGlExtensions: List<String>? = null
 
     fun getGpuDetails(): Triple<String, String, Pair<Int, Int>> {
         cachedGpuDetails?.let { return it }
@@ -80,7 +81,9 @@ object GpuUtils {
             GLES20.glGetIntegerv(GLES20.GL_MAX_TEXTURE_SIZE, maxTexSize, 0)
 
             val extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS) ?: ""
-            val extCount = if (extensions.isEmpty()) 0 else extensions.split(" ").size
+            val extList = if (extensions.isEmpty()) emptyList() else extensions.split(" ")
+            val extCount = extList.size
+            cachedOpenGlExtensions = extList
 
             EGL14.eglMakeCurrent(display, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT)
             EGL14.eglDestroySurface(display, surface)
@@ -150,6 +153,12 @@ object GpuUtils {
         cachedVulkanExtensions?.let { return it }
         updateVulkanInfo()
         return cachedVulkanExtensions ?: emptyList()
+    }
+
+    fun getOpenGlExtensions(): List<String> {
+        cachedOpenGlExtensions?.let { return it }
+        getGpuDetails()
+        return cachedOpenGlExtensions ?: emptyList()
     }
 
     private fun updateVulkanInfo() {

@@ -77,6 +77,7 @@ fun GPUScreen(navController: NavController, onNavigateBack: () -> Unit, viewMode
 @Composable
 private fun GPUScreenContent(gpuInfo: GPU) {
     var showVulkanExtensions by remember { mutableStateOf(false) }
+    var showOpenGlExtensions by remember { mutableStateOf(false) }
 
     ScreenLazyColumn {
         item {
@@ -143,6 +144,21 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                         value = "${gpuInfo.extensionsCount}",
                         modifier = Modifier.weight(1f),
                     )
+                }
+
+                if (gpuInfo.openGlExtensions.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OutlinedButton(
+                        onClick = { showOpenGlExtensions = true },
+                        modifier = Modifier.fillMaxWidth(),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                        shapes = ButtonDefaults.shapes(),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary,
+                        )
+                    ) {
+                        Text("Show all extensions")
+                    }
                 }
             }
         }
@@ -251,6 +267,43 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(gpuInfo.vulkanExtensions) { extension ->
+                        Text(
+                            text = extension,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    if (showOpenGlExtensions) {
+        val sheetState = androidx.compose.material3.rememberBottomSheetState(initialValue = SheetValue.Hidden)
+        ModalBottomSheet(
+            onDismissRequest = { showOpenGlExtensions = false },
+            sheetState = sheetState,
+            containerColor = MaterialTheme.colorScheme.surface,
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 24.dp)
+            ) {
+                Text(
+                    text = "OpenGL Extensions",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(gpuInfo.openGlExtensions) { extension ->
                         Text(
                             text = extension,
                             style = MaterialTheme.typography.bodyMedium,
