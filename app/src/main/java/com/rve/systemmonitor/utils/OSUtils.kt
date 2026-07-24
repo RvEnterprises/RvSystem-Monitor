@@ -57,7 +57,7 @@ object OSUtils {
         var cleanVersion = version.removePrefix("OS").removePrefix("V816").removePrefix(".")
         val codeRegex = "\\.([A-Z]{7})$".toRegex()
         val match = codeRegex.find(cleanVersion)
-        
+
         if (match != null) {
             val code = match.groupValues[1]
             val regionCode = code.substring(3, 5)

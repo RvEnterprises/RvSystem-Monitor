@@ -36,9 +36,10 @@ class HardwareRepositoryImpl @Inject constructor(
 
     private val device by lazy {
         Device(
-            manufacturer = DeviceUtils.getManufacturer(),
+            brand = DeviceUtils.getBrand(),
             model = DeviceUtils.getModel(),
             device = DeviceUtils.getDevice(),
+            marketName = DeviceUtils.getMarketName(),
         )
     }
 

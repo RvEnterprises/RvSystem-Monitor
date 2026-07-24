@@ -6,10 +6,10 @@ import android.util.Log
 object DeviceUtils {
     const val TAG = "DeviceUtils"
 
-    fun getManufacturer(): String = runCatching {
-        Build.MANUFACTURER
+    fun getBrand(): String = runCatching {
+        Build.BRAND
     }.getOrElse {
-        Log.e(TAG, "getManufacturer: ${it.message}", it)
+        Log.e(TAG, "getBrand: ${it.message}", it)
         "unknown"
     }
 
@@ -24,6 +24,17 @@ object DeviceUtils {
         Build.DEVICE
     }.getOrElse {
         Log.e(TAG, "getDevice: ${it.message}", it)
+        "unknown"
+    }
+
+    fun getMarketName(): String = runCatching {
+        val clazz = Class.forName("android.os.SystemProperties")
+        val getMethod = clazz.getMethod("get", String::class.java, String::class.java)
+        val marketName = getMethod.invoke(clazz, "ro.product.marketname", "") as String
+
+        marketName.ifEmpty { "unknown" }
+    }.getOrElse {
+        Log.e(TAG, "getMarketName: ${it.message}", it)
         "unknown"
     }
 

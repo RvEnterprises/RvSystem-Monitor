@@ -53,15 +53,20 @@ private fun HomeScreenContent(uiState: HomeUiState, onNavigateToGPU: () -> Unit)
         listOf(
             InfoCardData(
                 title = context.getString(R.string.home_title_device),
-                headline = uiState.device.model,
-                subhead = context.getString(R.string.label_by, uiState.device.manufacturer),
+                headline = if (uiState.device.marketName != "unknown") {
+                    "${uiState.device.marketName} (${uiState.device.model})"
+                } else {
+                    uiState.device.model
+                },
+                subhead = context.getString(R.string.label_by, uiState.device.brand),
                 iconRes = R.drawable.mobile_filled,
                 badges = listOf(uiState.device.device).toImmutableList(),
                 onHelpClick = { showHelpSheet = true },
             ),
             InfoCardData(
                 title = context.getString(R.string.home_title_os),
-                headline = "${context.getString(R.string.home_os_name_version, uiState.os.name, uiState.os.version)} (${context.getString(uiState.os.dessertNameRes)})",
+                headline = "${context.getString(R.string.home_os_name_version, uiState.os.name, uiState.os.version)} " +
+                    "(${context.getString(uiState.os.dessertNameRes)})",
                 subhead = uiState.os.hyperOSVersion?.let { "HyperOS $it" } ?: "",
                 iconRes = R.drawable.android_filled,
                 backgroundIconOffset = 45.dp,
