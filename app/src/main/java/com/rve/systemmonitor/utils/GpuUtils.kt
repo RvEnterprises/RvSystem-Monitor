@@ -36,6 +36,7 @@ object GpuUtils {
     private var cachedVulkanExtensionsCount: Int? = null
     private var cachedVulkanExtensions: List<String>? = null
     private var cachedVulkanMaxImage1D: Int? = null
+    private var cachedVulkanMaxImage2D: Int? = null
     private var cachedShadingLanguageVersion: String? = null
     private var cachedOpenGlExtensions: List<String>? = null
 
@@ -162,6 +163,12 @@ object GpuUtils {
         return cachedVulkanMaxImage1D ?: 0
     }
 
+    fun getVulkanMaxImage2D(): Int {
+        cachedVulkanMaxImage2D?.let { return it }
+        updateVulkanInfo()
+        return cachedVulkanMaxImage2D ?: 0
+    }
+
     fun getOpenGlExtensions(): List<String> {
         cachedOpenGlExtensions?.let { return it }
         getGpuDetails()
@@ -179,6 +186,7 @@ object GpuUtils {
             val extensionsStr = parts.getOrNull(4) ?: ""
             cachedVulkanExtensions = if (extensionsStr.isNotEmpty()) extensionsStr.split(",") else emptyList()
             cachedVulkanMaxImage1D = parts.getOrNull(5)?.toIntOrNull() ?: 0
+            cachedVulkanMaxImage2D = parts.getOrNull(6)?.toIntOrNull() ?: 0
         }.onFailure {
             Log.e(TAG, "updateVulkanInfo error: ${it.message}", it)
             cachedVulkanVersion = "Unknown"
@@ -187,6 +195,7 @@ object GpuUtils {
             cachedVulkanExtensionsCount = 0
             cachedVulkanExtensions = emptyList()
             cachedVulkanMaxImage1D = 0
+            cachedVulkanMaxImage2D = 0
         }
     }
 

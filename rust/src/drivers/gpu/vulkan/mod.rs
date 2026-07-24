@@ -154,6 +154,7 @@ pub fn get_vulkan_version() -> String {
                     let driver_version = u32::from_le_bytes(props[4..8].try_into().unwrap());
                     let device_type = u32::from_le_bytes(props[16..20].try_into().unwrap());
                     let max_image_1d = u32::from_le_bytes(props[296..300].try_into().unwrap());
+                    let max_image_2d = u32::from_le_bytes(props[300..304].try_into().unwrap());
 
                     let mut extension_count: u32 = 0;
                     let mut extensions_str = String::new();
@@ -197,13 +198,14 @@ pub fn get_vulkan_version() -> String {
 
                     vk_destroy_instance(instance, ptr::null());
                     return format!(
-                        "{}|{}|{}|{}|{}|{}",
+                        "{}|{}|{}|{}|{}|{}|{}",
                         format_version(api_version),
                         format_version(driver_version),
                         format_device_type(device_type),
                         extension_count,
                         extensions_str,
-                        max_image_1d
+                        max_image_1d,
+                        max_image_2d
                     );
                 }
             }
@@ -213,7 +215,7 @@ pub fn get_vulkan_version() -> String {
         }
 
         format!(
-            "{}|Unknown|Unknown|0||0",
+            "{}|Unknown|Unknown|0||0|0",
             query_instance_version(vk_enumerate_instance_version)
         )
     }

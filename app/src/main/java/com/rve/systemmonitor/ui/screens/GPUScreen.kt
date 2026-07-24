@@ -205,7 +205,11 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                         value = if (gpuInfo.vulkanMaxImage1D > 0) "${gpuInfo.vulkanMaxImage1D}" else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
-                    Spacer(modifier = Modifier.weight(1f))
+                    InfoItem(
+                        label = "Max 2D Image",
+                        value = if (gpuInfo.vulkanMaxImage2D > 0) "${gpuInfo.vulkanMaxImage2D} x ${gpuInfo.vulkanMaxImage2D}" else stringResource(R.string.value_unknown),
+                        modifier = Modifier.weight(1f),
+                    )
                 }
 
                 if (gpuInfo.vulkanExtensions.isNotEmpty()) {
