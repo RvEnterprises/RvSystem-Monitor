@@ -163,6 +163,11 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                         value = gpuInfo.deviceType,
                         modifier = Modifier.weight(1f),
                     )
+                    InfoItem(
+                        label = stringResource(R.string.gpu_label_extensions),
+                        value = "${gpuInfo.vulkanExtensionsCount}",
+                        modifier = Modifier.weight(1f),
+                    )
                 }
             }
         }

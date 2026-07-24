@@ -56,6 +56,9 @@ pub fn get_vulkan_version() -> String {
                 None
             };
 
+        let vk_enumerate_device_extension_properties_ptr =
+            dlsym(handle, c"vkEnumerateDeviceExtensionProperties".as_ptr());
+
         if vk_create_instance_ptr.is_null()
             || vk_destroy_instance_ptr.is_null()
             || vk_enumerate_physical_devices_ptr.is_null()
@@ -78,6 +81,29 @@ pub fn get_vulkan_version() -> String {
         ) -> VkResult = std::mem::transmute(vk_enumerate_physical_devices_ptr);
         let vk_get_physical_device_properties: extern "system" fn(VkPhysicalDevice, *mut u8) =
             std::mem::transmute(vk_get_physical_device_properties_ptr);
+
+        let vk_enumerate_device_extension_properties: Option<
+            extern "system" fn(
+                VkPhysicalDevice,
+                *const i8,
+                *mut u32,
+                *mut std::ffi::c_void,
+            ) -> VkResult,
+        > = if !vk_enumerate_device_extension_properties_ptr.is_null() {
+            Some(std::mem::transmute::<
+                *mut libc::c_void,
+                extern "system" fn(
+                    VkPhysicalDevice,
+                    *const i8,
+                    *mut u32,
+                    *mut std::ffi::c_void,
+                ) -> VkResult,
+            >(
+                vk_enumerate_device_extension_properties_ptr,
+            ))
+        } else {
+            None
+        };
 
         // Create a minimal instance
         let app_info = VkApplicationInfo {
@@ -121,12 +147,25 @@ pub fn get_vulkan_version() -> String {
                     let driver_version = u32::from_le_bytes(props[4..8].try_into().unwrap());
                     let device_type = u32::from_le_bytes(props[16..20].try_into().unwrap());
 
+                    let mut extension_count: u32 = 0;
+                    if let Some(vk_enumerate_device_extension_props) =
+                        vk_enumerate_device_extension_properties
+                    {
+                        vk_enumerate_device_extension_props(
+                            devices[0],
+                            ptr::null(),
+                            &mut extension_count,
+                            ptr::null_mut(),
+                        );
+                    }
+
                     vk_destroy_instance(instance, ptr::null());
                     return format!(
-                        "{}|{}|{}",
+                        "{}|{}|{}|{}",
                         format_version(api_version),
                         format_version(driver_version),
-                        format_device_type(device_type)
+                        format_device_type(device_type),
+                        extension_count
                     );
                 }
             }
@@ -136,7 +175,7 @@ pub fn get_vulkan_version() -> String {
         }
 
         format!(
-            "{}|Unknown|Unknown",
+            "{}|Unknown|Unknown|0",
             query_instance_version(vk_enumerate_instance_version)
         )
     }

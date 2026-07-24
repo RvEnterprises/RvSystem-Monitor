@@ -13,6 +13,7 @@ data class GPU(
     val temperature: Double = 0.0,
     val maxTextureSize: Int = 0,
     val extensionsCount: Int = 0,
+    val vulkanExtensionsCount: Int = 0,
     val deviceType: String = "unknown",
     val shadingLanguageVersion: String = "unknown",
     val totalMemoryMb: Long = 0,
