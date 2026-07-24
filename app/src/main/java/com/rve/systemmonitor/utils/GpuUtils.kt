@@ -40,6 +40,7 @@ object GpuUtils {
     private var cachedVulkanMaxImage3D: Int? = null
     private var cachedVulkanMaxImageCube: Int? = null
     private var cachedVulkanMaxImageArrayLayers: Int? = null
+    private var cachedVulkanMaxUniformBufferRange: Int? = null
     private var cachedShadingLanguageVersion: String? = null
     private var cachedOpenGlExtensions: List<String>? = null
 
@@ -190,6 +191,12 @@ object GpuUtils {
         return cachedVulkanMaxImageArrayLayers ?: 0
     }
 
+    fun getVulkanMaxUniformBufferRange(): Int {
+        cachedVulkanMaxUniformBufferRange?.let { return it }
+        updateVulkanInfo()
+        return cachedVulkanMaxUniformBufferRange ?: 0
+    }
+
     fun getOpenGlExtensions(): List<String> {
         cachedOpenGlExtensions?.let { return it }
         getGpuDetails()
@@ -211,6 +218,7 @@ object GpuUtils {
             cachedVulkanMaxImage3D = parts.getOrNull(7)?.toIntOrNull() ?: 0
             cachedVulkanMaxImageCube = parts.getOrNull(8)?.toIntOrNull() ?: 0
             cachedVulkanMaxImageArrayLayers = parts.getOrNull(9)?.toIntOrNull() ?: 0
+            cachedVulkanMaxUniformBufferRange = parts.getOrNull(10)?.toIntOrNull() ?: 0
         }.onFailure {
             Log.e(TAG, "updateVulkanInfo error: ${it.message}", it)
             cachedVulkanVersion = "Unknown"
@@ -223,6 +231,15 @@ object GpuUtils {
             cachedVulkanMaxImage3D = 0
             cachedVulkanMaxImageCube = 0
             cachedVulkanMaxImageArrayLayers = 0
+            cachedVulkanMaxUniformBufferRange = 0
         }
+    }
+
+    fun formatBinarySize(bytes: Long): String {
+        if (bytes <= 0) return "0 B"
+        val units = arrayOf("B", "KB", "MB", "GB", "TB")
+        val digitGroups = (Math.log10(bytes.toDouble()) / Math.log10(1024.0)).toInt()
+        val formatted = String.format(java.util.Locale.US, "%.1f %s", bytes / Math.pow(1024.0, digitGroups.toDouble()), units[digitGroups])
+        return formatted.replace(".0 ", " ")
     }
 }

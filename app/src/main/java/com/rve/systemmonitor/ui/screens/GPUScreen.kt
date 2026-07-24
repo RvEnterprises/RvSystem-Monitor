@@ -257,7 +257,11 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                         value = if (gpuInfo.vulkanMaxImageArrayLayers > 0) "${gpuInfo.vulkanMaxImageArrayLayers}" else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
-                    Spacer(modifier = Modifier.weight(1f))
+                    InfoItem(
+                        label = "Uniform Buffer Range",
+                        value = if (gpuInfo.vulkanMaxUniformBufferRange > 0) com.rve.systemmonitor.utils.GpuUtils.formatBinarySize(gpuInfo.vulkanMaxUniformBufferRange.toLong()) else stringResource(R.string.value_unknown),
+                        modifier = Modifier.weight(1f),
+                    )
                 }
             }
         }
