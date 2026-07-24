@@ -199,6 +199,32 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                     )
                 }
 
+                if (gpuInfo.vulkanExtensions.isNotEmpty()) {
+                    OutlinedButton(
+                        onClick = { showVulkanExtensions = true },
+                        modifier = Modifier.fillMaxWidth(),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                        shapes = ButtonDefaults.shapes(),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = MaterialTheme.colorScheme.primary,
+                        )
+                    ) {
+                        Text("Show all extensions")
+                    }
+                }
+            }
+        }
+
+        item {
+            StandardCard {
+                Text(
+                    text = "Vulkan Limits",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                )
+
                 TwoColumnInfoRow(modifier = Modifier.padding(bottom = 16.dp)) {
                     InfoItem(
                         label = "Max 1D Image",
@@ -219,21 +245,6 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                         modifier = Modifier.weight(1f),
                     )
                     Spacer(modifier = Modifier.weight(1f))
-                }
-
-                if (gpuInfo.vulkanExtensions.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    OutlinedButton(
-                        onClick = { showVulkanExtensions = true },
-                        modifier = Modifier.fillMaxWidth(),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-                        shapes = ButtonDefaults.shapes(),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = MaterialTheme.colorScheme.primary,
-                        )
-                    ) {
-                        Text("Show all extensions")
-                    }
                 }
             }
         }
