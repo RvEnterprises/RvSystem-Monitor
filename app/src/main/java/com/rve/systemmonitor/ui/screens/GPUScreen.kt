@@ -270,7 +270,11 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                         value = if (gpuInfo.vulkanMaxStorageBufferRange > 0) com.rve.systemmonitor.utils.GpuUtils.formatBinarySize(gpuInfo.vulkanMaxStorageBufferRange.toLong()) else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
-                    Spacer(modifier = Modifier.weight(1f))
+                    InfoItem(
+                        label = "Max Anisotropy",
+                        value = if (gpuInfo.vulkanMaxSamplerAnisotropy > 0f) "${gpuInfo.vulkanMaxSamplerAnisotropy.toInt()}x" else stringResource(R.string.value_unknown),
+                        modifier = Modifier.weight(1f),
+                    )
                 }
             }
         }
