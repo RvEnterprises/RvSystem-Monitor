@@ -183,9 +183,9 @@ pub fn get_vulkan_version() -> String {
 
 fn format_device_type(device_type: u32) -> String {
     match device_type {
-        1 => "Integrated".to_string(),
-        2 => "Discrete".to_string(),
-        3 => "Virtual".to_string(),
+        1 => "Integrated GPU".to_string(),
+        2 => "Discrete GPU".to_string(),
+        3 => "Virtual GPU".to_string(),
         4 => "CPU".to_string(),
         _ => "Other".to_string(),
     }
