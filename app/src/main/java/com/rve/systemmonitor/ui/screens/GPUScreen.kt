@@ -199,7 +199,7 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                     )
                 }
 
-                TwoColumnInfoRow {
+                TwoColumnInfoRow(modifier = Modifier.padding(bottom = 16.dp)) {
                     InfoItem(
                         label = "Max 1D Image",
                         value = if (gpuInfo.vulkanMaxImage1D > 0) "${gpuInfo.vulkanMaxImage1D}" else stringResource(R.string.value_unknown),
@@ -210,6 +210,15 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                         value = if (gpuInfo.vulkanMaxImage2D > 0) "${gpuInfo.vulkanMaxImage2D} x ${gpuInfo.vulkanMaxImage2D}" else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
+                }
+
+                TwoColumnInfoRow {
+                    InfoItem(
+                        label = "Max 3D Image",
+                        value = if (gpuInfo.vulkanMaxImage3D > 0) "${gpuInfo.vulkanMaxImage3D} x ${gpuInfo.vulkanMaxImage3D} x ${gpuInfo.vulkanMaxImage3D}" else stringResource(R.string.value_unknown),
+                        modifier = Modifier.weight(1f),
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
                 }
 
                 if (gpuInfo.vulkanExtensions.isNotEmpty()) {
