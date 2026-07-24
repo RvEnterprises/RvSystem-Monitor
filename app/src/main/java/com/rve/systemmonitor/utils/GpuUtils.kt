@@ -216,13 +216,4 @@ object GpuUtils {
             cachedVulkanMaxImageCube = 0
         }
     }
-
-    fun getGpuMemoryInfo(context: Context): Long {
-        return runCatching {
-            val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-            val memInfo = ActivityManager.MemoryInfo()
-            activityManager.getMemoryInfo(memInfo)
-            memInfo.totalMem / (1024 * 1024)
-        }.getOrElse { 0L }
-    }
 }

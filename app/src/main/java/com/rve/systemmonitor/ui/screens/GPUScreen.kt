@@ -253,29 +253,7 @@ private fun GPUScreenContent(gpuInfo: GPU) {
             }
         }
 
-        item {
-            StandardCard {
-                Text(
-                    text = stringResource(R.string.gpu_memory_information),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 16.dp),
-                )
 
-                TwoColumnInfoRow {
-                    InfoItem(
-                        label = stringResource(R.string.gpu_label_shared_memory),
-                        value = if (gpuInfo.totalMemoryMb > 0) {
-                            stringResource(R.string.gpu_shared_memory_format, gpuInfo.totalMemoryMb)
-                        } else {
-                            stringResource(R.string.value_unknown)
-                        },
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-            }
-        }
     }
 
     if (showVulkanExtensions) {

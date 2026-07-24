@@ -24,5 +24,4 @@ data class GPU(
     val vulkanMaxImageCube: Int = 0,
     val deviceType: String = "unknown",
     val shadingLanguageVersion: String = "unknown",
-    val totalMemoryMb: Long = 0,
 )

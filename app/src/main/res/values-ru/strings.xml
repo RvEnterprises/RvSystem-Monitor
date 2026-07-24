@@ -89,10 +89,8 @@
     <string name="gpu_label_api_version">Версия API</string>
     <string name="gpu_label_driver_version">Версия драйвера</string>
     <string name="gpu_label_device_type">Тип устройства</string>
-    <string name="gpu_memory_information">Информация о памяти</string>
-    <string name="gpu_label_shared_memory">Общая память</string>
+
     <string name="gpu_max_texture_size_format">%1$d px</string>
-    <string name="gpu_shared_memory_format">%1$d МБ</string>
 
     <!-- Memory Screen -->
     <string name="memory_label_ram">ОЗУ (RAM)</string>
