@@ -18,6 +18,7 @@ data class GPU(
     val openGlExtensions: ImmutableList<String> = persistentListOf(),
     val vulkanExtensionsCount: Int = 0,
     val vulkanExtensions: ImmutableList<String> = persistentListOf(),
+    val vulkanMaxImage1D: Int = 0,
     val deviceType: String = "unknown",
     val shadingLanguageVersion: String = "unknown",
     val totalMemoryMb: Long = 0,

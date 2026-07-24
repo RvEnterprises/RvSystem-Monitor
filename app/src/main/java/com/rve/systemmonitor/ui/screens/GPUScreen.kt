@@ -186,7 +186,7 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                     )
                 }
 
-                TwoColumnInfoRow {
+                TwoColumnInfoRow(modifier = Modifier.padding(bottom = 16.dp)) {
                     InfoItem(
                         label = stringResource(R.string.gpu_label_device_type),
                         value = gpuInfo.deviceType,
@@ -197,6 +197,15 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                         value = "${gpuInfo.vulkanExtensionsCount}",
                         modifier = Modifier.weight(1f),
                     )
+                }
+
+                TwoColumnInfoRow {
+                    InfoItem(
+                        label = "Max 1D Image",
+                        value = if (gpuInfo.vulkanMaxImage1D > 0) "${gpuInfo.vulkanMaxImage1D}" else stringResource(R.string.value_unknown),
+                        modifier = Modifier.weight(1f),
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
                 }
 
                 if (gpuInfo.vulkanExtensions.isNotEmpty()) {
