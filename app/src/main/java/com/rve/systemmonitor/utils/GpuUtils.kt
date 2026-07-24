@@ -41,6 +41,7 @@ object GpuUtils {
     private var cachedVulkanMaxImageCube: Int? = null
     private var cachedVulkanMaxImageArrayLayers: Int? = null
     private var cachedVulkanMaxUniformBufferRange: Int? = null
+    private var cachedVulkanMaxStorageBufferRange: Int? = null
     private var cachedShadingLanguageVersion: String? = null
     private var cachedOpenGlExtensions: List<String>? = null
 
@@ -197,6 +198,12 @@ object GpuUtils {
         return cachedVulkanMaxUniformBufferRange ?: 0
     }
 
+    fun getVulkanMaxStorageBufferRange(): Int {
+        cachedVulkanMaxStorageBufferRange?.let { return it }
+        updateVulkanInfo()
+        return cachedVulkanMaxStorageBufferRange ?: 0
+    }
+
     fun getOpenGlExtensions(): List<String> {
         cachedOpenGlExtensions?.let { return it }
         getGpuDetails()
@@ -219,6 +226,7 @@ object GpuUtils {
             cachedVulkanMaxImageCube = parts.getOrNull(8)?.toIntOrNull() ?: 0
             cachedVulkanMaxImageArrayLayers = parts.getOrNull(9)?.toIntOrNull() ?: 0
             cachedVulkanMaxUniformBufferRange = parts.getOrNull(10)?.toIntOrNull() ?: 0
+            cachedVulkanMaxStorageBufferRange = parts.getOrNull(11)?.toIntOrNull() ?: 0
         }.onFailure {
             Log.e(TAG, "updateVulkanInfo error: ${it.message}", it)
             cachedVulkanVersion = "Unknown"
@@ -232,6 +240,7 @@ object GpuUtils {
             cachedVulkanMaxImageCube = 0
             cachedVulkanMaxImageArrayLayers = 0
             cachedVulkanMaxUniformBufferRange = 0
+            cachedVulkanMaxStorageBufferRange = 0
         }
     }
 

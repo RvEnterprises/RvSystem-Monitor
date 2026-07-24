@@ -251,7 +251,7 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                     )
                 }
 
-                TwoColumnInfoRow {
+                TwoColumnInfoRow(modifier = Modifier.padding(bottom = 16.dp)) {
                     InfoItem(
                         label = "Max Array Layers",
                         value = if (gpuInfo.vulkanMaxImageArrayLayers > 0) "${gpuInfo.vulkanMaxImageArrayLayers}" else stringResource(R.string.value_unknown),
@@ -262,6 +262,15 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                         value = if (gpuInfo.vulkanMaxUniformBufferRange > 0) com.rve.systemmonitor.utils.GpuUtils.formatBinarySize(gpuInfo.vulkanMaxUniformBufferRange.toLong()) else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
+                }
+
+                TwoColumnInfoRow {
+                    InfoItem(
+                        label = "Storage Buffer Range",
+                        value = if (gpuInfo.vulkanMaxStorageBufferRange > 0) com.rve.systemmonitor.utils.GpuUtils.formatBinarySize(gpuInfo.vulkanMaxStorageBufferRange.toLong()) else stringResource(R.string.value_unknown),
+                        modifier = Modifier.weight(1f),
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
