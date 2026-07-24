@@ -27,6 +27,7 @@ data class GPU(
     val vulkanMaxStorageBufferRange: Int = 0,
     val vulkanMaxSamplerAnisotropy: Float = 0f,
     val vulkanMaxFramebufferColorSamples: Int = 0,
+    val vulkanMaxFramebufferDepthSamples: Int = 0,
     val deviceType: String = "unknown",
     val shadingLanguageVersion: String = "unknown",
 )

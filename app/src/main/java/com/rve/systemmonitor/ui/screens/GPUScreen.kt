@@ -283,7 +283,11 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                         value = if (gpuInfo.vulkanMaxFramebufferColorSamples > 0) "${gpuInfo.vulkanMaxFramebufferColorSamples}x" else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
-                    Spacer(modifier = Modifier.weight(1f))
+                    InfoItem(
+                        label = "Depth Max Samples",
+                        value = if (gpuInfo.vulkanMaxFramebufferDepthSamples > 0) "${gpuInfo.vulkanMaxFramebufferDepthSamples}x" else stringResource(R.string.value_unknown),
+                        modifier = Modifier.weight(1f),
+                    )
                 }
             }
         }
