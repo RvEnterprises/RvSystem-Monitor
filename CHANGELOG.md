@@ -1,5 +1,78 @@
 # Changelog
 
+## [0.8-beta] - 2026-07-24
+
+### Feat
+- **device**: Display market name and use brand instead of manufacturer
+- **ui**: Add chromatic aberration to bottom navigation bar
+- **os**: Display HyperOS version and refine OS card layout
+- **ui**: Animate bottom nav bar item content color
+- **ui**: Add option to disable ripple effect in hapticClickable
+- **os**: Add Android 17 (Cinnamon Bun) dessert name mapping
+- **cpu**: Add tsens fallback for legacy Snapdragon formats
+- **cpu**: Support MediaTek Dimensity 8500 thermal zone format
+- **cpu**: Support MediaTek G99 thermal zone format
+- **cpu**: Support Snapdragon 845 thermal zone format
+- **cpu**: Support Qualcomm cpu-C-N-S thermal zone format
+- **setup**: Add skip option for overlay permission
+- **ui**: add new contributors and bundle offline avatars
+- **settings**: add toggle to disable transition background blur
+- **backup**: add missing overlay settings to backup
+- **ui**: New screen transition animations
+- **overlay**: add customizable overlay position feature
+- **fps**: calculate real render fps using totalFrames delta
+
+### Fix
+- **cpu**: Add fallback to cpufreq/policy paths for cpu metrics
+- **ui**: Make bottom nav items responsive on small screens
+- **navigation**: Remove color animations in bottom nav bar
+- **cpu**: Fix temperature and governor detection on MediaTek/Samsung SoCs
+- **overlay**: use TypedValue for sp conversion
+- **battery**: synchronize graph updates with power draw metric
+- **rust**: replace deprecated JNI get_string method
+- **overlay**: replace TextView with SurfaceView to prevent refresh rate boost
+- **i18n**: remove unused and duplicate translations
+- rename translation files to strings.xml
+
+### Refactor
+- **ui**: Remove cpu temperature from cpu overview card
+
+### Docs
+- **readme**: update badges and support links
+- Remove version numbers from Tech Stack
+- Remove Key Features section
+
+### Style
+- **ui**: Redesign bottom nav bar
+- **ui**: Adjust bottom nav selected item background contrast
+- **ui**: Remove ripple effect from BottomNavBar items
+- apply spotless formatting
+
+### Build
+- **deps**: bump com.android.application from 9.3.0 to 9.3.1
+- **deps**: bump libc from 0.2.188 to 0.2.189 in /rust
+- **deps**: bump libc from 0.2.186 to 0.2.188 in /rust
+- **deps**: bump com.android.application from 9.2.1 to 9.3.0
+- **deps**: bump org.jetbrains.kotlinx:kotlinx-collections-immutable
+- **deps**: bump com.google.devtools.ksp from 2.3.9 to 2.3.10
+- **deps**: bump hilt from 2.60 to 2.60.1
+- **deps**: bump kotlin from 2.4.0 to 2.4.10
+- **deps**: bump androidx.compose.material3:material3
+- **deps**: bump androidx.hilt:hilt-navigation-compose
+- **deps**: bump com.diffplug.spotless from 8.7.0 to 8.8.0
+- **deps**: Add errorprone annotations dependency
+- **deps**: bump androidx.compose:compose-bom
+- **deps**: bump hilt from 2.59.2 to 2.60
+- **deps**: bump gradle-wrapper from 9.6.0 to 9.6.1
+- **deps**: bump gradle-wrapper from 9.5.1 to 9.6.0
+- **deps**: bump log from 0.4.32 to 0.4.33 in /rust
+
+### Other Changes
+- Revert "fix(cpu): Fix temperature and governor detection on MediaTek/Samsung SoCs"
+- Fix: resolve inconsistent overlay update intervals and freezing
+- Fix(fastlane): trim short description to stay under 80 characters limit
+- UK and RU translations
+
 ## [0.7.1-alpha] - 2026-06-22
 
 ### Feat

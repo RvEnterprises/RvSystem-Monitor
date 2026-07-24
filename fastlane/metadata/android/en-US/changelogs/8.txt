@@ -1,0 +1,8 @@
+• Added option to disable ripple effect and transition blur.
+• Supported multiple thermal zone formats for Snapdragon and MediaTek.
+• Displayed device market name and HyperOS version.
+• Added skip option for overlay permission.
+• Implemented customizable floating overlay positions.
+• Improved real-time render fps calculation using totalFrames.
+• Redesigned bottom navigation bar with new animations.
+• Added new screen transition animations.
