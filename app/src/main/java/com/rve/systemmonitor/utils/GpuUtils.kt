@@ -39,6 +39,7 @@ object GpuUtils {
     private var cachedVulkanMaxImage2D: Int? = null
     private var cachedVulkanMaxImage3D: Int? = null
     private var cachedVulkanMaxImageCube: Int? = null
+    private var cachedVulkanMaxImageArrayLayers: Int? = null
     private var cachedShadingLanguageVersion: String? = null
     private var cachedOpenGlExtensions: List<String>? = null
 
@@ -183,6 +184,12 @@ object GpuUtils {
         return cachedVulkanMaxImageCube ?: 0
     }
 
+    fun getVulkanMaxImageArrayLayers(): Int {
+        cachedVulkanMaxImageArrayLayers?.let { return it }
+        updateVulkanInfo()
+        return cachedVulkanMaxImageArrayLayers ?: 0
+    }
+
     fun getOpenGlExtensions(): List<String> {
         cachedOpenGlExtensions?.let { return it }
         getGpuDetails()
@@ -203,6 +210,7 @@ object GpuUtils {
             cachedVulkanMaxImage2D = parts.getOrNull(6)?.toIntOrNull() ?: 0
             cachedVulkanMaxImage3D = parts.getOrNull(7)?.toIntOrNull() ?: 0
             cachedVulkanMaxImageCube = parts.getOrNull(8)?.toIntOrNull() ?: 0
+            cachedVulkanMaxImageArrayLayers = parts.getOrNull(9)?.toIntOrNull() ?: 0
         }.onFailure {
             Log.e(TAG, "updateVulkanInfo error: ${it.message}", it)
             cachedVulkanVersion = "Unknown"
@@ -214,6 +222,7 @@ object GpuUtils {
             cachedVulkanMaxImage2D = 0
             cachedVulkanMaxImage3D = 0
             cachedVulkanMaxImageCube = 0
+            cachedVulkanMaxImageArrayLayers = 0
         }
     }
 }

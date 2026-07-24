@@ -22,6 +22,7 @@ data class GPU(
     val vulkanMaxImage2D: Int = 0,
     val vulkanMaxImage3D: Int = 0,
     val vulkanMaxImageCube: Int = 0,
+    val vulkanMaxImageArrayLayers: Int = 0,
     val deviceType: String = "unknown",
     val shadingLanguageVersion: String = "unknown",
 )
