@@ -228,12 +228,12 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                 TwoColumnInfoRow(modifier = Modifier.padding(bottom = 16.dp)) {
                     InfoItem(
                         label = "Max 1D Image",
-                        value = if (gpuInfo.vulkanMaxImage1D > 0) "${gpuInfo.vulkanMaxImage1D}" else stringResource(R.string.value_unknown),
+                        value = if (gpuInfo.vulkanMaxImage1D > 0) "${gpuInfo.vulkanMaxImage1D} px" else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
                     InfoItem(
                         label = "Max 2D Image",
-                        value = if (gpuInfo.vulkanMaxImage2D > 0) "${gpuInfo.vulkanMaxImage2D} x ${gpuInfo.vulkanMaxImage2D}" else stringResource(R.string.value_unknown),
+                        value = if (gpuInfo.vulkanMaxImage2D > 0) "${gpuInfo.vulkanMaxImage2D} x ${gpuInfo.vulkanMaxImage2D} px" else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
                 }
@@ -241,12 +241,12 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                 TwoColumnInfoRow {
                     InfoItem(
                         label = "Max 3D Image",
-                        value = if (gpuInfo.vulkanMaxImage3D > 0) "${gpuInfo.vulkanMaxImage3D} x ${gpuInfo.vulkanMaxImage3D} x ${gpuInfo.vulkanMaxImage3D}" else stringResource(R.string.value_unknown),
+                        value = if (gpuInfo.vulkanMaxImage3D > 0) "${gpuInfo.vulkanMaxImage3D} x ${gpuInfo.vulkanMaxImage3D} x ${gpuInfo.vulkanMaxImage3D} px" else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
                     InfoItem(
                         label = "Max Cube Image",
-                        value = if (gpuInfo.vulkanMaxImageCube > 0) "${gpuInfo.vulkanMaxImageCube} x ${gpuInfo.vulkanMaxImageCube}" else stringResource(R.string.value_unknown),
+                        value = if (gpuInfo.vulkanMaxImageCube > 0) "${gpuInfo.vulkanMaxImageCube} x ${gpuInfo.vulkanMaxImageCube} px" else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
                 }
