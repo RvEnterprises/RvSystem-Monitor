@@ -85,6 +85,7 @@ class HardwareRepositoryImpl @Inject constructor(
             vulkanMaxImage1D = GpuUtils.getVulkanMaxImage1D(),
             vulkanMaxImage2D = GpuUtils.getVulkanMaxImage2D(),
             vulkanMaxImage3D = GpuUtils.getVulkanMaxImage3D(),
+            vulkanMaxImageCube = GpuUtils.getVulkanMaxImageCube(),
             deviceType = GpuUtils.getVulkanDeviceType(),
             shadingLanguageVersion = GpuUtils.getShadingLanguageVersion(),
             totalMemoryMb = GpuUtils.getGpuMemoryInfo(application),

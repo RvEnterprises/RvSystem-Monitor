@@ -244,7 +244,11 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                         value = if (gpuInfo.vulkanMaxImage3D > 0) "${gpuInfo.vulkanMaxImage3D} x ${gpuInfo.vulkanMaxImage3D} x ${gpuInfo.vulkanMaxImage3D}" else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
-                    Spacer(modifier = Modifier.weight(1f))
+                    InfoItem(
+                        label = "Max Cube Image",
+                        value = if (gpuInfo.vulkanMaxImageCube > 0) "${gpuInfo.vulkanMaxImageCube} x ${gpuInfo.vulkanMaxImageCube}" else stringResource(R.string.value_unknown),
+                        modifier = Modifier.weight(1f),
+                    )
                 }
             }
         }
