@@ -161,6 +161,16 @@ pub fn get_vulkan_version() -> String {
                     let max_uniform_buffer_range = u32::from_le_bytes(props[320..324].try_into().unwrap());
                     let max_storage_buffer_range = u32::from_le_bytes(props[324..328].try_into().unwrap());
                     let max_sampler_anisotropy = f32::from_le_bytes(props[568..572].try_into().unwrap());
+                    
+                    let sample_counts = u32::from_le_bytes(props[672..676].try_into().unwrap());
+                    let max_color_samples = if (sample_counts & 0x40) != 0 { 64 }
+                    else if (sample_counts & 0x20) != 0 { 32 }
+                    else if (sample_counts & 0x10) != 0 { 16 }
+                    else if (sample_counts & 0x08) != 0 { 8 }
+                    else if (sample_counts & 0x04) != 0 { 4 }
+                    else if (sample_counts & 0x02) != 0 { 2 }
+                    else if (sample_counts & 0x01) != 0 { 1 }
+                    else { 0 };
 
                     let mut extension_count: u32 = 0;
                     let mut extensions_str = String::new();
@@ -204,7 +214,7 @@ pub fn get_vulkan_version() -> String {
 
                     vk_destroy_instance(instance, ptr::null());
                     return format!(
-                        "{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}",
+                        "{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}",
                         format_version(api_version),
                         format_version(driver_version),
                         format_device_type(device_type),
@@ -217,7 +227,8 @@ pub fn get_vulkan_version() -> String {
                         max_image_array_layers,
                         max_uniform_buffer_range,
                         max_storage_buffer_range,
-                        max_sampler_anisotropy
+                        max_sampler_anisotropy,
+                        max_color_samples
                     );
                 }
             }
@@ -227,7 +238,7 @@ pub fn get_vulkan_version() -> String {
         }
 
         format!(
-            "{}|Unknown|Unknown|0||0|0|0|0|0|0|0|0",
+            "{}|Unknown|Unknown|0||0|0|0|0|0|0|0|0|0",
             query_instance_version(vk_enumerate_instance_version)
         )
     }
