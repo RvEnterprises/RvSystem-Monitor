@@ -1,6 +1,8 @@
 package com.rve.systemmonitor.domain.model
 
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 data class GPU(
@@ -14,6 +16,7 @@ data class GPU(
     val maxTextureSize: Int = 0,
     val extensionsCount: Int = 0,
     val vulkanExtensionsCount: Int = 0,
+    val vulkanExtensions: ImmutableList<String> = persistentListOf(),
     val deviceType: String = "unknown",
     val shadingLanguageVersion: String = "unknown",
     val totalMemoryMb: Long = 0,

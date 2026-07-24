@@ -6,6 +6,13 @@ type VkPhysicalDevice = *mut std::ffi::c_void;
 type VkResult = i32;
 
 #[repr(C)]
+#[derive(Clone)]
+struct VkExtensionProperties {
+    extension_name: [std::ffi::c_char; 256],
+    spec_version: u32,
+}
+
+#[repr(C)]
 struct VkApplicationInfo {
     s_type: i32,
     p_next: *const std::ffi::c_void,
@@ -148,6 +155,7 @@ pub fn get_vulkan_version() -> String {
                     let device_type = u32::from_le_bytes(props[16..20].try_into().unwrap());
 
                     let mut extension_count: u32 = 0;
+                    let mut extensions_str = String::new();
                     if let Some(vk_enumerate_device_extension_props) =
                         vk_enumerate_device_extension_properties
                     {
@@ -157,15 +165,43 @@ pub fn get_vulkan_version() -> String {
                             &mut extension_count,
                             ptr::null_mut(),
                         );
+
+                        if extension_count > 0 {
+                            let mut extensions = vec![
+                                VkExtensionProperties {
+                                    extension_name: [0; 256],
+                                    spec_version: 0,
+                                };
+                                extension_count as usize
+                            ];
+                            if vk_enumerate_device_extension_props(
+                                devices[0],
+                                ptr::null(),
+                                &mut extension_count,
+                                extensions.as_mut_ptr() as *mut std::ffi::c_void,
+                            ) == 0
+                            {
+                                let names: Vec<String> = extensions
+                                    .iter()
+                                    .map(|ext| {
+                                        let c_str =
+                                            std::ffi::CStr::from_ptr(ext.extension_name.as_ptr());
+                                        c_str.to_string_lossy().into_owned()
+                                    })
+                                    .collect();
+                                extensions_str = names.join(",");
+                            }
+                        }
                     }
 
                     vk_destroy_instance(instance, ptr::null());
                     return format!(
-                        "{}|{}|{}|{}",
+                        "{}|{}|{}|{}|{}",
                         format_version(api_version),
                         format_version(driver_version),
                         format_device_type(device_type),
-                        extension_count
+                        extension_count,
+                        extensions_str
                     );
                 }
             }

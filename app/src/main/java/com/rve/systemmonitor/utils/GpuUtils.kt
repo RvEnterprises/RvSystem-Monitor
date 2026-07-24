@@ -34,6 +34,7 @@ object GpuUtils {
     private var cachedVulkanDriverVersion: String? = null
     private var cachedVulkanDeviceType: String? = null
     private var cachedVulkanExtensionsCount: Int? = null
+    private var cachedVulkanExtensions: List<String>? = null
     private var cachedShadingLanguageVersion: String? = null
 
     fun getGpuDetails(): Triple<String, String, Pair<Int, Int>> {
@@ -145,6 +146,12 @@ object GpuUtils {
         return cachedVulkanExtensionsCount ?: 0
     }
 
+    fun getVulkanExtensions(): List<String> {
+        cachedVulkanExtensions?.let { return it }
+        updateVulkanInfo()
+        return cachedVulkanExtensions ?: emptyList()
+    }
+
     private fun updateVulkanInfo() {
         runCatching {
             val result = getVulkanVersionNative()
@@ -153,12 +160,15 @@ object GpuUtils {
             cachedVulkanDriverVersion = parts.getOrNull(1) ?: "Unknown"
             cachedVulkanDeviceType = parts.getOrNull(2) ?: "Unknown"
             cachedVulkanExtensionsCount = parts.getOrNull(3)?.toIntOrNull() ?: 0
+            val extensionsStr = parts.getOrNull(4) ?: ""
+            cachedVulkanExtensions = if (extensionsStr.isNotEmpty()) extensionsStr.split(",") else emptyList()
         }.onFailure {
             Log.e(TAG, "updateVulkanInfo error: ${it.message}", it)
             cachedVulkanVersion = "Unknown"
             cachedVulkanDriverVersion = "Unknown"
             cachedVulkanDeviceType = "Unknown"
             cachedVulkanExtensionsCount = 0
+            cachedVulkanExtensions = emptyList()
         }
     }
 
