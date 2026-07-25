@@ -128,19 +128,23 @@ pub fn get_core_frequency(core_id: i32, freq_type: &str) -> i64 {
     if let Some(Some(file)) = slot {
         return read_fd_parsed::<i64>(file, &mut buf).unwrap_or(0);
     }
-    let file_names = match freq_type {
-        "max_info" => vec!["cpuinfo_max_freq", "scaling_max_freq"],
-        "min_info" => vec!["cpuinfo_min_freq", "scaling_min_freq"],
-        "cur" => vec!["scaling_cur_freq", "cpuinfo_cur_freq"],
+
+    let mut try_paths = |name: &str| -> Option<i64> {
+        let path1 = format!("/sys/devices/system/cpu/cpu{}/cpufreq/{}", core_id, name);
+        let path2 = format!("/sys/devices/system/cpu/cpufreq/policy{}/{}", core_id, name);
+        read_path_parsed::<i64>(&path1, &mut buf)
+            .or_else(|| read_path_parsed::<i64>(&path2, &mut buf))
+    };
+
+    let names: &[&str] = match freq_type {
+        "max_info" => &["cpuinfo_max_freq", "scaling_max_freq"],
+        "min_info" => &["cpuinfo_min_freq", "scaling_min_freq"],
+        "cur" => &["scaling_cur_freq", "cpuinfo_cur_freq"],
         _ => return 0,
     };
 
-    for name in file_names {
-        let path1 = format!("/sys/devices/system/cpu/cpu{}/cpufreq/{}", core_id, name);
-        let path2 = format!("/sys/devices/system/cpu/cpufreq/policy{}/{}", core_id, name);
-        if let Some(val) = read_path_parsed::<i64>(&path1, &mut buf)
-            .or_else(|| read_path_parsed::<i64>(&path2, &mut buf))
-        {
+    for name in names {
+        if let Some(val) = try_paths(name) {
             return val;
         }
     }
