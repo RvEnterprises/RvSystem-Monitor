@@ -107,9 +107,11 @@ private fun CPUOverviewCard(cpu: CPU) {
                 )
             }
 
-            Row(
+            @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+            androidx.compose.foundation.layout.FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 BadgeChip(
                     text = stringResource(R.string.cpu_cores_count, cpu.cores),
@@ -128,6 +130,17 @@ private fun CPUOverviewCard(cpu: CPU) {
                 ) {
                     BadgeChip(
                         text = String.format(Locale.US, "%.1f%%", cpu.load),
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        textColor = MaterialTheme.colorScheme.onSecondary,
+                    )
+                }
+                AnimatedVisibility(
+                    visible = cpu.temperature > 0.0,
+                    enter = fadeIn() + scaleIn(),
+                    exit = fadeOut() + scaleOut(),
+                ) {
+                    BadgeChip(
+                        text = String.format(Locale.US, "%.1f °C", cpu.temperature),
                         containerColor = MaterialTheme.colorScheme.secondary,
                         textColor = MaterialTheme.colorScheme.onSecondary,
                     )

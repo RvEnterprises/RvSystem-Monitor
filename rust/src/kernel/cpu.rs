@@ -119,9 +119,9 @@ fn get_thermal_fd_from_priority(
         }
     }
     if best_path.is_none() {
-        for (tz_type, temp_path) in map {
-            if priority.iter().any(|p| tz_type.contains(p)) {
-                best_path = Some(temp_path.clone());
+        for zone in priority {
+            if let Some((_, path)) = map.iter().find(|(k, _)| k.contains(*zone)) {
+                best_path = Some(path.clone());
                 break;
             }
         }
@@ -135,10 +135,17 @@ fn get_cpu_thermal_fd() -> &'static Mutex<Option<File>> {
         get_thermal_fd_from_priority(
             get_thermal_map(),
             &[
-                "cpu-thermal",
+                "soc_max",
+                "soc_thermal",
                 "soc-thermal",
+                "cpu_max",
+                "cpu-thermal",
+                "msm_therm",
+                "mtktsap",
+                "ap_ntc",
                 "cpu",
                 "soc",
+                "tsens_tz_sensor0",
                 "thermal-cpufreq",
             ],
         )
