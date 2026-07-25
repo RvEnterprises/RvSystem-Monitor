@@ -39,8 +39,8 @@ fn get_cpu_fds() -> &'static Mutex<CpuFds> {
     CPU_FDS.get_or_init(|| {
         let cores = get_core_count() as usize;
 
-        let open_opt = |path1: String, path2: String| -> Option<File> {
-            File::open(&path1).or_else(|_| File::open(&path2)).ok()
+        let open_opt = |paths: &[String]| -> Option<File> {
+            paths.iter().find_map(|p| File::open(p).ok())
         };
 
         let mut cur_freq = Vec::with_capacity(cores);
@@ -49,34 +49,27 @@ fn get_cpu_fds() -> &'static Mutex<CpuFds> {
         let mut governor = Vec::with_capacity(cores);
 
         for i in 0..cores {
-            cur_freq.push(open_opt(
+            cur_freq.push(open_opt(&[
                 format!("/sys/devices/system/cpu/cpu{}/cpufreq/scaling_cur_freq", i),
-                format!(
-                    "/sys/devices/system/cpu/cpufreq/policy{}/scaling_cur_freq",
-                    i
-                ),
-            ));
-            max_freq.push(open_opt(
+                format!("/sys/devices/system/cpu/cpufreq/policy{}/scaling_cur_freq", i),
+                format!("/sys/devices/system/cpu/cpu{}/cpufreq/cpuinfo_cur_freq", i),
+            ]));
+            max_freq.push(open_opt(&[
                 format!("/sys/devices/system/cpu/cpu{}/cpufreq/cpuinfo_max_freq", i),
-                format!(
-                    "/sys/devices/system/cpu/cpufreq/policy{}/cpuinfo_max_freq",
-                    i
-                ),
-            ));
-            min_freq.push(open_opt(
+                format!("/sys/devices/system/cpu/cpufreq/policy{}/cpuinfo_max_freq", i),
+                format!("/sys/devices/system/cpu/cpu{}/cpufreq/scaling_max_freq", i),
+                format!("/sys/devices/system/cpu/cpufreq/policy{}/scaling_max_freq", i),
+            ]));
+            min_freq.push(open_opt(&[
                 format!("/sys/devices/system/cpu/cpu{}/cpufreq/cpuinfo_min_freq", i),
-                format!(
-                    "/sys/devices/system/cpu/cpufreq/policy{}/cpuinfo_min_freq",
-                    i
-                ),
-            ));
-            governor.push(open_opt(
+                format!("/sys/devices/system/cpu/cpufreq/policy{}/cpuinfo_min_freq", i),
+                format!("/sys/devices/system/cpu/cpu{}/cpufreq/scaling_min_freq", i),
+                format!("/sys/devices/system/cpu/cpufreq/policy{}/scaling_min_freq", i),
+            ]));
+            governor.push(open_opt(&[
                 format!("/sys/devices/system/cpu/cpu{}/cpufreq/scaling_governor", i),
-                format!(
-                    "/sys/devices/system/cpu/cpufreq/policy{}/scaling_governor",
-                    i
-                ),
-            ));
+                format!("/sys/devices/system/cpu/cpufreq/policy{}/scaling_governor", i),
+            ]));
         }
 
         Mutex::new(CpuFds {
@@ -322,23 +315,22 @@ pub fn get_core_frequency(core_id: i32, freq_type: &str) -> i64 {
     if let Some(Some(file)) = slot {
         return read_fd_parsed::<i64>(file, &mut buf).unwrap_or(0);
     }
-    let file_name = match freq_type {
-        "max_info" => "cpuinfo_max_freq",
-        "min_info" => "cpuinfo_min_freq",
-        "cur" => "scaling_cur_freq",
+    let file_names = match freq_type {
+        "max_info" => vec!["cpuinfo_max_freq", "scaling_max_freq"],
+        "min_info" => vec!["cpuinfo_min_freq", "scaling_min_freq"],
+        "cur" => vec!["scaling_cur_freq", "cpuinfo_cur_freq"],
         _ => return 0,
     };
-    let path1 = format!(
-        "/sys/devices/system/cpu/cpu{}/cpufreq/{}",
-        core_id, file_name
-    );
-    let path2 = format!(
-        "/sys/devices/system/cpu/cpufreq/policy{}/{}",
-        core_id, file_name
-    );
-    read_path_parsed::<i64>(&path1, &mut buf)
-        .or_else(|| read_path_parsed::<i64>(&path2, &mut buf))
-        .unwrap_or(0)
+
+    for name in file_names {
+        let path1 = format!("/sys/devices/system/cpu/cpu{}/cpufreq/{}", core_id, name);
+        let path2 = format!("/sys/devices/system/cpu/cpufreq/policy{}/{}", core_id, name);
+        if let Some(val) = read_path_parsed::<i64>(&path1, &mut buf).or_else(|| read_path_parsed::<i64>(&path2, &mut buf)) {
+            return val;
+        }
+    }
+    
+    0
 }
 
 pub fn get_core_governor(core_id: i32) -> String {
