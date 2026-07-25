@@ -239,12 +239,12 @@ pub fn calculate_cpu_load(proc_stat: &str) -> Vec<f64> {
                     continue;
                 }
 
-                let parts: Vec<&str> = line.split_whitespace().collect();
-                if parts.len() < 5 {
-                    continue;
-                }
+                let mut iter = line.split_whitespace();
+                let name = match iter.next() {
+                    Some(n) => n,
+                    None => continue,
+                };
 
-                let name = parts[0];
                 let idx = if name == "cpu" {
                     0
                 } else if let Ok(core_id) = name[3..].parse::<usize>() {
@@ -257,16 +257,16 @@ pub fn calculate_cpu_load(proc_stat: &str) -> Vec<f64> {
                     continue;
                 }
 
-                buf[idx] = Some(CpuTicks {
-                    user: parts[1].parse::<u64>().unwrap_or(0),
-                    nice: parts[2].parse::<u64>().unwrap_or(0),
-                    system: parts[3].parse::<u64>().unwrap_or(0),
-                    idle: parts[4].parse::<u64>().unwrap_or(0),
-                    iowait: parts.get(5).and_then(|s| s.parse().ok()).unwrap_or(0),
-                    irq: parts.get(6).and_then(|s| s.parse().ok()).unwrap_or(0),
-                    softirq: parts.get(7).and_then(|s| s.parse().ok()).unwrap_or(0),
-                    steal: parts.get(8).and_then(|s| s.parse().ok()).unwrap_or(0),
-                });
+                let mut ticks = CpuTicks::default();
+                ticks.user = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                ticks.nice = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                ticks.system = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                ticks.idle = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                ticks.iowait = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                ticks.irq = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                ticks.softirq = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                ticks.steal = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                buf[idx] = Some(ticks);
             }
 
             let mut results = Vec::with_capacity(cores + 1);
