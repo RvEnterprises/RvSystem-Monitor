@@ -112,15 +112,25 @@ fn get_thermal_fd_from_priority(
     priority: &[&str],
 ) -> Mutex<Option<File>> {
     let mut best_path = None;
+    let mut buf = String::with_capacity(32);
+
+    let mut is_valid = |p: &PathBuf| -> bool {
+        let mut file_opt = File::open(p).ok();
+        let temp = read_temp(&mut file_opt, &mut buf);
+        temp > 5.0 && temp < 120.0
+    };
+
     for zone in priority {
         if let Some(path) = map.get(*zone) {
-            best_path = Some(path.clone());
-            break;
+            if is_valid(path) {
+                best_path = Some(path.clone());
+                break;
+            }
         }
     }
     if best_path.is_none() {
         for zone in priority {
-            if let Some((_, path)) = map.iter().find(|(k, _)| k.contains(*zone)) {
+            if let Some((_, path)) = map.iter().find(|(k, p)| k.contains(*zone) && is_valid(p)) {
                 best_path = Some(path.clone());
                 break;
             }
@@ -143,6 +153,8 @@ fn get_cpu_thermal_fd() -> &'static Mutex<Option<File>> {
                 "msm_therm",
                 "mtktsap",
                 "ap_ntc",
+                "apc",
+                "cpuss",
                 "cpu",
                 "soc",
                 "tsens_tz_sensor0",
@@ -300,7 +312,13 @@ fn read_temp(file_opt: &mut Option<File>, buf: &mut String) -> f64 {
     if let Some(file) = file_opt.as_mut()
         && let Some(temp) = read_fd_parsed::<f64>(file, buf)
     {
-        return if temp > 1000.0 { temp / 1000.0 } else { temp };
+        return if temp > 1000.0 {
+            temp / 1000.0
+        } else if temp > 150.0 {
+            temp / 10.0
+        } else {
+            temp
+        };
     }
     0.0
 }
