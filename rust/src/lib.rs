@@ -9,6 +9,7 @@ use jni::objects::JString;
 use jni::strings::JNIString;
 use jni::sys::{jdouble, jdoubleArray, jint, jlong, jlongArray, jobjectArray, jstring};
 
+pub mod bench;
 pub mod drivers;
 pub mod kernel;
 pub mod macros;
@@ -202,114 +203,149 @@ jni_fn! {
 }
 
 jni_fn! {
-    fn Java_com_rve_systemmonitor_utils_BenchmarkUtils_benchRustNative(env, iters: jint) -> jdoubleArray {
+    fn Java_com_rve_systemmonitor_utils_BenchmarkUtils_benchRustNative(env, iters: jint, warmup: jint) -> jstring {
         let n = iters as usize;
-        let _ = env;
+        let w = warmup as usize;
         let cores = kernel::cpu::get_core_count();
         let proc_stat = std::fs::read_to_string("/proc/stat").unwrap_or_default();
+        let _ = env;
 
-        // Results layout: [per_op µs × 7, cores, total_file_ops]
-        let mut results = vec![0.0f64; 9];
-        let mut total_file_ops: u64 = 0;
+        // System snapshot before
+        let snap_before = bench::system::SystemSnapshot::capture();
 
-        // 1. CPU freq (all cores, n times) — each call does File::open + read_to_string + parse = 1 file op + 1 string alloc
-        let mut total = std::time::Duration::ZERO;
-        let mut file_ops = 0u64;
-        for _ in 0..n {
-            let s = std::time::Instant::now();
-            for i in 0..cores {
-                let _ = kernel::cpu::get_core_frequency(i, "cur");
-                file_ops += 1;
-            }
-            total += s.elapsed();
+        // --- WARMUP ---
+        for _ in 0..w {
+            for i in 0..cores { let _ = kernel::cpu::get_core_frequency(i, "cur"); }
+            for i in 0..cores { let _ = kernel::cpu::get_core_governor(i); }
+            let _ = kernel::thermal::get_cpu_temperature();
+            for i in 0..cores { let _ = kernel::thermal::get_core_temperature(i); }
+            let _ = kernel::cpu::calculate_cpu_load(&proc_stat);
+            let _ = mm::memory::get_memory_data();
         }
-        results[0] = total.as_secs_f64() * 1_000_000.0 / n as f64;
-        total_file_ops += file_ops;
 
-        // 2. Governor (all cores, n times)
-        let mut total = std::time::Duration::ZERO;
-        let mut file_ops = 0u64;
+        // --- MEASUREMENT: individual samples per operation ---
+        let mut freq_samples = Vec::with_capacity(n);
+        let mut gov_samples = Vec::with_capacity(n);
+        let mut temp_samples = Vec::with_capacity(n);
+        let mut all_temp_samples = Vec::with_capacity(n);
+        let mut load_samples = Vec::with_capacity(n);
+        let mut mem_samples = Vec::with_capacity(n);
+        let mut full_samples = Vec::with_capacity(n);
+
+        // Track native exec time vs JNI marshalling for full cycle
+        let mut native_exec_samples = Vec::with_capacity(n);
+        let mut jni_marshal_samples = Vec::with_capacity(n);
+
         for _ in 0..n {
+            // 1. Freq
             let s = std::time::Instant::now();
-            for i in 0..cores {
-                let _ = kernel::cpu::get_core_governor(i);
-                file_ops += 1;
-            }
-            total += s.elapsed();
-        }
-        results[1] = total.as_secs_f64() * 1_000_000.0 / n as f64;
-        total_file_ops += file_ops;
+            for i in 0..cores { let _ = kernel::cpu::get_core_frequency(i, "cur"); }
+            freq_samples.push(s.elapsed());
 
-        // 3. CPU temp
-        let mut total = std::time::Duration::ZERO;
-        let mut file_ops = 0u64;
-        for _ in 0..n {
+            // 2. Governor
+            let s = std::time::Instant::now();
+            for i in 0..cores { let _ = kernel::cpu::get_core_governor(i); }
+            gov_samples.push(s.elapsed());
+
+            // 3. CPU temp
             let s = std::time::Instant::now();
             let _ = kernel::thermal::get_cpu_temperature();
-            file_ops += 1;
-            total += s.elapsed();
-        }
-        results[2] = total.as_secs_f64() * 1_000_000.0 / n as f64;
-        total_file_ops += file_ops;
+            temp_samples.push(s.elapsed());
 
-        // 4. All core temps — each reads dir + N temp files
-        let mut total = std::time::Duration::ZERO;
-        let mut file_ops = 0u64;
-        for _ in 0..n {
+            // 4. All core temps
             let s = std::time::Instant::now();
-            for i in 0..cores {
-                let _ = kernel::thermal::get_core_temperature(i);
-                file_ops += 1;
-            }
-            total += s.elapsed();
-        }
-        results[3] = total.as_secs_f64() * 1_000_000.0 / n as f64;
-        total_file_ops += file_ops;
+            for i in 0..cores { let _ = kernel::thermal::get_core_temperature(i); }
+            all_temp_samples.push(s.elapsed());
 
-        // 5. /proc/stat parse (already cached, just parse)
-        let mut total = std::time::Duration::ZERO;
-        for _ in 0..n {
+            // 5. /proc/stat
             let s = std::time::Instant::now();
             let _ = kernel::cpu::calculate_cpu_load(&proc_stat);
-            total += s.elapsed();
-        }
-        results[4] = total.as_secs_f64() * 1_000_000.0 / n as f64;
+            load_samples.push(s.elapsed());
 
-        // 6. Memory — reads /proc/meminfo + /sys/block/zram0/ files
-        let mut total = std::time::Duration::ZERO;
-        let mut file_ops = 0u64;
-        for _ in 0..n {
+            // 6. Memory
             let s = std::time::Instant::now();
             let _ = mm::memory::get_memory_data();
-            file_ops += 3; // meminfo + 2 zram files
-            total += s.elapsed();
-        }
-        results[5] = total.as_secs_f64() * 1_000_000.0 / n as f64;
-        total_file_ops += file_ops;
+            mem_samples.push(s.elapsed());
 
-        // 7. Full cycle
-        let mut total = std::time::Duration::ZERO;
-        let mut file_ops = 0u64;
-        for _ in 0..n {
-            let s = std::time::Instant::now();
+            // 7. Full cycle — measure native exec vs JNI marshalling separately
+            let s_total = std::time::Instant::now();
+            let s_native = std::time::Instant::now();
             let _ = kernel::thermal::get_cpu_temperature();
-            file_ops += 1;
             for i in 0..cores {
                 let _ = kernel::cpu::get_core_frequency(i, "cur");
                 let _ = kernel::thermal::get_core_temperature(i);
-                file_ops += 2;
             }
             let _ = kernel::cpu::calculate_cpu_load(&proc_stat);
             let _ = mm::memory::get_memory_data();
-            file_ops += 3;
-            total += s.elapsed();
+            let native_elapsed = s_native.elapsed();
+
+            // Simulate JNI marshalling: create arrays and copy (measures overhead of JNI bridge)
+            let s_marshal = std::time::Instant::now();
+            let _freqs: Vec<i64> = (0..cores).map(|i| kernel::cpu::get_core_frequency(i, "cur")).collect();
+            let _temps: Vec<f64> = (0..cores).map(|i| kernel::thermal::get_core_temperature(i)).collect();
+            let _load = kernel::cpu::calculate_cpu_load(&proc_stat);
+            let _mem = mm::memory::get_memory_data();
+            let marshal_elapsed = s_marshal.elapsed();
+
+            native_exec_samples.push(native_elapsed);
+            jni_marshal_samples.push(marshal_elapsed);
+            full_samples.push(s_total.elapsed());
         }
-        results[6] = total.as_secs_f64() * 1_000_000.0 / n as f64;
-        total_file_ops += file_ops;
 
-        results[7] = cores as f64;
-        results[8] = total_file_ops as f64;
+        // System snapshot after
+        let snap_after = bench::system::SystemSnapshot::capture();
+        let sys_delta = snap_after.delta(&snap_before);
 
-        jni_double_array!(env, results)
+        // Calculate statistics
+        let freq_stats = bench::stats::LatencyStats::from_durations(&freq_samples);
+        let gov_stats = bench::stats::LatencyStats::from_durations(&gov_samples);
+        let temp_stats = bench::stats::LatencyStats::from_durations(&temp_samples);
+        let all_temp_stats = bench::stats::LatencyStats::from_durations(&all_temp_samples);
+        let load_stats = bench::stats::LatencyStats::from_durations(&load_samples);
+        let mem_stats = bench::stats::LatencyStats::from_durations(&mem_samples);
+        let full_stats = bench::stats::LatencyStats::from_durations(&full_samples);
+        let native_stats = bench::stats::LatencyStats::from_durations(&native_exec_samples);
+        let marshal_stats = bench::stats::LatencyStats::from_durations(&jni_marshal_samples);
+
+        // Format output
+        let out = format!(
+            "=== JNI Bridge Benchmark Summary ===\n\
+             Config: {n} iters | {w} warmup | Cores: {cores} | Affinity: {affinity}\n\n\
+             Latency (μs):\n\
+             \x20 Operation         p50      p90      p95      p99      Max      StdDev\n\
+             \x20 ──────────────   ──────   ──────   ──────   ──────   ──────   ──────\n\
+             \x20 Freq (all)       {f50:<7.1} {f90:<7.1} {f95:<7.1} {f99:<7.1} {fmax:<7.1} ±{fstd:<5.1}\n\
+             \x20 Governor (all)   {g50:<7.1} {g90:<7.1} {g95:<7.1} {g99:<7.1} {gmax:<7.1} ±{gstd:<5.1}\n\
+             \x20 CPU Temp         {t50:<7.1} {t90:<7.1} {t95:<7.1} {t99:<7.1} {tmax:<7.1} ±{tstd:<5.1}\n\
+             \x20 All Core Temps   {at50:<7.1} {at90:<7.1} {at95:<7.1} {at99:<7.1} {atmax:<7.1} ±{atstd:<5.1}\n\
+             \x20 /proc/stat       {l50:<7.1} {l90:<7.1} {l95:<7.1} {l99:<7.1} {lmax:<7.1} ±{lstd:<5.1}\n\
+             \x20 Memory           {m50:<7.1} {m90:<7.1} {m95:<7.1} {m99:<7.1} {mmax:<7.1} ±{mstd:<5.1}\n\
+             \x20 Full Cycle       {fl50:<7.1} {fl90:<7.1} {fl95:<7.1} {fl99:<7.1} {flmax:<7.1} ±{flstd:<5.1}\n\n\
+             JNI Breakdown (Full Cycle):\n\
+             \x20 Native Exec (Rust) : {native_avg:.1} μs\n\
+             \x20 Marshalling/Copy   : {marshal_avg:.1} μs\n\
+             \x20 JNI Overhead Net   : {jni_overhead:.1} μs\n\n\
+             Memory & System:\n\
+             \x20 RSS Delta          : {rss_delta:+} KB\n\
+             \x20 Context Switches   : {ctx_vol} vol + {ctx_invol} invol\n\
+             \x20 Warmup Skipped     : {w} iterations",
+            affinity = snap_before.core_affinity,
+            f50 = freq_stats.p50, f90 = freq_stats.p90, f95 = freq_stats.p95, f99 = freq_stats.p99, fmax = freq_stats.max, fstd = freq_stats.stddev,
+            g50 = gov_stats.p50, g90 = gov_stats.p90, g95 = gov_stats.p95, g99 = gov_stats.p99, gmax = gov_stats.max, gstd = gov_stats.stddev,
+            t50 = temp_stats.p50, t90 = temp_stats.p90, t95 = temp_stats.p95, t99 = temp_stats.p99, tmax = temp_stats.max, tstd = temp_stats.stddev,
+            at50 = all_temp_stats.p50, at90 = all_temp_stats.p90, at95 = all_temp_stats.p95, at99 = all_temp_stats.p99, atmax = all_temp_stats.max, atstd = all_temp_stats.stddev,
+            l50 = load_stats.p50, l90 = load_stats.p90, l95 = load_stats.p95, l99 = load_stats.p99, lmax = load_stats.max, lstd = load_stats.stddev,
+            m50 = mem_stats.p50, m90 = mem_stats.p90, m95 = mem_stats.p95, m99 = mem_stats.p99, mmax = mem_stats.max, mstd = mem_stats.stddev,
+            fl50 = full_stats.p50, fl90 = full_stats.p90, fl95 = full_stats.p95, fl99 = full_stats.p99, flmax = full_stats.max, flstd = full_stats.stddev,
+            native_avg = native_stats.mean,
+            marshal_avg = marshal_stats.mean,
+            jni_overhead = full_stats.mean - native_stats.mean - marshal_stats.mean,
+            rss_delta = sys_delta.rss_delta_kb,
+            ctx_vol = sys_delta.ctx_voluntary_delta,
+            ctx_invol = sys_delta.ctx_involuntary_delta,
+        );
+
+        let jstr = env.new_string(&out)?;
+        Ok(jstr.into_raw())
     }
 }
