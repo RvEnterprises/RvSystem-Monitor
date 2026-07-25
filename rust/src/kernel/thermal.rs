@@ -264,3 +264,20 @@ pub fn get_core_temperature(core_id: i32) -> f64 {
     }
     get_cpu_temperature()
 }
+
+pub fn get_all_core_temperatures() -> Vec<f64> {
+    let cores = get_core_count() as usize;
+    let mut result = Vec::with_capacity(cores);
+    let mut buf = String::with_capacity(16);
+    let mut fds_mutex = get_core_thermal_fds().lock().unwrap();
+
+    for i in 0..cores {
+        if let Some(slot) = fds_mutex.get_mut(i) {
+            let temp = read_temp(slot, &mut buf);
+            result.push(if temp != 0.0 { temp } else { 0.0 });
+        } else {
+            result.push(0.0);
+        }
+    }
+    result
+}

@@ -251,9 +251,9 @@ jni_fn! {
             let _ = kernel::thermal::get_cpu_temperature();
             temp_samples.push(s.elapsed());
 
-            // 4. All core temps
+            // 4. All core temps — single lock, read all at once
             let s = std::time::Instant::now();
-            for i in 0..cores { let _ = kernel::thermal::get_core_temperature(i); }
+            let _ = kernel::thermal::get_all_core_temperatures();
             all_temp_samples.push(s.elapsed());
 
             // 5. /proc/stat
