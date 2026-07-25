@@ -55,7 +55,7 @@ jni_fn! {
 jni_fn! {
     fn Java_com_rve_systemmonitor_utils_GpuUtils_getGpuTemperatureNative(env) -> jdouble {
         let _ = env;
-        Ok(kernel::cpu::get_gpu_temperature())
+        Ok(kernel::thermal::get_gpu_temperature())
     }
 }
 
@@ -159,7 +159,7 @@ jni_fn! {
 jni_fn! {
     fn Java_com_rve_systemmonitor_utils_CpuUtils_getCpuTemperatureNative(env) -> jdouble {
         let _ = env;
-        Ok(kernel::cpu::get_cpu_temperature())
+        Ok(kernel::thermal::get_cpu_temperature())
     }
 }
 
@@ -169,7 +169,7 @@ jni_fn! {
         let mut temps = Vec::with_capacity(cores as usize);
 
         for i in 0..cores {
-            temps.push(kernel::cpu::get_core_temperature(i));
+            temps.push(kernel::thermal::get_core_temperature(i));
         }
 
         jni_double_array!(env, temps)
@@ -181,11 +181,11 @@ jni_fn! {
         let cores = kernel::cpu::get_core_count() as usize;
         let mut data = Vec::with_capacity(1 + 2 * cores);
 
-        data.push(kernel::cpu::get_cpu_temperature());
+        data.push(kernel::thermal::get_cpu_temperature());
 
         for i in 0..cores {
             data.push(kernel::cpu::get_core_frequency(i as i32, "cur") as f64);
-            data.push(kernel::cpu::get_core_temperature(i as i32));
+            data.push(kernel::thermal::get_core_temperature(i as i32));
         }
 
         jni_double_array!(env, data)
@@ -197,6 +197,119 @@ jni_fn! {
         let proc_stat_jstr = proc_stat.mutf8_chars(env).unwrap();
         let proc_stat_cow = proc_stat_jstr.to_str();
         let results = kernel::cpu::calculate_cpu_load(proc_stat_cow.as_ref());
+        jni_double_array!(env, results)
+    }
+}
+
+jni_fn! {
+    fn Java_com_rve_systemmonitor_utils_BenchmarkUtils_benchRustNative(env, iters: jint) -> jdoubleArray {
+        let n = iters as usize;
+        let _ = env;
+        let cores = kernel::cpu::get_core_count();
+        let proc_stat = std::fs::read_to_string("/proc/stat").unwrap_or_default();
+
+        // Results layout: [per_op µs × 7, cores, total_file_ops]
+        let mut results = vec![0.0f64; 9];
+        let mut total_file_ops: u64 = 0;
+
+        // 1. CPU freq (all cores, n times) — each call does File::open + read_to_string + parse = 1 file op + 1 string alloc
+        let mut total = std::time::Duration::ZERO;
+        let mut file_ops = 0u64;
+        for _ in 0..n {
+            let s = std::time::Instant::now();
+            for i in 0..cores {
+                let _ = kernel::cpu::get_core_frequency(i, "cur");
+                file_ops += 1;
+            }
+            total += s.elapsed();
+        }
+        results[0] = total.as_secs_f64() * 1_000_000.0 / n as f64;
+        total_file_ops += file_ops;
+
+        // 2. Governor (all cores, n times)
+        let mut total = std::time::Duration::ZERO;
+        let mut file_ops = 0u64;
+        for _ in 0..n {
+            let s = std::time::Instant::now();
+            for i in 0..cores {
+                let _ = kernel::cpu::get_core_governor(i);
+                file_ops += 1;
+            }
+            total += s.elapsed();
+        }
+        results[1] = total.as_secs_f64() * 1_000_000.0 / n as f64;
+        total_file_ops += file_ops;
+
+        // 3. CPU temp
+        let mut total = std::time::Duration::ZERO;
+        let mut file_ops = 0u64;
+        for _ in 0..n {
+            let s = std::time::Instant::now();
+            let _ = kernel::thermal::get_cpu_temperature();
+            file_ops += 1;
+            total += s.elapsed();
+        }
+        results[2] = total.as_secs_f64() * 1_000_000.0 / n as f64;
+        total_file_ops += file_ops;
+
+        // 4. All core temps — each reads dir + N temp files
+        let mut total = std::time::Duration::ZERO;
+        let mut file_ops = 0u64;
+        for _ in 0..n {
+            let s = std::time::Instant::now();
+            for i in 0..cores {
+                let _ = kernel::thermal::get_core_temperature(i);
+                file_ops += 1;
+            }
+            total += s.elapsed();
+        }
+        results[3] = total.as_secs_f64() * 1_000_000.0 / n as f64;
+        total_file_ops += file_ops;
+
+        // 5. /proc/stat parse (already cached, just parse)
+        let mut total = std::time::Duration::ZERO;
+        for _ in 0..n {
+            let s = std::time::Instant::now();
+            let _ = kernel::cpu::calculate_cpu_load(&proc_stat);
+            total += s.elapsed();
+        }
+        results[4] = total.as_secs_f64() * 1_000_000.0 / n as f64;
+
+        // 6. Memory — reads /proc/meminfo + /sys/block/zram0/ files
+        let mut total = std::time::Duration::ZERO;
+        let mut file_ops = 0u64;
+        for _ in 0..n {
+            let s = std::time::Instant::now();
+            let _ = mm::memory::get_memory_data();
+            file_ops += 3; // meminfo + 2 zram files
+            total += s.elapsed();
+        }
+        results[5] = total.as_secs_f64() * 1_000_000.0 / n as f64;
+        total_file_ops += file_ops;
+
+        // 7. Full cycle
+        let mut total = std::time::Duration::ZERO;
+        let mut file_ops = 0u64;
+        for _ in 0..n {
+            let s = std::time::Instant::now();
+            let _ = kernel::thermal::get_cpu_temperature();
+            file_ops += 1;
+            for i in 0..cores {
+                let _ = kernel::cpu::get_core_frequency(i, "cur");
+                let _ = kernel::thermal::get_core_temperature(i);
+                file_ops += 2;
+            }
+            let _ = kernel::cpu::calculate_cpu_load(&proc_stat);
+            let _ = mm::memory::get_memory_data();
+            file_ops += 3;
+            total += s.elapsed();
+        }
+        results[6] = total.as_secs_f64() * 1_000_000.0 / n as f64;
+        total_file_ops += file_ops;
+
+        results[7] = cores as f64;
+        results[8] = total_file_ops as f64;
+
         jni_double_array!(env, results)
     }
 }

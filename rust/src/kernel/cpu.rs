@@ -3,10 +3,8 @@
 //! Provides functions to read and parse CPU information from the system.
 
 use once_cell::sync::OnceCell;
-use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::{Read, Seek, SeekFrom};
-use std::path::PathBuf;
 use std::sync::Mutex;
 
 fn read_fd_parsed<T: std::str::FromStr>(file: &mut File, buf: &mut String) -> Option<T> {
@@ -98,222 +96,6 @@ fn get_cpu_fds() -> &'static Mutex<CpuFds> {
     })
 }
 
-static THERMAL_MAP: OnceCell<HashMap<String, PathBuf>> = OnceCell::new();
-
-fn get_thermal_map() -> &'static HashMap<String, PathBuf> {
-    THERMAL_MAP.get_or_init(|| {
-        let mut map = HashMap::new();
-        if let Ok(entries) = fs::read_dir("/sys/class/thermal") {
-            for entry in entries.flatten() {
-                let base = entry.file_name();
-                let name = base.to_string_lossy();
-                if !name.starts_with("thermal_zone") {
-                    continue;
-                }
-                let type_path = entry.path().join("type");
-                let temp_path = entry.path().join("temp");
-                if let Ok(tz_type) = fs::read_to_string(&type_path) {
-                    map.insert(tz_type.trim().to_lowercase(), temp_path);
-                }
-            }
-        }
-        map
-    })
-}
-
-static CPU_THERMAL_FD: OnceCell<Mutex<Option<File>>> = OnceCell::new();
-static GPU_THERMAL_FD: OnceCell<Mutex<Option<File>>> = OnceCell::new();
-
-fn get_thermal_fd_from_priority(
-    map: &HashMap<String, PathBuf>,
-    priority: &[&str],
-) -> Mutex<Option<File>> {
-    let mut best_path = None;
-    let mut buf = String::with_capacity(32);
-
-    let mut is_valid = |p: &PathBuf| -> bool {
-        let mut file_opt = File::open(p).ok();
-        let temp = read_temp(&mut file_opt, &mut buf);
-        temp > 5.0 && temp < 120.0
-    };
-
-    for zone in priority {
-        if let Some(path) = map.get(*zone) {
-            if is_valid(path) {
-                best_path = Some(path.clone());
-                break;
-            }
-        }
-    }
-    if best_path.is_none() {
-        for zone in priority {
-            if let Some((_, path)) = map.iter().find(|(k, p)| k.contains(*zone) && is_valid(p)) {
-                best_path = Some(path.clone());
-                break;
-            }
-        }
-    }
-    let file = best_path.and_then(|p| File::open(p).ok());
-    Mutex::new(file)
-}
-
-fn get_cpu_thermal_fd() -> &'static Mutex<Option<File>> {
-    CPU_THERMAL_FD.get_or_init(|| {
-        get_thermal_fd_from_priority(
-            get_thermal_map(),
-            &[
-                "soc_max",
-                "soc_thermal",
-                "soc-thermal",
-                "cpu_max",
-                "cpu-thermal",
-                "msm_therm",
-                "mtktsap",
-                "ap_ntc",
-                "apc",
-                "cpuss",
-                "cpu",
-                "soc",
-                "tsens_tz_sensor0",
-                "thermal-cpufreq",
-            ],
-        )
-    })
-}
-
-fn get_gpu_thermal_fd() -> &'static Mutex<Option<File>> {
-    GPU_THERMAL_FD.get_or_init(|| {
-        get_thermal_fd_from_priority(
-            get_thermal_map(),
-            &[
-                "gpu-thermal",
-                "gpu0-thermal",
-                "gpuss-0-usr",
-                "gpu",
-                "tsens_tz_sensor9",
-            ],
-        )
-    })
-}
-
-static CORE_THERMAL_FDS: OnceCell<Mutex<Vec<Option<File>>>> = OnceCell::new();
-
-fn get_core_thermal_fds() -> &'static Mutex<Vec<Option<File>>> {
-    CORE_THERMAL_FDS.get_or_init(|| {
-        let cores = get_core_count() as usize;
-        let map = get_thermal_map();
-        let mut fds = Vec::with_capacity(cores);
-
-        let mut qc_zones: Vec<(i32, i32, String)> = Vec::new();
-        for key in map.keys() {
-            if key.starts_with("cpu-") {
-                // Format: cpu-C-N-S or cpu-<type>-core<N>
-                let parts: Vec<&str> = key.split('-').collect();
-                if parts.len() >= 3 {
-                    if let (Ok(c), Ok(n)) = (parts[1].parse::<i32>(), parts[2].parse::<i32>()) {
-                        qc_zones.push((c, n, key.clone()));
-                    } else {
-                        // Dimensity format: cpu-little-core0
-                        let cluster_type = parts[1];
-                        let core_str = parts[2];
-                        if core_str.starts_with("core") {
-                            if let Ok(n) = core_str[4..].parse::<i32>() {
-                                let c = match cluster_type {
-                                    "little" => 0,
-                                    "medium" => 1,
-                                    "big" => 2,
-                                    "prime" => 3,
-                                    _ => -1,
-                                };
-                                if c != -1 {
-                                    qc_zones.push((c, n, key.clone()));
-                                }
-                            }
-                        }
-                    }
-                }
-            } else if key.starts_with("cpu_") {
-                // Format: cpu_littleN, cpu_bigN
-                let is_little = key.starts_with("cpu_little");
-                let is_big = key.starts_with("cpu_big");
-                if is_little || is_big {
-                    let prefix_len = if is_little {
-                        "cpu_little".len()
-                    } else {
-                        "cpu_big".len()
-                    };
-                    if let Ok(n) = key[prefix_len..].parse::<i32>() {
-                        let core_idx = n - 1;
-                        let c = if is_little { 0 } else { 1 };
-                        qc_zones.push((c, core_idx, key.clone()));
-                    }
-                }
-            } else if key.starts_with("cpu") {
-                // Format: cpuN-silver-S, cpuN-gold-S
-                if let Some(dash_idx) = key.find('-') {
-                    if let Ok(n) = key[3..dash_idx].parse::<i32>() {
-                        let rest = &key[dash_idx + 1..];
-                        let c = if rest.starts_with("silver") || rest.starts_with("little") {
-                            0
-                        } else if rest.starts_with("gold") || rest.starts_with("big") {
-                            1
-                        } else if rest.starts_with("prime") {
-                            2
-                        } else {
-                            -1
-                        };
-                        if c != -1 {
-                            qc_zones.push((c, n, key.clone()));
-                        }
-                    }
-                }
-            } else if key.starts_with("tsens_tz_sensor") {
-                if let Ok(n) = key[15..].parse::<i32>() {
-                    let core_idx = if n >= 1 && n <= 8 {
-                        n - 1
-                    } else if n == 0 {
-                        99
-                    } else {
-                        n
-                    };
-                    qc_zones.push((99, core_idx, key.clone()));
-                }
-            }
-        }
-
-        let mut unique_cn: HashMap<(i32, i32), String> = HashMap::new();
-        for (c, n, key) in qc_zones {
-            if !unique_cn.contains_key(&(c, n))
-                || key.ends_with("-0")
-                || key.ends_with("-0-0")
-                || key.ends_with("-usr")
-            {
-                unique_cn.insert((c, n), key);
-            }
-        }
-
-        let mut sorted_cn: Vec<(&(i32, i32), &String)> = unique_cn.iter().collect();
-        sorted_cn.sort_by(|a, b| {
-            if a.0.0 != b.0.0 {
-                a.0.0.cmp(&b.0.0)
-            } else {
-                a.0.1.cmp(&b.0.1)
-            }
-        });
-
-        for i in 0..cores {
-            if i < sorted_cn.len() {
-                let key = sorted_cn[i].1;
-                fds.push(map.get(key).and_then(|p| File::open(p).ok()));
-            } else {
-                fds.push(None);
-            }
-        }
-
-        Mutex::new(fds)
-    })
-}
-
 pub fn get_core_count() -> i32 {
     if let Ok(content) = fs::read_to_string("/sys/devices/system/cpu/present") {
         let content = content.trim();
@@ -327,21 +109,6 @@ pub fn get_core_count() -> i32 {
     std::thread::available_parallelism()
         .map(|n| n.get() as i32)
         .unwrap_or(0)
-}
-
-fn read_temp(file_opt: &mut Option<File>, buf: &mut String) -> f64 {
-    if let Some(file) = file_opt.as_mut()
-        && let Some(temp) = read_fd_parsed::<f64>(file, buf)
-    {
-        return if temp > 1000.0 {
-            temp / 1000.0
-        } else if temp > 150.0 {
-            temp / 10.0
-        } else {
-            temp
-        };
-    }
-    0.0
 }
 
 pub fn get_core_frequency(core_id: i32, freq_type: &str) -> i64 {
@@ -397,7 +164,6 @@ pub fn get_core_governor(core_id: i32) -> String {
         }
     }
 
-    // Fallback
     let path1 = format!(
         "/sys/devices/system/cpu/cpu{}/cpufreq/scaling_governor",
         core_id
@@ -414,30 +180,6 @@ pub fn get_core_governor(core_id: i32) -> String {
             s
         })
         .unwrap_or_else(|_| "N/A".to_string())
-}
-
-pub fn get_cpu_temperature() -> f64 {
-    let mut buf = String::with_capacity(16);
-    let mut fd_mutex = get_cpu_thermal_fd().lock().unwrap();
-    read_temp(&mut fd_mutex, &mut buf)
-}
-
-pub fn get_gpu_temperature() -> f64 {
-    let mut buf = String::with_capacity(16);
-    let mut fd_mutex = get_gpu_thermal_fd().lock().unwrap();
-    read_temp(&mut fd_mutex, &mut buf)
-}
-
-pub fn get_core_temperature(core_id: i32) -> f64 {
-    let mut buf = String::with_capacity(16);
-    let mut fds_mutex = get_core_thermal_fds().lock().unwrap();
-    if let Some(slot) = fds_mutex.get_mut(core_id as usize) {
-        let temp = read_temp(slot, &mut buf);
-        if temp != 0.0 {
-            return temp;
-        }
-    }
-    get_cpu_temperature()
 }
 
 #[derive(Default, Clone, Copy)]
@@ -536,7 +278,6 @@ pub fn calculate_cpu_load(proc_stat: &str) -> Vec<f64> {
     let last_ticks_mutex = LAST_CPU_TICKS.get_or_init(|| Mutex::new(vec![None; cores + 1]));
     let mut last_ticks = last_ticks_mutex.lock().unwrap();
 
-    // Process each entry (0 is total, 1..=cores are individual cores)
     for i in 0..=cores {
         if let Some(curr) = current_ticks[i] {
             if let Some(prev) = last_ticks.get(i).and_then(|x| *x) {

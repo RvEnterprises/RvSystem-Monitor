@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rve.systemmonitor.R
 import com.rve.systemmonitor.ui.components.ExitUntilCollapsedMediumTopAppBar
+import com.rve.systemmonitor.utils.BenchmarkUtils
 import com.rve.systemmonitor.utils.DeviceUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -54,6 +56,7 @@ fun RustLibraryScreen(onNavigateBack: () -> Unit) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val rustVersion = remember { DeviceUtils.getRustLibraryVersion() }
     val context = LocalContext.current
+    val benchResult = remember { mutableStateOf<String?>(null) }
 
     val methods = remember(context) {
         listOf(
@@ -223,6 +226,34 @@ fun RustLibraryScreen(onNavigateBack: () -> Unit) {
             items(methods) { method ->
                 MethodDetailItem(method)
                 Spacer(modifier = Modifier.height(24.dp))
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                androidx.compose.material3.Button(
+                    onClick = { benchResult.value = BenchmarkUtils.run(500) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Run Benchmark (500 iters)")
+                }
+                benchResult.value?.let { result ->
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text(
+                            text = result,
+                            modifier = Modifier.padding(12.dp),
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = 11.sp,
+                                lineHeight = 16.sp,
+                            ),
+                        )
+                    }
+                }
             }
         }
     }
