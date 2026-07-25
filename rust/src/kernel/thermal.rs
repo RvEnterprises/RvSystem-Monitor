@@ -139,29 +139,25 @@ fn get_core_thermal_fds() -> &'static Mutex<Vec<Option<File>>> {
         let map = get_thermal_map();
         let mut fds = Vec::with_capacity(cores);
 
-        let mut qc_zones: Vec<(i32, i32, String)> = Vec::new();
+        let mut qc_zones: Vec<(i32, i32, &str)> = Vec::new();
         for key in map.keys() {
             if key.starts_with("cpu-") {
                 let parts: Vec<&str> = key.split('-').collect();
                 if parts.len() >= 3 {
                     if let (Ok(c), Ok(n)) = (parts[1].parse::<i32>(), parts[2].parse::<i32>()) {
-                        qc_zones.push((c, n, key.clone()));
-                    } else {
-                        let cluster_type = parts[1];
-                        let core_str = parts[2];
-                        if core_str.starts_with("core") {
-                            if let Ok(n) = core_str[4..].parse::<i32>() {
-                                let c = match cluster_type {
-                                    "little" => 0,
-                                    "medium" => 1,
-                                    "big" => 2,
-                                    "prime" => 3,
-                                    _ => -1,
-                                };
-                                if c != -1 {
-                                    qc_zones.push((c, n, key.clone()));
-                                }
-                            }
+                        qc_zones.push((c, n, key));
+                        continue;
+                    }
+                    if parts[2].starts_with("core") {
+                        if let Ok(n) = parts[2][4..].parse::<i32>() {
+                            let c = match parts[1] {
+                                "little" => 0,
+                                "medium" => 1,
+                                "big" => 2,
+                                "prime" => 3,
+                                _ => continue,
+                            };
+                            qc_zones.push((c, n, key));
                         }
                     }
                 }
@@ -171,44 +167,32 @@ fn get_core_thermal_fds() -> &'static Mutex<Vec<Option<File>>> {
                 if is_little || is_big {
                     let prefix_len = if is_little { "cpu_little".len() } else { "cpu_big".len() };
                     if let Ok(n) = key[prefix_len..].parse::<i32>() {
-                        let core_idx = n - 1;
                         let c = if is_little { 0 } else { 1 };
-                        qc_zones.push((c, core_idx, key.clone()));
+                        qc_zones.push((c, n - 1, key));
                     }
                 }
             } else if key.starts_with("cpu") {
                 if let Some(dash_idx) = key.find('-') {
                     if let Ok(n) = key[3..dash_idx].parse::<i32>() {
                         let rest = &key[dash_idx + 1..];
-                        let c = if rest.starts_with("silver") || rest.starts_with("little") {
-                            0
-                        } else if rest.starts_with("gold") || rest.starts_with("big") {
-                            1
-                        } else if rest.starts_with("prime") {
-                            2
-                        } else {
-                            -1
+                        let c = match rest {
+                            r if r.starts_with("silver") || r.starts_with("little") => 0,
+                            r if r.starts_with("gold") || r.starts_with("big") => 1,
+                            r if r.starts_with("prime") => 2,
+                            _ => continue,
                         };
-                        if c != -1 {
-                            qc_zones.push((c, n, key.clone()));
-                        }
+                        qc_zones.push((c, n, key));
                     }
                 }
             } else if key.starts_with("tsens_tz_sensor") {
                 if let Ok(n) = key[15..].parse::<i32>() {
-                    let core_idx = if n >= 1 && n <= 8 {
-                        n - 1
-                    } else if n == 0 {
-                        99
-                    } else {
-                        n
-                    };
-                    qc_zones.push((99, core_idx, key.clone()));
+                    let core_idx = if n >= 1 && n <= 8 { n - 1 } else if n == 0 { 99 } else { n };
+                    qc_zones.push((99, core_idx, key));
                 }
             }
         }
 
-        let mut unique_cn: HashMap<(i32, i32), String> = HashMap::new();
+        let mut unique_cn: HashMap<(i32, i32), &str> = HashMap::new();
         for (c, n, key) in qc_zones {
             if !unique_cn.contains_key(&(c, n))
                 || key.ends_with("-0")
@@ -219,7 +203,7 @@ fn get_core_thermal_fds() -> &'static Mutex<Vec<Option<File>>> {
             }
         }
 
-        let mut sorted_cn: Vec<(&(i32, i32), &String)> = unique_cn.iter().collect();
+        let mut sorted_cn: Vec<(&(i32, i32), &&str)> = unique_cn.iter().collect();
         sorted_cn.sort_by(|a, b| {
             if a.0.0 != b.0.0 {
                 a.0.0.cmp(&b.0.0)
@@ -230,7 +214,7 @@ fn get_core_thermal_fds() -> &'static Mutex<Vec<Option<File>>> {
 
         for i in 0..cores {
             if i < sorted_cn.len() {
-                let key = sorted_cn[i].1;
+                let key = *sorted_cn[i].1;
                 fds.push(map.get(key).and_then(|p| File::open(p).ok()));
             } else {
                 fds.push(None);
