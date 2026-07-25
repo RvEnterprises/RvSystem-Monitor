@@ -232,9 +232,8 @@ jni_fn! {
         let mut mem_samples = Vec::with_capacity(n);
         let mut full_samples = Vec::with_capacity(n);
 
-        // Track native exec time vs JNI marshalling for full cycle
+        // Track native exec time vs total for JNI overhead calculation
         let mut native_exec_samples = Vec::with_capacity(n);
-        let mut jni_marshal_samples = Vec::with_capacity(n);
 
         for _ in 0..n {
             // 1. Freq
@@ -267,7 +266,7 @@ jni_fn! {
             let _ = mm::memory::get_memory_data();
             mem_samples.push(s.elapsed());
 
-            // 7. Full cycle — measure native exec vs JNI marshalling separately
+            // 7. Full cycle — measure native exec vs total for JNI overhead
             let s_total = std::time::Instant::now();
             let s_native = std::time::Instant::now();
             let _ = kernel::thermal::get_cpu_temperature();
@@ -279,16 +278,7 @@ jni_fn! {
             let _ = mm::memory::get_memory_data();
             let native_elapsed = s_native.elapsed();
 
-            // Simulate JNI marshalling: create arrays and copy (measures overhead of JNI bridge)
-            let s_marshal = std::time::Instant::now();
-            let _freqs: Vec<i64> = (0..cores).map(|i| kernel::cpu::get_core_frequency(i, "cur")).collect();
-            let _temps: Vec<f64> = (0..cores).map(|i| kernel::thermal::get_core_temperature(i)).collect();
-            let _load = kernel::cpu::calculate_cpu_load(&proc_stat);
-            let _mem = mm::memory::get_memory_data();
-            let marshal_elapsed = s_marshal.elapsed();
-
             native_exec_samples.push(native_elapsed);
-            jni_marshal_samples.push(marshal_elapsed);
             full_samples.push(s_total.elapsed());
         }
 
@@ -305,7 +295,6 @@ jni_fn! {
         let mem_stats = bench::stats::LatencyStats::from_durations(&mem_samples);
         let full_stats = bench::stats::LatencyStats::from_durations(&full_samples);
         let native_stats = bench::stats::LatencyStats::from_durations(&native_exec_samples);
-        let marshal_stats = bench::stats::LatencyStats::from_durations(&jni_marshal_samples);
 
         // Format output
         let out = format!(
@@ -323,8 +312,8 @@ jni_fn! {
              \x20 Full Cycle       {fl50:<7.1} {fl90:<7.1} {fl95:<7.1} {fl99:<7.1} {flmax:<7.1} ±{flstd:<5.1}\n\n\
              JNI Breakdown (Full Cycle):\n\
              \x20 Native Exec (Rust) : {native_avg:.1} μs\n\
-             \x20 Marshalling/Copy   : {marshal_avg:.1} μs\n\
-             \x20 JNI Overhead Net   : {jni_overhead:.1} μs\n\n\
+             \x20 JNI Overhead       : {jni_overhead:.1} μs\n\
+             \x20 Total              : {total_avg:.1} μs\n\n\
              Memory & System:\n\
              \x20 RSS Delta          : {rss_delta:+} KB\n\
              \x20 Context Switches   : {ctx_vol} vol + {ctx_invol} invol\n\
@@ -338,8 +327,8 @@ jni_fn! {
             m50 = mem_stats.p50, m90 = mem_stats.p90, m95 = mem_stats.p95, m99 = mem_stats.p99, mmax = mem_stats.max, mstd = mem_stats.stddev,
             fl50 = full_stats.p50, fl90 = full_stats.p90, fl95 = full_stats.p95, fl99 = full_stats.p99, flmax = full_stats.max, flstd = full_stats.stddev,
             native_avg = native_stats.mean,
-            marshal_avg = marshal_stats.mean,
-            jni_overhead = full_stats.mean - native_stats.mean - marshal_stats.mean,
+            jni_overhead = full_stats.mean - native_stats.mean,
+            total_avg = full_stats.mean,
             rss_delta = sys_delta.rss_delta_kb,
             ctx_vol = sys_delta.ctx_voluntary_delta,
             ctx_invol = sys_delta.ctx_involuntary_delta,
