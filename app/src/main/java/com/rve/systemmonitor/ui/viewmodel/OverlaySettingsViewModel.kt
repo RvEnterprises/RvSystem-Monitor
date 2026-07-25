@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rve.systemmonitor.domain.model.OverlayPosition
 import com.rve.systemmonitor.domain.repository.OverlayRepository
+import com.rve.systemmonitor.domain.repository.SettingsRepository
+import com.rve.systemmonitor.shizuku.ShizukuManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,8 +17,8 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class OverlaySettingsViewModel @Inject constructor(
     private val overlayRepository: OverlayRepository,
-    private val settingsRepository: com.rve.systemmonitor.domain.repository.SettingsRepository,
-    private val shizukuManager: com.rve.systemmonitor.shizuku.ShizukuManager,
+    private val settingsRepository: SettingsRepository,
+    private val shizukuManager: ShizukuManager,
 ) : ViewModel() {
 
     val isShizukuAvailable: StateFlow<Boolean> = shizukuManager.isShizukuAvailable

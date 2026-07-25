@@ -39,9 +39,8 @@ fn get_cpu_fds() -> &'static Mutex<CpuFds> {
     CPU_FDS.get_or_init(|| {
         let cores = get_core_count() as usize;
 
-        let open_opt = |paths: &[String]| -> Option<File> {
-            paths.iter().find_map(|p| File::open(p).ok())
-        };
+        let open_opt =
+            |paths: &[String]| -> Option<File> { paths.iter().find_map(|p| File::open(p).ok()) };
 
         let mut cur_freq = Vec::with_capacity(cores);
         let mut max_freq = Vec::with_capacity(cores);
@@ -51,24 +50,42 @@ fn get_cpu_fds() -> &'static Mutex<CpuFds> {
         for i in 0..cores {
             cur_freq.push(open_opt(&[
                 format!("/sys/devices/system/cpu/cpu{}/cpufreq/scaling_cur_freq", i),
-                format!("/sys/devices/system/cpu/cpufreq/policy{}/scaling_cur_freq", i),
+                format!(
+                    "/sys/devices/system/cpu/cpufreq/policy{}/scaling_cur_freq",
+                    i
+                ),
                 format!("/sys/devices/system/cpu/cpu{}/cpufreq/cpuinfo_cur_freq", i),
             ]));
             max_freq.push(open_opt(&[
                 format!("/sys/devices/system/cpu/cpu{}/cpufreq/cpuinfo_max_freq", i),
-                format!("/sys/devices/system/cpu/cpufreq/policy{}/cpuinfo_max_freq", i),
+                format!(
+                    "/sys/devices/system/cpu/cpufreq/policy{}/cpuinfo_max_freq",
+                    i
+                ),
                 format!("/sys/devices/system/cpu/cpu{}/cpufreq/scaling_max_freq", i),
-                format!("/sys/devices/system/cpu/cpufreq/policy{}/scaling_max_freq", i),
+                format!(
+                    "/sys/devices/system/cpu/cpufreq/policy{}/scaling_max_freq",
+                    i
+                ),
             ]));
             min_freq.push(open_opt(&[
                 format!("/sys/devices/system/cpu/cpu{}/cpufreq/cpuinfo_min_freq", i),
-                format!("/sys/devices/system/cpu/cpufreq/policy{}/cpuinfo_min_freq", i),
+                format!(
+                    "/sys/devices/system/cpu/cpufreq/policy{}/cpuinfo_min_freq",
+                    i
+                ),
                 format!("/sys/devices/system/cpu/cpu{}/cpufreq/scaling_min_freq", i),
-                format!("/sys/devices/system/cpu/cpufreq/policy{}/scaling_min_freq", i),
+                format!(
+                    "/sys/devices/system/cpu/cpufreq/policy{}/scaling_min_freq",
+                    i
+                ),
             ]));
             governor.push(open_opt(&[
                 format!("/sys/devices/system/cpu/cpu{}/cpufreq/scaling_governor", i),
-                format!("/sys/devices/system/cpu/cpufreq/policy{}/scaling_governor", i),
+                format!(
+                    "/sys/devices/system/cpu/cpufreq/policy{}/scaling_governor",
+                    i
+                ),
             ]));
         }
 
@@ -220,7 +237,11 @@ fn get_core_thermal_fds() -> &'static Mutex<Vec<Option<File>>> {
                 let is_little = key.starts_with("cpu_little");
                 let is_big = key.starts_with("cpu_big");
                 if is_little || is_big {
-                    let prefix_len = if is_little { "cpu_little".len() } else { "cpu_big".len() };
+                    let prefix_len = if is_little {
+                        "cpu_little".len()
+                    } else {
+                        "cpu_big".len()
+                    };
                     if let Ok(n) = key[prefix_len..].parse::<i32>() {
                         let core_idx = n - 1;
                         let c = if is_little { 0 } else { 1 };
@@ -262,10 +283,10 @@ fn get_core_thermal_fds() -> &'static Mutex<Vec<Option<File>>> {
 
         let mut unique_cn: HashMap<(i32, i32), String> = HashMap::new();
         for (c, n, key) in qc_zones {
-            if !unique_cn.contains_key(&(c, n)) 
-                || key.ends_with("-0") 
+            if !unique_cn.contains_key(&(c, n))
+                || key.ends_with("-0")
                 || key.ends_with("-0-0")
-                || key.ends_with("-usr") 
+                || key.ends_with("-usr")
             {
                 unique_cn.insert((c, n), key);
             }
@@ -350,11 +371,13 @@ pub fn get_core_frequency(core_id: i32, freq_type: &str) -> i64 {
     for name in file_names {
         let path1 = format!("/sys/devices/system/cpu/cpu{}/cpufreq/{}", core_id, name);
         let path2 = format!("/sys/devices/system/cpu/cpufreq/policy{}/{}", core_id, name);
-        if let Some(val) = read_path_parsed::<i64>(&path1, &mut buf).or_else(|| read_path_parsed::<i64>(&path2, &mut buf)) {
+        if let Some(val) = read_path_parsed::<i64>(&path1, &mut buf)
+            .or_else(|| read_path_parsed::<i64>(&path2, &mut buf))
+        {
             return val;
         }
     }
-    
+
     0
 }
 

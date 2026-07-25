@@ -16,6 +16,7 @@ import android.view.WindowManager
 import android.widget.TextView
 import androidx.core.app.NotificationCompat
 import com.rve.systemmonitor.R
+import com.rve.systemmonitor.domain.model.OverlayPosition
 import com.rve.systemmonitor.domain.repository.OverlayRepository
 import com.rve.systemmonitor.utils.BatteryUtils
 import com.rve.systemmonitor.utils.CpuUtils
@@ -208,12 +209,12 @@ class SystemOverlayService : Service() {
             .launchIn(serviceScope)
     }
 
-    private fun updateOverlayPosition(position: com.rve.systemmonitor.domain.model.OverlayPosition, repoX: Int, repoY: Int) {
+    private fun updateOverlayPosition(position: OverlayPosition, repoX: Int, repoY: Int) {
         val params = overlayView?.layoutParams as? WindowManager.LayoutParams ?: return
         var changed = false
 
         when (position) {
-            com.rve.systemmonitor.domain.model.OverlayPosition.FREE -> {
+            OverlayPosition.FREE -> {
                 params.gravity = Gravity.TOP or Gravity.START
                 params.x = repoX
                 params.y = repoY
@@ -221,7 +222,7 @@ class SystemOverlayService : Service() {
                 changed = true
             }
 
-            com.rve.systemmonitor.domain.model.OverlayPosition.TOP_LEFT -> {
+            OverlayPosition.TOP_LEFT -> {
                 params.gravity = Gravity.TOP or Gravity.START
                 params.x = 0
                 params.y = 0
@@ -229,7 +230,7 @@ class SystemOverlayService : Service() {
                 changed = true
             }
 
-            com.rve.systemmonitor.domain.model.OverlayPosition.TOP_CENTER -> {
+            OverlayPosition.TOP_CENTER -> {
                 params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
                 params.x = 0
                 params.y = 0
@@ -237,7 +238,7 @@ class SystemOverlayService : Service() {
                 changed = true
             }
 
-            com.rve.systemmonitor.domain.model.OverlayPosition.TOP_RIGHT -> {
+            OverlayPosition.TOP_RIGHT -> {
                 params.gravity = Gravity.TOP or Gravity.END
                 params.x = 0
                 params.y = 0

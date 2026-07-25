@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.Build
 import android.util.Log
+import com.rve.systemmonitor.BuildConfig
 import com.rve.systemmonitor.R
 import kotlin.math.abs
 import kotlinx.coroutines.channels.awaitClose
@@ -125,7 +126,7 @@ object BatteryUtils {
             val oldCurrent = current
             current = batteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_AVERAGE)
 
-            if (com.rve.systemmonitor.BuildConfig.DEBUG && current != oldCurrent) {
+            if (BuildConfig.DEBUG && current != oldCurrent) {
                 Log.d("BatteryUtils", "Fallback to CURRENT_AVERAGE: $current (NOW was $oldCurrent)")
             }
         }
@@ -143,7 +144,7 @@ object BatteryUtils {
             (current / 1000).toInt()
         }
 
-        if (com.rve.systemmonitor.BuildConfig.DEBUG && result == 0 && current != 0L) {
+        if (BuildConfig.DEBUG && result == 0 && current != 0L) {
             Log.d("BatteryUtils", "Current truncated to 0 mA from $current uA")
         }
 

@@ -33,6 +33,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.rve.systemmonitor.ui.navigation.isMainRootRoute
+import com.rve.systemmonitor.ui.theme.LocalBlurEffectEnabled
 
 @Composable
 fun ScreenWrapper(
@@ -95,7 +96,7 @@ fun ScreenWrapper(
     val previousEntryId = navController.previousBackStackEntry?.id.also { _ -> currentBackStackEntryState }
     val shouldDim = myEntry != null && previousEntryId == myEntry.id
 
-    val blurEffectEnabled = com.rve.systemmonitor.ui.theme.LocalBlurEffectEnabled.current
+    val blurEffectEnabled = LocalBlurEffectEnabled.current
 
     val disableBlurAllOver = !blurEffectEnabled
 

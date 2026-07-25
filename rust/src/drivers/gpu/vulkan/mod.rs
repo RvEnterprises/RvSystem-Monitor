@@ -105,9 +105,7 @@ pub fn get_vulkan_version() -> String {
                     *mut u32,
                     *mut std::ffi::c_void,
                 ) -> VkResult,
-            >(
-                vk_enumerate_device_extension_properties_ptr,
-            ))
+            >(vk_enumerate_device_extension_properties_ptr))
         } else {
             None
         };
@@ -157,30 +155,53 @@ pub fn get_vulkan_version() -> String {
                     let max_image_2d = u32::from_le_bytes(props[300..304].try_into().unwrap());
                     let max_image_3d = u32::from_le_bytes(props[304..308].try_into().unwrap());
                     let max_image_cube = u32::from_le_bytes(props[308..312].try_into().unwrap());
-                    let max_image_array_layers = u32::from_le_bytes(props[312..316].try_into().unwrap());
-                    let max_uniform_buffer_range = u32::from_le_bytes(props[320..324].try_into().unwrap());
-                    let max_storage_buffer_range = u32::from_le_bytes(props[324..328].try_into().unwrap());
-                    let max_sampler_anisotropy = f32::from_le_bytes(props[568..572].try_into().unwrap());
-                    
-                    let sample_counts = u32::from_le_bytes(props[672..676].try_into().unwrap());
-                    let max_color_samples = if (sample_counts & 0x40) != 0 { 64 }
-                    else if (sample_counts & 0x20) != 0 { 32 }
-                    else if (sample_counts & 0x10) != 0 { 16 }
-                    else if (sample_counts & 0x08) != 0 { 8 }
-                    else if (sample_counts & 0x04) != 0 { 4 }
-                    else if (sample_counts & 0x02) != 0 { 2 }
-                    else if (sample_counts & 0x01) != 0 { 1 }
-                    else { 0 };
+                    let max_image_array_layers =
+                        u32::from_le_bytes(props[312..316].try_into().unwrap());
+                    let max_uniform_buffer_range =
+                        u32::from_le_bytes(props[320..324].try_into().unwrap());
+                    let max_storage_buffer_range =
+                        u32::from_le_bytes(props[324..328].try_into().unwrap());
+                    let max_sampler_anisotropy =
+                        f32::from_le_bytes(props[568..572].try_into().unwrap());
 
-                    let depth_sample_counts = u32::from_le_bytes(props[676..680].try_into().unwrap());
-                    let max_depth_samples = if (depth_sample_counts & 0x40) != 0 { 64 }
-                    else if (depth_sample_counts & 0x20) != 0 { 32 }
-                    else if (depth_sample_counts & 0x10) != 0 { 16 }
-                    else if (depth_sample_counts & 0x08) != 0 { 8 }
-                    else if (depth_sample_counts & 0x04) != 0 { 4 }
-                    else if (depth_sample_counts & 0x02) != 0 { 2 }
-                    else if (depth_sample_counts & 0x01) != 0 { 1 }
-                    else { 0 };
+                    let sample_counts = u32::from_le_bytes(props[672..676].try_into().unwrap());
+                    let max_color_samples = if (sample_counts & 0x40) != 0 {
+                        64
+                    } else if (sample_counts & 0x20) != 0 {
+                        32
+                    } else if (sample_counts & 0x10) != 0 {
+                        16
+                    } else if (sample_counts & 0x08) != 0 {
+                        8
+                    } else if (sample_counts & 0x04) != 0 {
+                        4
+                    } else if (sample_counts & 0x02) != 0 {
+                        2
+                    } else if (sample_counts & 0x01) != 0 {
+                        1
+                    } else {
+                        0
+                    };
+
+                    let depth_sample_counts =
+                        u32::from_le_bytes(props[676..680].try_into().unwrap());
+                    let max_depth_samples = if (depth_sample_counts & 0x40) != 0 {
+                        64
+                    } else if (depth_sample_counts & 0x20) != 0 {
+                        32
+                    } else if (depth_sample_counts & 0x10) != 0 {
+                        16
+                    } else if (depth_sample_counts & 0x08) != 0 {
+                        8
+                    } else if (depth_sample_counts & 0x04) != 0 {
+                        4
+                    } else if (depth_sample_counts & 0x02) != 0 {
+                        2
+                    } else if (depth_sample_counts & 0x01) != 0 {
+                        1
+                    } else {
+                        0
+                    };
 
                     let mut extension_count: u32 = 0;
                     let mut extensions_str = String::new();

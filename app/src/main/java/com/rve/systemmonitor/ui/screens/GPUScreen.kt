@@ -17,8 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,6 +44,7 @@ import com.rve.systemmonitor.ui.components.item.InfoItem
 import com.rve.systemmonitor.ui.components.layout.ScreenLazyColumn
 import com.rve.systemmonitor.ui.components.row.TwoColumnInfoRow
 import com.rve.systemmonitor.ui.viewmodel.GPUViewModel
+import com.rve.systemmonitor.utils.GpuUtils
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -155,7 +156,7 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                         shapes = ButtonDefaults.shapes(),
                         colors = ButtonDefaults.outlinedButtonColors(
                             contentColor = MaterialTheme.colorScheme.primary,
-                        )
+                        ),
                     ) {
                         Text("Show all extensions")
                     }
@@ -207,7 +208,7 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                         shapes = ButtonDefaults.shapes(),
                         colors = ButtonDefaults.outlinedButtonColors(
                             contentColor = MaterialTheme.colorScheme.primary,
-                        )
+                        ),
                     ) {
                         Text("Show all extensions")
                     }
@@ -228,12 +229,16 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                 TwoColumnInfoRow(modifier = Modifier.padding(bottom = 16.dp)) {
                     InfoItem(
                         label = "Max 1D Image",
-                        value = if (gpuInfo.vulkanMaxImage1D > 0) "${gpuInfo.vulkanMaxImage1D} px" else stringResource(R.string.value_unknown),
+                        value = if (gpuInfo.vulkanMaxImage1D >
+                            0
+                        ) "${gpuInfo.vulkanMaxImage1D} px" else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
                     InfoItem(
                         label = "Max 2D Image",
-                        value = if (gpuInfo.vulkanMaxImage2D > 0) "${gpuInfo.vulkanMaxImage2D} x ${gpuInfo.vulkanMaxImage2D} px" else stringResource(R.string.value_unknown),
+                        value = if (gpuInfo.vulkanMaxImage2D >
+                            0
+                        ) "${gpuInfo.vulkanMaxImage2D} x ${gpuInfo.vulkanMaxImage2D} px" else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
                 }
@@ -241,12 +246,22 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                 TwoColumnInfoRow(modifier = Modifier.padding(bottom = 16.dp)) {
                     InfoItem(
                         label = "Max 3D Image",
-                        value = if (gpuInfo.vulkanMaxImage3D > 0) "${gpuInfo.vulkanMaxImage3D} x ${gpuInfo.vulkanMaxImage3D} x ${gpuInfo.vulkanMaxImage3D} px" else stringResource(R.string.value_unknown),
+                        value =
+                            if (gpuInfo.vulkanMaxImage3D > 0) {
+                                "${gpuInfo.vulkanMaxImage3D} x ${gpuInfo.vulkanMaxImage3D} x ${gpuInfo.vulkanMaxImage3D} px"
+                            } else {
+                                stringResource(R.string.value_unknown)
+                            },
                         modifier = Modifier.weight(1f),
                     )
                     InfoItem(
                         label = "Max Cube Image",
-                        value = if (gpuInfo.vulkanMaxImageCube > 0) "${gpuInfo.vulkanMaxImageCube} x ${gpuInfo.vulkanMaxImageCube} px" else stringResource(R.string.value_unknown),
+                        value =
+                            if (gpuInfo.vulkanMaxImageCube > 0) {
+                                "${gpuInfo.vulkanMaxImageCube} x ${gpuInfo.vulkanMaxImageCube} px"
+                            } else {
+                                stringResource(R.string.value_unknown)
+                            },
                         modifier = Modifier.weight(1f),
                     )
                 }
@@ -254,12 +269,19 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                 TwoColumnInfoRow(modifier = Modifier.padding(bottom = 16.dp)) {
                     InfoItem(
                         label = "Max Array Layers",
-                        value = if (gpuInfo.vulkanMaxImageArrayLayers > 0) "${gpuInfo.vulkanMaxImageArrayLayers}" else stringResource(R.string.value_unknown),
+                        value = if (gpuInfo.vulkanMaxImageArrayLayers >
+                            0
+                        ) "${gpuInfo.vulkanMaxImageArrayLayers}" else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
                     InfoItem(
                         label = "Uniform Buffer Range",
-                        value = if (gpuInfo.vulkanMaxUniformBufferRange > 0) com.rve.systemmonitor.utils.GpuUtils.formatBinarySize(gpuInfo.vulkanMaxUniformBufferRange.toLong()) else stringResource(R.string.value_unknown),
+                        value =
+                            if (gpuInfo.vulkanMaxUniformBufferRange > 0) {
+                                GpuUtils.formatBinarySize(gpuInfo.vulkanMaxUniformBufferRange.toLong())
+                            } else {
+                                stringResource(R.string.value_unknown)
+                            },
                         modifier = Modifier.weight(1f),
                     )
                 }
@@ -267,12 +289,19 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                 TwoColumnInfoRow(modifier = Modifier.padding(bottom = 16.dp)) {
                     InfoItem(
                         label = "Storage Buffer Range",
-                        value = if (gpuInfo.vulkanMaxStorageBufferRange > 0) com.rve.systemmonitor.utils.GpuUtils.formatBinarySize(gpuInfo.vulkanMaxStorageBufferRange.toLong()) else stringResource(R.string.value_unknown),
+                        value =
+                            if (gpuInfo.vulkanMaxStorageBufferRange > 0) {
+                                GpuUtils.formatBinarySize(gpuInfo.vulkanMaxStorageBufferRange.toLong())
+                            } else {
+                                stringResource(R.string.value_unknown)
+                            },
                         modifier = Modifier.weight(1f),
                     )
                     InfoItem(
                         label = "Max Anisotropy",
-                        value = if (gpuInfo.vulkanMaxSamplerAnisotropy > 0f) "${gpuInfo.vulkanMaxSamplerAnisotropy.toInt()}x" else stringResource(R.string.value_unknown),
+                        value = if (gpuInfo.vulkanMaxSamplerAnisotropy >
+                            0f
+                        ) "${gpuInfo.vulkanMaxSamplerAnisotropy.toInt()}x" else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
                 }
@@ -280,19 +309,21 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                 TwoColumnInfoRow {
                     InfoItem(
                         label = "Color Max Samples",
-                        value = if (gpuInfo.vulkanMaxFramebufferColorSamples > 0) "${gpuInfo.vulkanMaxFramebufferColorSamples}x" else stringResource(R.string.value_unknown),
+                        value = if (gpuInfo.vulkanMaxFramebufferColorSamples >
+                            0
+                        ) "${gpuInfo.vulkanMaxFramebufferColorSamples}x" else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
                     InfoItem(
                         label = "Depth Max Samples",
-                        value = if (gpuInfo.vulkanMaxFramebufferDepthSamples > 0) "${gpuInfo.vulkanMaxFramebufferDepthSamples}x" else stringResource(R.string.value_unknown),
+                        value = if (gpuInfo.vulkanMaxFramebufferDepthSamples >
+                            0
+                        ) "${gpuInfo.vulkanMaxFramebufferDepthSamples}x" else stringResource(R.string.value_unknown),
                         modifier = Modifier.weight(1f),
                     )
                 }
             }
         }
-
-
     }
 
     if (showVulkanExtensions) {
@@ -306,25 +337,25 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
-                    .padding(bottom = 24.dp)
+                    .padding(bottom = 24.dp),
             ) {
                 Text(
                     text = "Vulkan Extensions",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 16.dp),
                 )
 
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(gpuInfo.vulkanExtensions) { extension ->
                         Text(
                             text = extension,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -343,25 +374,25 @@ private fun GPUScreenContent(gpuInfo: GPU) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
-                    .padding(bottom = 24.dp)
+                    .padding(bottom = 24.dp),
             ) {
                 Text(
                     text = "OpenGL Extensions",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 16.dp),
                 )
 
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(gpuInfo.openGlExtensions) { extension ->
                         Text(
                             text = extension,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }

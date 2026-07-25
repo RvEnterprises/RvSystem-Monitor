@@ -1,5 +1,6 @@
 package com.rve.systemmonitor.utils
 
+import com.rve.systemmonitor.domain.repository.SettingsRepository
 import com.rve.systemmonitor.shizuku.ShizukuManager
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,10 +14,7 @@ import kotlinx.coroutines.flow.flowOn
 
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @Singleton
-class FpsMonitor @Inject constructor(
-    private val shizukuManager: ShizukuManager,
-    private val settingsRepository: com.rve.systemmonitor.domain.repository.SettingsRepository,
-) {
+class FpsMonitor @Inject constructor(private val shizukuManager: ShizukuManager, private val settingsRepository: SettingsRepository) {
     val framesPerSecond: Flow<Int> = combine(
         settingsRepository.useShizuku,
         shizukuManager.isShizukuAvailable,

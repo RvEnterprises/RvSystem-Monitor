@@ -76,6 +76,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rve.systemmonitor.R
+import com.rve.systemmonitor.domain.model.OverlayPosition
 import com.rve.systemmonitor.service.SystemOverlayService
 import com.rve.systemmonitor.ui.components.ExitUntilCollapsedMediumTopAppBar
 import com.rve.systemmonitor.ui.components.card.SettingsSliderCard
@@ -596,17 +597,17 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
                         ) {
                             LayoutOptionCard(
                                 title = stringResource(R.string.overlay_position_free),
-                                isSelected = overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.FREE,
+                                isSelected = overlayPosition == OverlayPosition.FREE,
                                 enabled = isOverlayActive,
                                 onClick = {
                                     if (isOverlayActive) {
-                                        viewModel.setOverlayPosition(com.rve.systemmonitor.domain.model.OverlayPosition.FREE)
+                                        viewModel.setOverlayPosition(OverlayPosition.FREE)
                                     }
                                 },
                                 modifier = Modifier.weight(1f),
                             ) {
                                 val indicatorColor by animateColorAsState(
-                                    targetValue = if (overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.FREE)
+                                    targetValue = if (overlayPosition == OverlayPosition.FREE)
                                         MaterialTheme.colorScheme.onPrimary
                                     else
                                         MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
@@ -626,17 +627,17 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
 
                             LayoutOptionCard(
                                 title = stringResource(R.string.overlay_position_top_center),
-                                isSelected = overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.TOP_CENTER,
+                                isSelected = overlayPosition == OverlayPosition.TOP_CENTER,
                                 enabled = isOverlayActive,
                                 onClick = {
                                     if (isOverlayActive) {
-                                        viewModel.setOverlayPosition(com.rve.systemmonitor.domain.model.OverlayPosition.TOP_CENTER)
+                                        viewModel.setOverlayPosition(OverlayPosition.TOP_CENTER)
                                     }
                                 },
                                 modifier = Modifier.weight(1f),
                             ) {
                                 val indicatorColor by animateColorAsState(
-                                    targetValue = if (overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.TOP_CENTER)
+                                    targetValue = if (overlayPosition == OverlayPosition.TOP_CENTER)
                                         MaterialTheme.colorScheme.onPrimary
                                     else
                                         MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
@@ -661,17 +662,17 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
                         ) {
                             LayoutOptionCard(
                                 title = stringResource(R.string.overlay_position_top_left),
-                                isSelected = overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.TOP_LEFT,
+                                isSelected = overlayPosition == OverlayPosition.TOP_LEFT,
                                 enabled = isOverlayActive,
                                 onClick = {
                                     if (isOverlayActive) {
-                                        viewModel.setOverlayPosition(com.rve.systemmonitor.domain.model.OverlayPosition.TOP_LEFT)
+                                        viewModel.setOverlayPosition(OverlayPosition.TOP_LEFT)
                                     }
                                 },
                                 modifier = Modifier.weight(1f),
                             ) {
                                 val indicatorColor by animateColorAsState(
-                                    targetValue = if (overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.TOP_LEFT)
+                                    targetValue = if (overlayPosition == OverlayPosition.TOP_LEFT)
                                         MaterialTheme.colorScheme.onPrimary
                                     else
                                         MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
@@ -691,17 +692,17 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
 
                             LayoutOptionCard(
                                 title = stringResource(R.string.overlay_position_top_right),
-                                isSelected = overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.TOP_RIGHT,
+                                isSelected = overlayPosition == OverlayPosition.TOP_RIGHT,
                                 enabled = isOverlayActive,
                                 onClick = {
                                     if (isOverlayActive) {
-                                        viewModel.setOverlayPosition(com.rve.systemmonitor.domain.model.OverlayPosition.TOP_RIGHT)
+                                        viewModel.setOverlayPosition(OverlayPosition.TOP_RIGHT)
                                     }
                                 },
                                 modifier = Modifier.weight(1f),
                             ) {
                                 val indicatorColor by animateColorAsState(
-                                    targetValue = if (overlayPosition == com.rve.systemmonitor.domain.model.OverlayPosition.TOP_RIGHT)
+                                    targetValue = if (overlayPosition == OverlayPosition.TOP_RIGHT)
                                         MaterialTheme.colorScheme.onPrimary
                                     else
                                         MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
