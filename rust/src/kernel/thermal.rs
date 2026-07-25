@@ -73,11 +73,9 @@ fn get_thermal_fd_from_priority(
     };
 
     for zone in priority {
-        if let Some(path) = map.get(*zone) {
-            if is_valid(path) {
-                best_path = Some(path.clone());
-                break;
-            }
+        if let Some(path) = map.get(*zone).filter(|p| is_valid(p)) {
+            best_path = Some(path.clone());
+            break;
         }
     }
     if best_path.is_none() {
@@ -148,17 +146,15 @@ fn get_core_thermal_fds() -> &'static Mutex<Vec<Option<File>>> {
                         qc_zones.push((c, n, key));
                         continue;
                     }
-                    if parts[2].starts_with("core") {
-                        if let Ok(n) = parts[2][4..].parse::<i32>() {
-                            let c = match parts[1] {
-                                "little" => 0,
-                                "medium" => 1,
-                                "big" => 2,
-                                "prime" => 3,
-                                _ => continue,
-                            };
-                            qc_zones.push((c, n, key));
-                        }
+                    if let Some(n) = parts[2].strip_prefix("core").and_then(|s| s.parse().ok()) {
+                        let c = match parts[1] {
+                            "little" => 0,
+                            "medium" => 1,
+                            "big" => 2,
+                            "prime" => 3,
+                            _ => continue,
+                        };
+                        qc_zones.push((c, n, key));
                     }
                 }
             } else if key.starts_with("cpu_") {
@@ -172,23 +168,19 @@ fn get_core_thermal_fds() -> &'static Mutex<Vec<Option<File>>> {
                     }
                 }
             } else if key.starts_with("cpu") {
-                if let Some(dash_idx) = key.find('-') {
-                    if let Ok(n) = key[3..dash_idx].parse::<i32>() {
-                        let rest = &key[dash_idx + 1..];
-                        let c = match rest {
-                            r if r.starts_with("silver") || r.starts_with("little") => 0,
-                            r if r.starts_with("gold") || r.starts_with("big") => 1,
-                            r if r.starts_with("prime") => 2,
-                            _ => continue,
-                        };
-                        qc_zones.push((c, n, key));
-                    }
+                if let Some(n) = key.find('-').and_then(|i| key[3..i].parse().ok()) {
+                    let rest = &key[key.find('-').unwrap() + 1..];
+                    let c = match rest {
+                        r if r.starts_with("silver") || r.starts_with("little") => 0,
+                        r if r.starts_with("gold") || r.starts_with("big") => 1,
+                        r if r.starts_with("prime") => 2,
+                        _ => continue,
+                    };
+                    qc_zones.push((c, n, key));
                 }
-            } else if key.starts_with("tsens_tz_sensor") {
-                if let Ok(n) = key[15..].parse::<i32>() {
-                    let core_idx = if n >= 1 && n <= 8 { n - 1 } else if n == 0 { 99 } else { n };
-                    qc_zones.push((99, core_idx, key));
-                }
+            } else if let Some(n) = key.strip_prefix("tsens_tz_sensor").and_then(|s| s.parse().ok()) {
+                let core_idx = if (1..=8).contains(&n) { n - 1 } else if n == 0 { 99 } else { n };
+                qc_zones.push((99, core_idx, key));
             }
         }
 

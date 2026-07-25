@@ -24,6 +24,25 @@ fn read_path_parsed<T: std::str::FromStr>(path: &str, buf: &mut String) -> Optio
     None
 }
 
+fn try_avail_freq(path: &str, freq_type: &str, buf: &mut String) -> Option<i64> {
+    buf.clear();
+    let mut f = File::open(path).ok()?;
+    f.read_to_string(buf).ok()?;
+    let mut vals: Vec<i64> = buf
+        .split_whitespace()
+        .filter_map(|s| s.parse().ok())
+        .collect();
+    if vals.is_empty() {
+        return None;
+    }
+    vals.sort_unstable();
+    match freq_type {
+        "max_info" => vals.last().copied(),
+        "min_info" => vals.first().copied(),
+        _ => None,
+    }
+}
+
 struct CpuFds {
     cur_freq: Vec<Option<File>>,
     max_freq: Vec<Option<File>>,
@@ -149,6 +168,23 @@ pub fn get_core_frequency(core_id: i32, freq_type: &str) -> i64 {
         }
     }
 
+    // Parse scaling_available_frequencies
+    if freq_type == "max_info" || freq_type == "min_info" {
+        let avail_path1 = format!(
+            "/sys/devices/system/cpu/cpu{}/cpufreq/scaling_available_frequencies",
+            core_id
+        );
+        let avail_path2 = format!(
+            "/sys/devices/system/cpu/cpufreq/policy{}/scaling_available_frequencies",
+            core_id
+        );
+        if let Some(val) = try_avail_freq(&avail_path1, freq_type, &mut buf)
+            .or_else(|| try_avail_freq(&avail_path2, freq_type, &mut buf))
+        {
+            return val;
+        }
+    }
+
     0
 }
 
@@ -224,9 +260,9 @@ pub fn calculate_cpu_load(proc_stat: &str) -> Vec<f64> {
 
     thread_local! {
         static TICKS_BUF: std::cell::RefCell<Vec<Option<CpuTicks>>> =
-            std::cell::RefCell::new(Vec::new());
+            const { std::cell::RefCell::new(Vec::new()) };
         static LAST_TICKS: std::cell::RefCell<Vec<Option<CpuTicks>>> =
-            std::cell::RefCell::new(Vec::new());
+            const { std::cell::RefCell::new(Vec::new()) };
     }
 
     TICKS_BUF.with(|buf| {
@@ -261,15 +297,16 @@ pub fn calculate_cpu_load(proc_stat: &str) -> Vec<f64> {
                     continue;
                 }
 
-                let mut ticks = CpuTicks::default();
-                ticks.user = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
-                ticks.nice = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
-                ticks.system = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
-                ticks.idle = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
-                ticks.iowait = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
-                ticks.irq = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
-                ticks.softirq = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
-                ticks.steal = iter.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+                let ticks = CpuTicks {
+                    user: iter.next().and_then(|s| s.parse().ok()).unwrap_or(0),
+                    nice: iter.next().and_then(|s| s.parse().ok()).unwrap_or(0),
+                    system: iter.next().and_then(|s| s.parse().ok()).unwrap_or(0),
+                    idle: iter.next().and_then(|s| s.parse().ok()).unwrap_or(0),
+                    iowait: iter.next().and_then(|s| s.parse().ok()).unwrap_or(0),
+                    irq: iter.next().and_then(|s| s.parse().ok()).unwrap_or(0),
+                    softirq: iter.next().and_then(|s| s.parse().ok()).unwrap_or(0),
+                    steal: iter.next().and_then(|s| s.parse().ok()).unwrap_or(0),
+                };
                 buf[idx] = Some(ticks);
             }
 
