@@ -26,25 +26,21 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rve.systemmonitor.R
 import com.rve.systemmonitor.ui.components.ExitUntilCollapsedMediumTopAppBar
-import com.rve.systemmonitor.utils.BenchmarkUtils
 import com.rve.systemmonitor.utils.DeviceUtils
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -58,7 +54,6 @@ fun RustLibraryScreen(onNavigateBack: () -> Unit) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val rustVersion = remember { DeviceUtils.getRustLibraryVersion() }
     val context = LocalContext.current
-    val benchResult = remember { mutableStateOf<String?>(null) }
 
     val methods = remember(context) {
         listOf(
@@ -228,56 +223,6 @@ fun RustLibraryScreen(onNavigateBack: () -> Unit) {
             items(methods) { method ->
                 MethodDetailItem(method)
                 Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                androidx.compose.material3.Button(
-                    onClick = { benchResult.value = BenchmarkUtils.run(500) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("Run Benchmark (500 iters)")
-                }
-                benchResult.value?.let { result ->
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Surface(
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Text(
-                                    text = "Benchmark Result",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                                val clipboardManager = LocalClipboardManager.current
-                                androidx.compose.material3.TextButton(
-                                    onClick = {
-                                        clipboardManager.setText(AnnotatedString(result))
-                                    },
-                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp),
-                                ) {
-                                    Text("Copy", style = MaterialTheme.typography.labelSmall)
-                                }
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = result,
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    fontFamily = FontFamily.Monospace,
-                                    fontSize = 11.sp,
-                                    lineHeight = 16.sp,
-                                ),
-                            )
-                        }
-                    }
-                }
             }
         }
     }
