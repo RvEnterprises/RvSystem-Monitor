@@ -74,7 +74,7 @@
     <string name="cpu_label_architecture">Архитектура</string>
     <string name="cpu_label_board">Плата</string>
     <string name="cpu_label_hardware">Оборудование</string>
-    <string name="cpu_core_label">Ядро CPU %1$d</string>
+    <string name="cpu_core_label">Ядро %1$d</string>
     <string name="cpu_label_minimum">Минимум</string>
     <string name="cpu_label_maximum">Максимум</string>
 

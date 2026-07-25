@@ -74,7 +74,7 @@
     <string name="cpu_label_architecture">Architecture</string>
     <string name="cpu_label_board">Board</string>
     <string name="cpu_label_hardware">Hardware</string>
-    <string name="cpu_core_label">CPU Core %1$d</string>
+    <string name="cpu_core_label">Core %1$d</string>
     <string name="cpu_label_minimum">Minimum</string>
     <string name="cpu_label_maximum">Maximum</string>
 
