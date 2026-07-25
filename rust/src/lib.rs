@@ -203,7 +203,7 @@ jni_fn! {
 }
 
 jni_fn! {
-    fn Java_com_rve_systemmonitor_utils_BenchmarkUtils_benchRustNative(env, iters: jint, warmup: jint) -> jstring {
+    fn Java_com_rve_systemmonitor_utils_BenchmarkUtils_benchRustNative(env, iters: jint, warmup: jint) -> jdoubleArray {
         let n = iters as usize;
         let w = warmup as usize;
         let cores = kernel::cpu::get_core_count();
@@ -296,45 +296,24 @@ jni_fn! {
         let full_stats = bench::stats::LatencyStats::from_durations(&full_samples);
         let native_stats = bench::stats::LatencyStats::from_durations(&native_exec_samples);
 
-        // Format output
-        let out = format!(
-            "=== JNI Bridge Benchmark Summary ===\n\
-             Config: {n} iters | {w} warmup | Cores: {cores} | Affinity: {affinity}\n\n\
-             Latency (μs):\n\
-             \x20 Operation         p50      p90      p95      p99      Max      StdDev\n\
-             \x20 ──────────────   ──────   ──────   ──────   ──────   ──────   ──────\n\
-             \x20 Freq (all)       {f50:<7.1} {f90:<7.1} {f95:<7.1} {f99:<7.1} {fmax:<7.1} ±{fstd:<5.1}\n\
-             \x20 Governor (all)   {g50:<7.1} {g90:<7.1} {g95:<7.1} {g99:<7.1} {gmax:<7.1} ±{gstd:<5.1}\n\
-             \x20 CPU Temp         {t50:<7.1} {t90:<7.1} {t95:<7.1} {t99:<7.1} {tmax:<7.1} ±{tstd:<5.1}\n\
-             \x20 All Core Temps   {at50:<7.1} {at90:<7.1} {at95:<7.1} {at99:<7.1} {atmax:<7.1} ±{atstd:<5.1}\n\
-             \x20 /proc/stat       {l50:<7.1} {l90:<7.1} {l95:<7.1} {l99:<7.1} {lmax:<7.1} ±{lstd:<5.1}\n\
-             \x20 Memory           {m50:<7.1} {m90:<7.1} {m95:<7.1} {m99:<7.1} {mmax:<7.1} ±{mstd:<5.1}\n\
-             \x20 Full Cycle       {fl50:<7.1} {fl90:<7.1} {fl95:<7.1} {fl99:<7.1} {flmax:<7.1} ±{flstd:<5.1}\n\n\
-             JNI Breakdown (Full Cycle):\n\
-             \x20 Native Exec (Rust) : {native_avg:.1} μs\n\
-             \x20 JNI Overhead       : {jni_overhead:.1} μs\n\
-             \x20 Total              : {total_avg:.1} μs\n\n\
-             Memory & System:\n\
-             \x20 RSS Delta          : {rss_delta:+} KB\n\
-             \x20 Context Switches   : {ctx_vol} vol + {ctx_invol} invol\n\
-             \x20 Warmup Skipped     : {w} iterations",
-            affinity = snap_before.core_affinity,
-            f50 = freq_stats.p50, f90 = freq_stats.p90, f95 = freq_stats.p95, f99 = freq_stats.p99, fmax = freq_stats.max, fstd = freq_stats.stddev,
-            g50 = gov_stats.p50, g90 = gov_stats.p90, g95 = gov_stats.p95, g99 = gov_stats.p99, gmax = gov_stats.max, gstd = gov_stats.stddev,
-            t50 = temp_stats.p50, t90 = temp_stats.p90, t95 = temp_stats.p95, t99 = temp_stats.p99, tmax = temp_stats.max, tstd = temp_stats.stddev,
-            at50 = all_temp_stats.p50, at90 = all_temp_stats.p90, at95 = all_temp_stats.p95, at99 = all_temp_stats.p99, atmax = all_temp_stats.max, atstd = all_temp_stats.stddev,
-            l50 = load_stats.p50, l90 = load_stats.p90, l95 = load_stats.p95, l99 = load_stats.p99, lmax = load_stats.max, lstd = load_stats.stddev,
-            m50 = mem_stats.p50, m90 = mem_stats.p90, m95 = mem_stats.p95, m99 = mem_stats.p99, mmax = mem_stats.max, mstd = mem_stats.stddev,
-            fl50 = full_stats.p50, fl90 = full_stats.p90, fl95 = full_stats.p95, fl99 = full_stats.p99, flmax = full_stats.max, flstd = full_stats.stddev,
-            native_avg = native_stats.mean,
-            jni_overhead = full_stats.mean - native_stats.mean,
-            total_avg = full_stats.mean,
-            rss_delta = sys_delta.rss_delta_kb,
-            ctx_vol = sys_delta.ctx_voluntary_delta,
-            ctx_invol = sys_delta.ctx_involuntary_delta,
-        );
+        // Return raw stats as jdoubleArray — zero-copy, format in Kotlin
+        // Layout: [freq(6), gov(6), temp(6), all_temp(6), load(6), mem(6), full(6), native_mean(1), rss(1), ctx_vol(1), ctx_invol(1), cores(1), iters(1), warmup(1)] = 49
+        let mut out = Vec::with_capacity(49);
+        out.extend_from_slice(&[freq_stats.p50, freq_stats.p90, freq_stats.p95, freq_stats.p99, freq_stats.max, freq_stats.stddev]);
+        out.extend_from_slice(&[gov_stats.p50, gov_stats.p90, gov_stats.p95, gov_stats.p99, gov_stats.max, gov_stats.stddev]);
+        out.extend_from_slice(&[temp_stats.p50, temp_stats.p90, temp_stats.p95, temp_stats.p99, temp_stats.max, temp_stats.stddev]);
+        out.extend_from_slice(&[all_temp_stats.p50, all_temp_stats.p90, all_temp_stats.p95, all_temp_stats.p99, all_temp_stats.max, all_temp_stats.stddev]);
+        out.extend_from_slice(&[load_stats.p50, load_stats.p90, load_stats.p95, load_stats.p99, load_stats.max, load_stats.stddev]);
+        out.extend_from_slice(&[mem_stats.p50, mem_stats.p90, mem_stats.p95, mem_stats.p99, mem_stats.max, mem_stats.stddev]);
+        out.extend_from_slice(&[full_stats.p50, full_stats.p90, full_stats.p95, full_stats.p99, full_stats.max, full_stats.stddev]);
+        out.push(native_stats.mean);
+        out.push(sys_delta.rss_delta_kb as f64);
+        out.push(sys_delta.ctx_voluntary_delta as f64);
+        out.push(sys_delta.ctx_involuntary_delta as f64);
+        out.push(cores as f64);
+        out.push(iters as f64);
+        out.push(warmup as f64);
 
-        let jstr = env.new_string(&out)?;
-        Ok(jstr.into_raw())
+        jni_double_array!(env, out)
     }
 }
