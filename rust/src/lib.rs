@@ -55,7 +55,7 @@ jni_fn! {
 jni_fn! {
     fn Java_com_rve_systemmonitor_utils_GpuUtils_getGpuTemperatureNative(env) -> jdouble {
         let _ = env;
-        Ok(kernel::cpu::get_gpu_temperature())
+        Ok(kernel::thermal::get_gpu_temperature())
     }
 }
 
@@ -159,7 +159,7 @@ jni_fn! {
 jni_fn! {
     fn Java_com_rve_systemmonitor_utils_CpuUtils_getCpuTemperatureNative(env) -> jdouble {
         let _ = env;
-        Ok(kernel::cpu::get_cpu_temperature())
+        Ok(kernel::thermal::get_cpu_temperature())
     }
 }
 
@@ -169,7 +169,7 @@ jni_fn! {
         let mut temps = Vec::with_capacity(cores as usize);
 
         for i in 0..cores {
-            temps.push(kernel::cpu::get_core_temperature(i));
+            temps.push(kernel::thermal::get_core_temperature(i));
         }
 
         jni_double_array!(env, temps)
@@ -181,11 +181,11 @@ jni_fn! {
         let cores = kernel::cpu::get_core_count() as usize;
         let mut data = Vec::with_capacity(1 + 2 * cores);
 
-        data.push(kernel::cpu::get_cpu_temperature());
+        data.push(kernel::thermal::get_cpu_temperature());
 
         for i in 0..cores {
             data.push(kernel::cpu::get_core_frequency(i as i32, "cur") as f64);
-            data.push(kernel::cpu::get_core_temperature(i as i32));
+            data.push(kernel::thermal::get_core_temperature(i as i32));
         }
 
         jni_double_array!(env, data)

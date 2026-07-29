@@ -35,10 +35,6 @@ data class CoreDetail(
     val maxFreq: String = formatFrequency(maxFreqKhz)
 
     private fun formatFrequency(freqKhz: Long): String {
-        return if (freqKhz >= 1_000_000) {
-            String.format(Locale.US, "%.2f GHz", freqKhz / 1_000_000.0)
-        } else {
-            "${freqKhz / 1000} MHz"
-        }
+        return String.format(Locale.US, "%.2f GHz", freqKhz / 1_000_000.0)
     }
 }
