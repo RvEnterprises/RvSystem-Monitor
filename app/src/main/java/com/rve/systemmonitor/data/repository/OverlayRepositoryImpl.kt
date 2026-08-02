@@ -30,6 +30,8 @@ class OverlayRepositoryImpl @Inject constructor(application: Application) : Over
     override val overlayPosition: Flow<OverlayPosition> = overlayPreferences.overlayPositionFlow
     override val overlayX: Flow<Int> = overlayPreferences.overlayXFlow
     override val overlayY: Flow<Int> = overlayPreferences.overlayYFlow
+    override val isAutoToggleEnabled: Flow<Boolean> = overlayPreferences.isAutoToggleEnabledFlow
+    override val autoToggleApps: Flow<Set<String>> = overlayPreferences.autoToggleAppsFlow
 
     override suspend fun setOverlayEnabled(enabled: Boolean) {
         overlayPreferences.saveIsOverlayEnabled(enabled)
@@ -97,5 +99,13 @@ class OverlayRepositoryImpl @Inject constructor(application: Application) : Over
 
     override suspend fun setOverlayY(y: Int) {
         overlayPreferences.saveOverlayY(y)
+    }
+
+    override suspend fun setAutoToggleEnabled(enabled: Boolean) {
+        overlayPreferences.saveIsAutoToggleEnabled(enabled)
+    }
+
+    override suspend fun setAutoToggleApps(apps: Set<String>) {
+        overlayPreferences.saveAutoToggleApps(apps)
     }
 }

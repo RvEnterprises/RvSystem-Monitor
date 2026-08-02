@@ -4,6 +4,9 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
+import android.app.usage.UsageEvents
+import android.app.usage.UsageStatsManager
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PixelFormat
@@ -70,6 +73,7 @@ class SystemOverlayService : Service() {
         startDataPipeline()
         startStylePipeline()
         startPositionPipeline()
+        startAutoTogglePipeline()
     }
 
     private data class VisibilitySettings(
@@ -249,6 +253,65 @@ class SystemOverlayService : Service() {
         if (changed) {
             windowManager?.updateViewLayout(overlayView, params)
         }
+    }
+
+    private var lastQueryTime: Long = 0L
+    private var lastForegroundApp: String? = null
+
+    private fun startAutoTogglePipeline() {
+        combine(
+            overlayRepository.isAutoToggleEnabled,
+            overlayRepository.autoToggleApps,
+        ) { enabled, apps ->
+            Pair(enabled, apps)
+        }
+            .flatMapLatest { (enabled, apps) ->
+                if (enabled) {
+                    overlayRepository.overlayUpdateInterval.flatMapLatest { interval ->
+                        flow {
+                            while (true) {
+                                emit(apps)
+                                delay(interval)
+                            }
+                        }
+                    }
+                } else {
+                    flow {
+                        emit(null)
+                    }
+                }
+            }
+            .flowOn(Dispatchers.Default)
+            .onEach { apps ->
+                if (apps == null) {
+                    // Auto-toggle disabled, always show
+                    serviceScope.launch(Dispatchers.Main) {
+                        overlayView?.visibility = View.VISIBLE
+                    }
+                } else {
+                    // Auto-toggle enabled, check foreground app
+                    val usageStatsManager = getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+                    val now = System.currentTimeMillis()
+                    if (lastQueryTime == 0L) {
+                        lastQueryTime = now - 1000 * 3600 // 1 hour ago for initial
+                    }
+                    val events = usageStatsManager.queryEvents(lastQueryTime, now)
+                    val event = UsageEvents.Event()
+                    while (events.hasNextEvent()) {
+                        events.getNextEvent(event)
+                        if (event.eventType == UsageEvents.Event.ACTIVITY_RESUMED) {
+                            lastForegroundApp = event.packageName
+                        }
+                    }
+                    lastQueryTime = now
+
+                    val shouldShow = lastForegroundApp != null && apps.contains(lastForegroundApp)
+                    serviceScope.launch(Dispatchers.Main) {
+                        overlayView?.visibility = if (shouldShow) View.VISIBLE else View.GONE
+                    }
+                }
+            }
+            .launchIn(serviceScope)
     }
 
     private data class OverlayStyle(val size: Float, val opacity: Float, val padding: Int, val color: Int, val radius: Int)

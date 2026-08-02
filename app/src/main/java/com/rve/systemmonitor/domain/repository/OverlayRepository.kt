@@ -21,6 +21,8 @@ interface OverlayRepository {
     val overlayPosition: Flow<OverlayPosition>
     val overlayX: Flow<Int>
     val overlayY: Flow<Int>
+    val isAutoToggleEnabled: Flow<Boolean>
+    val autoToggleApps: Flow<Set<String>>
 
     suspend fun setOverlayEnabled(enabled: Boolean)
     suspend fun setFpsEnabled(enabled: Boolean)
@@ -39,4 +41,6 @@ interface OverlayRepository {
     suspend fun setOverlayPosition(position: OverlayPosition)
     suspend fun setOverlayX(x: Int)
     suspend fun setOverlayY(y: Int)
+    suspend fun setAutoToggleEnabled(enabled: Boolean)
+    suspend fun setAutoToggleApps(apps: Set<String>)
 }

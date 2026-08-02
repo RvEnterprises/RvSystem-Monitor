@@ -135,8 +135,25 @@ class OverlaySettingsViewModel @Inject constructor(
             initialValue = OverlayPosition.FREE,
         )
 
+    val isAutoToggleEnabled: StateFlow<Boolean> = overlayRepository.isAutoToggleEnabled
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false,
+        )
+
+    val autoToggleApps: StateFlow<Set<String>> = overlayRepository.autoToggleApps
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptySet(),
+        )
+
     fun setOverlayEnabled(enabled: Boolean) {
         viewModelScope.launch {
+            if (enabled) {
+                overlayRepository.setAutoToggleEnabled(false)
+            }
             overlayRepository.setOverlayEnabled(enabled)
         }
     }
@@ -234,6 +251,22 @@ class OverlaySettingsViewModel @Inject constructor(
             overlayRepository.setRamGbEnabled(false)
             overlayRepository.setBatteryTempEnabled(false)
             overlayRepository.setCpuTempEnabled(false)
+            overlayRepository.setAutoToggleEnabled(false)
+        }
+    }
+
+    fun setAutoToggleEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            if (enabled) {
+                overlayRepository.setOverlayEnabled(false)
+            }
+            overlayRepository.setAutoToggleEnabled(enabled)
+        }
+    }
+
+    fun setAutoToggleApps(apps: Set<String>) {
+        viewModelScope.launch {
+            overlayRepository.setAutoToggleApps(apps)
         }
     }
 }

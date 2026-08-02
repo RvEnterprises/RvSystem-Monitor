@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.rve.systemmonitor.domain.model.OverlayPosition
 import kotlinx.coroutines.flow.Flow
@@ -35,6 +36,8 @@ class OverlayPreferences(private val context: Context) {
         val OVERLAY_POSITION_KEY = stringPreferencesKey("overlay_position")
         val OVERLAY_X_KEY = intPreferencesKey("overlay_x")
         val OVERLAY_Y_KEY = intPreferencesKey("overlay_y")
+        val IS_AUTO_TOGGLE_ENABLED_KEY = booleanPreferencesKey("is_auto_toggle_enabled")
+        val AUTO_TOGGLE_APPS_KEY = stringSetPreferencesKey("auto_toggle_apps")
     }
 
     val isOverlayEnabledFlow: Flow<Boolean> = context.overlayDataStore.getValueFlow(IS_OVERLAY_ENABLED_KEY, false)
@@ -60,6 +63,8 @@ class OverlayPreferences(private val context: Context) {
     }
     val overlayXFlow: Flow<Int> = context.overlayDataStore.getValueFlow(OVERLAY_X_KEY, 100)
     val overlayYFlow: Flow<Int> = context.overlayDataStore.getValueFlow(OVERLAY_Y_KEY, 100)
+    val isAutoToggleEnabledFlow: Flow<Boolean> = context.overlayDataStore.getValueFlow(IS_AUTO_TOGGLE_ENABLED_KEY, false)
+    val autoToggleAppsFlow: Flow<Set<String>> = context.overlayDataStore.getValueFlow(AUTO_TOGGLE_APPS_KEY, emptySet())
 
     suspend fun saveIsOverlayEnabled(enabled: Boolean) = context.overlayDataStore.setValue(IS_OVERLAY_ENABLED_KEY, enabled)
     suspend fun saveIsFpsEnabled(enabled: Boolean) = context.overlayDataStore.setValue(IS_FPS_ENABLED_KEY, enabled)
@@ -78,4 +83,6 @@ class OverlayPreferences(private val context: Context) {
     suspend fun saveOverlayPosition(position: OverlayPosition) = context.overlayDataStore.setValue(OVERLAY_POSITION_KEY, position.name)
     suspend fun saveOverlayX(x: Int) = context.overlayDataStore.setValue(OVERLAY_X_KEY, x)
     suspend fun saveOverlayY(y: Int) = context.overlayDataStore.setValue(OVERLAY_Y_KEY, y)
+    suspend fun saveIsAutoToggleEnabled(enabled: Boolean) = context.overlayDataStore.setValue(IS_AUTO_TOGGLE_ENABLED_KEY, enabled)
+    suspend fun saveAutoToggleApps(apps: Set<String>) = context.overlayDataStore.setValue(AUTO_TOGGLE_APPS_KEY, apps)
 }

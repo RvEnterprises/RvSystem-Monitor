@@ -90,13 +90,18 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(), onNavigateBack: () -> Unit) {
+fun OverlaySettingsScreen(
+    viewModel: OverlaySettingsViewModel = hiltViewModel(),
+    onNavigateBack: () -> Unit,
+    onNavigateToAutoToggle: () -> Unit,
+) {
     val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val coroutineScope = rememberCoroutineScope()
     val snapAnimationSpec = MaterialTheme.motionScheme.defaultEffectsSpec<Float>()
 
     val isOverlayEnabled by viewModel.isOverlayEnabled.collectAsStateWithLifecycle()
+    val isAutoToggleEnabled by viewModel.isAutoToggleEnabled.collectAsStateWithLifecycle()
     val isFpsEnabled by viewModel.isFpsEnabled.collectAsStateWithLifecycle()
     val isRamPercentageEnabled by viewModel.isRamPercentageEnabled.collectAsStateWithLifecycle()
     val isRamGbEnabled by viewModel.isRamGbEnabled.collectAsStateWithLifecycle()
@@ -115,7 +120,7 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
     val hasShizukuPermission by viewModel.hasShizukuPermission.collectAsStateWithLifecycle()
     val useShizuku by viewModel.useShizuku.collectAsStateWithLifecycle()
 
-    val isOverlayActive = isOverlayEnabled
+    val isOverlayActive = isOverlayEnabled || isAutoToggleEnabled
 
     val appearanceAlpha by animateFloatAsState(
         targetValue = if (isOverlayActive) 1f else 0.5f,
@@ -356,6 +361,54 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
             }
 
             item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(32.dp),
+                    onClick = rememberHapticOnClick {
+                        onNavigateToAutoToggle()
+                    }
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(56.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(MaterialTheme.colorScheme.primary),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.app_registration),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(32.dp),
+                            )
+                        }
+
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Auto-Toggle for Apps",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "Show overlay automatically when selected apps are running",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+            }
+
+            item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -374,7 +427,7 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
                         icon = R.drawable.sixty_fps_select_rounded,
                         isEnabled = isFpsEnabled,
                         hasPermission = hasOverlayPermission,
-                        enabled = isOverlayEnabled && useShizuku && isShizukuServiceReady,
+                        enabled = isOverlayActive && useShizuku && isShizukuServiceReady,
                         onClick = rememberHapticOnClick {
                             if (!hasOverlayPermission && !isFpsEnabled) {
                                 val intent = Intent(
@@ -396,7 +449,7 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
                         icon = R.drawable.memory_alt_filled,
                         isEnabled = isRamGbEnabled,
                         hasPermission = hasOverlayPermission,
-                        enabled = isOverlayEnabled,
+                        enabled = isOverlayActive,
                         onClick = rememberHapticOnClick {
                             if (!hasOverlayPermission && !isRamGbEnabled) {
                                 val intent = Intent(
@@ -418,7 +471,7 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
                         icon = R.drawable.memory_alt_filled,
                         isEnabled = isRamPercentageEnabled,
                         hasPermission = hasOverlayPermission,
-                        enabled = isOverlayEnabled,
+                        enabled = isOverlayActive,
                         onClick = rememberHapticOnClick {
                             if (!hasOverlayPermission && !isRamPercentageEnabled) {
                                 val intent = Intent(
@@ -440,7 +493,7 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
                         icon = R.drawable.device_thermostat_filled,
                         isEnabled = isBatteryTempEnabled,
                         hasPermission = hasOverlayPermission,
-                        enabled = isOverlayEnabled,
+                        enabled = isOverlayActive,
                         onClick = rememberHapticOnClick {
                             if (!hasOverlayPermission && !isBatteryTempEnabled) {
                                 val intent = Intent(
@@ -462,7 +515,7 @@ fun OverlaySettingsScreen(viewModel: OverlaySettingsViewModel = hiltViewModel(),
                         icon = R.drawable.device_thermostat_filled,
                         isEnabled = isCpuTempEnabled,
                         hasPermission = hasOverlayPermission,
-                        enabled = isOverlayEnabled,
+                        enabled = isOverlayActive,
                         onClick = rememberHapticOnClick {
                             if (!hasOverlayPermission && !isCpuTempEnabled) {
                                 val intent = Intent(

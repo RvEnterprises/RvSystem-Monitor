@@ -14,6 +14,7 @@ import com.rve.systemmonitor.ui.components.ScreenWrapper
 import com.rve.systemmonitor.ui.screens.AboutScreen
 import com.rve.systemmonitor.ui.screens.AppSettingsScreen
 import com.rve.systemmonitor.ui.screens.AppearanceSettingsScreen
+import com.rve.systemmonitor.ui.screens.AutoToggleSettingsScreen
 import com.rve.systemmonitor.ui.screens.GPUScreen
 import com.rve.systemmonitor.ui.screens.MonitoringSettingsScreen
 import com.rve.systemmonitor.ui.screens.OverlaySettingsScreen
@@ -160,6 +161,15 @@ fun AppNavigation(isSetupCompleted: Boolean) {
         composable<Route.OverlaySettings> {
             ScreenWrapper(navController = navController, animatedVisibilityScope = this) {
                 OverlaySettingsScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToAutoToggle = { navController.navigateSafely(Route.AutoToggleSettings) },
+                )
+            }
+        }
+
+        composable<Route.AutoToggleSettings> {
+            ScreenWrapper(navController = navController, animatedVisibilityScope = this) {
+                AutoToggleSettingsScreen(
                     onNavigateBack = { navController.popBackStack() },
                 )
             }
