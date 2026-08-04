@@ -1,11 +1,13 @@
 package com.rve.systemmonitor.domain.repository
 
+import com.rve.systemmonitor.utils.AppLanguage
 import com.rve.systemmonitor.utils.ThemeMode
 import com.rve.systemmonitor.utils.VibrationIntensity
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
     val themeMode: Flow<ThemeMode>
+    val language: Flow<AppLanguage>
     val amoledMode: Flow<Boolean>
     val hapticFeedbackEnabled: Flow<Boolean>
     val vibrationIntensity: Flow<VibrationIntensity>
@@ -20,6 +22,7 @@ interface SettingsRepository {
     val updatesPausedUntil: Flow<Long>
     val blurEffectEnabled: Flow<Boolean>
     suspend fun setThemeMode(mode: ThemeMode)
+    suspend fun setLanguage(language: AppLanguage)
     suspend fun setAmoledMode(enabled: Boolean)
     suspend fun setHapticFeedbackEnabled(enabled: Boolean)
     suspend fun setVibrationIntensity(intensity: VibrationIntensity)

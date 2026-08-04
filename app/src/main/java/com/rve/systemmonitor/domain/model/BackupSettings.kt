@@ -1,5 +1,6 @@
 package com.rve.systemmonitor.domain.model
 
+import com.rve.systemmonitor.utils.AppLanguage
 import com.rve.systemmonitor.utils.ThemeMode
 import com.rve.systemmonitor.utils.VibrationIntensity
 import kotlinx.serialization.Serializable
@@ -14,6 +15,7 @@ data class BackupSettings(
 @Serializable
 data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
+    val language: AppLanguage = AppLanguage.SYSTEM,
     val amoledMode: Boolean = false,
     val isSetupCompleted: Boolean = false,
     val hapticFeedbackEnabled: Boolean = true,

@@ -181,6 +181,14 @@
 
     <!-- App Settings Screen -->
     <string name="title_app">Приложение</string>
+    <string name="label_language">Язык</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_language_description">Выберите язык приложения</string>
+    <string name="language_system">Системный</string>
+    <string name="language_english">English</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_ukrainian">Українська</string>
+    <string name="language_chinese_simplified">简体中文</string>
     <string name="label_updates">Обновления</string>
     <string name="settings_check_for_updates">Проверить обновления</string>
     <string name="settings_check_updates_description">Автоматически проверять обновления при запуске</string>

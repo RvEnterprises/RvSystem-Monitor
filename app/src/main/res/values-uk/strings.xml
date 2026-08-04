@@ -181,6 +181,14 @@
 
     <!-- App Settings Screen -->
     <string name="title_app">Додаток</string>
+    <string name="label_language">Мова</string>
+    <string name="settings_language">Мова</string>
+    <string name="settings_language_description">Виберіть мову додатка</string>
+    <string name="language_system">Системна</string>
+    <string name="language_english">English</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_ukrainian">Українська</string>
+    <string name="language_chinese_simplified">简体中文</string>
     <string name="label_updates">Оновлення</string>
     <string name="settings_check_for_updates">Перевірити оновлення</string>
     <string name="settings_check_updates_description">Автоматично перевіряти оновлення під час запуску</string>

@@ -1,0 +1,388 @@
+<resources>
+    <!-- App -->
+    <string name="app_title">RvSystem Monitor</string>
+
+    <!-- Common / Shared -->
+    <string name="value_unknown">未知</string>
+    <string name="label_by">由 %1$s 提供</string>
+    <string name="cd_help">帮助</string>
+    <string name="cd_settings">设置</string>
+    <string name="cd_back">返回</string>
+    <string name="cd_reset_to_default">恢复默认设置</string>
+    <string name="cd_avatar">头像</string>
+    <string name="cd_update_icon">更新图标</string>
+    <string name="cd_setup_icon">设置图标</string>
+    <string name="cd_open_setup_flow">打开设置流程</string>
+    <string name="cd_theme_icon">主题图标</string>
+    <string name="cd_amoled_icon">Amoled 图标</string>
+    <string name="cd_haptic_icon">触感图标</string>
+    <string name="cd_metric_icon">%1$s 图标</string>
+    <string name="button_close">关闭</string>
+    <string name="button_cancel">取消</string>
+    <string name="button_pause">暂停</string>
+    <string name="button_later">稍后</string>
+    <string name="button_download">下载</string>
+    <string name="button_install">安装</string>
+    <string name="button_keep">保留</string>
+
+    <!-- Theme -->
+    <string name="theme_light">浅色</string>
+    <string name="theme_dark">深色</string>
+    <string name="theme_system">系统</string>
+
+    <!-- Vibration Intensity -->
+    <string name="vibration_light">轻度</string>
+    <string name="vibration_medium">中度</string>
+    <string name="vibration_strong">强</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_label_home">首页</string>
+    <string name="nav_label_cpu">CPU</string>
+    <string name="nav_label_memory">内存</string>
+    <string name="nav_label_battery">电池</string>
+
+    <!-- Home Screen -->
+    <string name="home_title_device">设备</string>
+    <string name="home_title_os">操作系统</string>
+    <string name="home_title_display">显示屏</string>
+    <string name="home_title_processor">处理器</string>
+    <string name="home_title_graphics">图形</string>
+    <string name="home_os_name_version">%1$s %2$s</string>
+    <string name="home_badge_api">API %1$s</string>
+    <string name="home_badge_patch">补丁：%1$s</string>
+    <string name="home_screen_size">屏幕尺寸：%1$s&quot;</string>
+    <string name="home_badge_refresh_rate">%1$sHz</string>
+    <string name="home_badge_density">%1$s dpi</string>
+    <string name="home_badge_hdr">HDR</string>
+    <string name="home_cores_count">%1$s 个核心</string>
+    <string name="home_badge_opengl_es">OpenGL ES %1$s</string>
+    <string name="home_badge_vulkan">Vulkan %1$s</string>
+    <!-- Home Screen Help -->
+    <string name="home_help_device_os_title">设备与操作系统</string>
+    <string name="home_help_device_os_desc">设备型号、制造商和 Android 版本等信息取自系统的 Build 属性和安全补丁级别。</string>
+    <string name="home_help_display_title">显示屏</string>
+    <string name="home_help_display_desc">屏幕分辨率、刷新率和密度指标通过 Android WindowManager 和 Display API 获取。</string>
+    <string name="home_help_processor_title">处理器（CPU）</string>
+    <string name="home_help_processor_desc">包括核心数量和架构在内的详细硬件信息，会通过高性能 Rust 后端从 Linux 内核文件（/proc/cpuinfo）中解析。</string>
+    <string name="home_help_graphics_title">图形（GPU）</string>
+    <string name="home_help_graphics_desc">图形渲染器、供应商和 OpenGL ES 版本通过 EGL 上下文直接从设备 GPU 获取。</string>
+
+    <!-- CPU Screen -->
+    <string name="cpu_cores_section_title">核心</string>
+    <string name="cpu_cores_count">%1$d 个核心</string>
+    <string name="cpu_peak_frequency">%1$s</string>
+    <string name="cpu_label_architecture">架构</string>
+    <string name="cpu_label_board">主板</string>
+    <string name="cpu_label_hardware">硬件</string>
+    <string name="cpu_core_label">核心 %1$d</string>
+    <string name="cpu_label_minimum">最小值</string>
+    <string name="cpu_label_maximum">最大值</string>
+
+    <!-- GPU Screen -->
+    <string name="title_graphics_info">图形信息</string>
+    <string name="gpu_opengl_es">OpenGL ES</string>
+    <string name="gpu_label_version">版本</string>
+    <string name="gpu_label_shader_version">着色器版本</string>
+    <string name="gpu_label_max_texture_size">最大纹理尺寸</string>
+    <string name="gpu_label_extensions">扩展</string>
+    <string name="gpu_vulkan">Vulkan</string>
+    <string name="gpu_label_api_version">API 版本</string>
+    <string name="gpu_label_driver_version">驱动版本</string>
+    <string name="gpu_label_device_type">设备类型</string>
+    <string name="gpu_max_texture_size_format">%1$d px</string>
+
+    <!-- Memory Screen -->
+    <string name="memory_label_ram">RAM</string>
+    <string name="memory_label_zram">ZRAM</string>
+    <string name="memory_detailed_breakdown">详细分解</string>
+    <string name="memory_internal_storage">内部存储</string>
+    <string name="memory_label_cached">缓存</string>
+    <string name="memory_cached_description">用于文件系统缓存以加快文件访问的内存。系统需要时可以回收这部分内存。</string>
+    <string name="memory_label_buffers">缓冲区</string>
+    <string name="memory_buffers_description">用于原始磁盘块和元数据的内存。在 Android 设备上通常很小。</string>
+    <string name="memory_label_active">活动</string>
+    <string name="memory_active_description">当前正在使用或最近使用过的内存。这部分内存近期不太可能被回收。</string>
+    <string name="memory_label_inactive">非活动</string>
+    <string name="memory_inactive_description">一段时间未使用的内存。这部分内存很可能会被移至 Swap/ZRAM 或被回收。</string>
+    <string name="memory_label_slab">Slab</string>
+    <string name="memory_slab_description">内核内部数据结构和对象使用的内存。</string>
+    <string name="memory_label_mount_path">挂载路径</string>
+    <string name="memory_label_filesystem">文件系统</string>
+
+    <!-- Battery Screen -->
+    <string name="battery_charging_speed">充电速度</string>
+    <string name="battery_discharging_speed">放电速度</string>
+    <string name="battery_current_speed">当前速度</string>
+    <string name="battery_hyper_charging">超级充电</string>
+    <string name="battery_fast_charging">快速充电</string>
+    <string name="battery_charging">充电中</string>
+    <string name="battery_details_title">电池详情</string>
+    <string name="battery_label_voltage">电压</string>
+    <string name="battery_label_temperature">温度</string>
+    <string name="battery_label_power_source">电源</string>
+    <string name="battery_label_cycle_count">循环次数</string>
+    <string name="battery_label_design_capacity">设计容量</string>
+    <string name="battery_label_uptime">运行时间</string>
+    <string name="battery_label_deep_sleep">深度睡眠</string>
+    <string name="battery_graph_max">最大：%1$s mA</string>
+    <string name="battery_graph_min">最小：%1$s mA</string>
+    <string name="battery_status_charging_label">充电中</string>
+    <string name="battery_status_discharging_label">放电中</string>
+    <!-- Battery Screen Help -->
+    <string name="battery_help_voltage_temp_title">电压与温度</string>
+    <string name="battery_help_voltage_temp_desc">数据通过 Android BatteryManager API 从实时系统广播中获取。</string>
+    <string name="battery_help_power_source_title">电源与状态</string>
+    <string name="battery_help_power_source_desc">通过系统 Intent 根据当前充电状态（交流电、USB 或无线）检测。</string>
+    <string name="battery_help_charging_speed_title">充电速度</string>
+    <string name="battery_help_charging_speed_desc">根据实时功率估算：快速充电（15W 以上）和超级充电（25W 以上）。</string>
+    <string name="battery_help_wattage_title">功率（瓦特）</string>
+    <string name="battery_help_wattage_desc">通过电压（V）乘以电流（A）实时计算。</string>
+    <string name="battery_help_current_title">电流（mA）</string>
+    <string name="battery_help_current_desc">直接读取电池充电计数器属性中的硬件数据。</string>
+    <string name="battery_help_design_capacity_title">设计容量</string>
+    <string name="battery_help_design_capacity_desc">从 Android PowerProfile 中提取，表示电池的出厂额定容量。</string>
+    <string name="battery_help_cycle_count_title">循环次数</string>
+    <string name="battery_help_cycle_count_desc">Android 14 及更高版本提供的原生属性，表示已完成的充电循环总数。</string>
+    <string name="battery_help_uptime_title">运行时间与深度睡眠</string>
+    <string name="battery_help_uptime_desc">运行时间是设备开机后的总时长。深度睡眠是 CPU 处于低功耗状态的时长。</string>
+
+    <!-- Settings Screen -->
+    <string name="title_settings">设置</string>
+    <string name="settings_item_app">应用</string>
+    <string name="settings_item_app_desc">应用通用设置</string>
+    <string name="settings_item_appearance">外观</string>
+    <string name="settings_item_appearance_desc">主题、触感反馈和视觉样式</string>
+    <string name="settings_item_overlay">悬浮窗</string>
+    <string name="settings_item_overlay_desc">全局系统监控悬浮窗</string>
+    <string name="settings_item_monitoring">监控</string>
+    <string name="settings_item_monitoring_desc">更新间隔和图表历史记录</string>
+    <string name="settings_item_rust_library">Rust 库</string>
+    <string name="settings_item_rust_library_desc">原生核心规格和 API 参考</string>
+    <string name="settings_item_about">关于</string>
+    <string name="settings_item_about_desc">开发者和项目信息</string>
+
+    <!-- About Screen -->
+    <string name="title_about">关于</string>
+    <string name="label_project_owner">项目所有者</string>
+    <string name="about_owner_name">Radika</string>
+    <string name="about_owner_role">首席开发者与架构师</string>
+    <string name="label_contributors">贡献者</string>
+    <string name="error_no_internet">无网络连接</string>
+    <string name="action_try_again">重试</string>
+    <string name="contributors_empty">暂未找到其他贡献者。</string>
+    <string name="badge_free">免费</string>
+    <string name="badge_open_source">开源</string>
+    <string name="badge_rust">Rust</string>
+    <string name="badge_kotlin">Kotlin</string>
+    <string name="badge_material3_expressive">Material 3 Expressive</string>
+    <string name="about_app_description">适用于 Android 的高性能系统监控</string>
+    <string name="error_no_browser">未找到网页浏览器</string>
+
+    <!-- App Settings Screen -->
+    <string name="title_app">应用</string>
+    <string name="label_language">语言</string>
+    <string name="settings_language">语言</string>
+    <string name="settings_language_description">选择应用使用的语言</string>
+    <string name="language_system">系统默认</string>
+    <string name="language_english">English</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_ukrainian">Українська</string>
+    <string name="language_chinese_simplified">简体中文</string>
+    <string name="label_updates">更新</string>
+    <string name="settings_check_for_updates">检查更新</string>
+    <string name="settings_check_updates_description">启动时自动检查更新</string>
+    <string name="label_backup">备份与恢复</string>
+    <string name="settings_export_title">导出设置</string>
+    <string name="settings_export_description">将所有设置保存为 JSON 文件</string>
+    <string name="settings_import_title">导入设置</string>
+    <string name="settings_import_description">从 JSON 文件恢复所有设置</string>
+    <string name="backup_export_success">设置导出成功</string>
+    <string name="backup_export_failed">设置导出失败</string>
+    <string name="backup_import_success">设置导入成功</string>
+    <string name="backup_import_failed">设置导入失败</string>
+    <string name="label_testing">测试</string>
+    <string name="settings_test_setup_flow">测试设置流程</string>
+    <string name="settings_test_setup_description">在不重置应用设置的情况下启动设置流程</string>
+
+    <!-- Shizuku -->
+    <string name="label_shizuku">特权访问</string>
+    <string name="settings_use_shizuku">Shizuku</string>
+    <string name="settings_use_shizuku_description">通过 Shizuku 解锁更深入的系统遥测</string>
+    <string name="shizuku_status_running_authorized">运行中且已授权</string>
+    <string name="shizuku_status_permission_required">需要权限</string>
+    <string name="shizuku_status_not_running">未运行</string>
+    <string name="button_grant_permission">授予权限</string>
+    <string name="cd_shizuku_icon">Shizuku 图标</string>
+
+    <!-- Appearance Settings Screen -->
+    <string name="title_appearance">外观</string>
+    <string name="label_visual_style">视觉样式</string>
+    <string name="settings_app_theme">应用主题</string>
+    <string name="settings_app_theme_description">选择你偏好的视觉样式</string>
+    <string name="settings_amoled_mode">Amoled 模式</string>
+    <string name="settings_amoled_description_enabled">为 OLED 屏幕提供纯黑背景</string>
+    <string name="settings_amoled_description_disabled">需要深色模式才能使用 Amoled 模式</string>
+    <string name="settings_haptic_feedback">触感反馈</string>
+    <string name="settings_haptic_description">交互时提供轻微振动</string>
+    <string name="settings_vibration_intensity">振动强度</string>
+    <string name="settings_blur_effect">模糊效果</string>
+    <string name="settings_blur_description">在屏幕切换期间为背景应用模糊效果</string>
+    <string name="appearance_hero_subtitle">让界面漂亮到足以放进截图炫耀。</string>
+
+    <!-- Monitoring Settings Screen -->
+    <string name="title_monitoring">监控</string>
+    <string name="monitoring_refresh_intervals">刷新间隔</string>
+    <string name="monitoring_cpu_interval">CPU 更新间隔</string>
+    <string name="monitoring_cpu_interval_desc">调整 CPU 统计信息的刷新频率</string>
+    <string name="monitoring_gpu_interval">GPU 更新间隔</string>
+    <string name="monitoring_gpu_interval_desc">调整 GPU 统计信息的刷新频率</string>
+    <string name="monitoring_memory_interval">内存更新间隔</string>
+    <string name="monitoring_memory_interval_desc">调整内存统计信息的刷新频率</string>
+    <string name="monitoring_battery_interval">电池更新间隔</string>
+    <string name="monitoring_battery_interval_desc">调整运行时间和电流（mA）的刷新频率</string>
+    <string name="monitoring_battery_graph_history">电池图表历史</string>
+    <string name="monitoring_battery_graph_desc">设置图表中显示的数据量</string>
+    <string name="monitoring_history_duration">历史时长</string>
+
+    <!-- Overlay Settings Screen -->
+    <string name="title_floating_overlay_settings">悬浮窗设置</string>
+    <string name="overlay_enable_title">启用悬浮窗</string>
+    <string name="overlay_label_metrics">指标</string>
+    <string name="overlay_fps">FPS</string>
+    <string name="overlay_fps_desc">显示实时帧率</string>
+    <string name="overlay_ram_gb">RAM 使用量（GB）</string>
+    <string name="overlay_ram_gb_desc">实时显示已用和总 RAM（GB）</string>
+    <string name="overlay_ram_percentage">RAM 百分比</string>
+    <string name="overlay_ram_percentage_desc">显示实时 RAM 使用率</string>
+    <string name="overlay_battery_temp">电池温度</string>
+    <string name="overlay_battery_temp_desc">显示实时电池温度</string>
+    <string name="overlay_cpu_temp">CPU 温度</string>
+    <string name="overlay_cpu_temp_desc">显示实时 CPU 温度</string>
+    <string name="overlay_label_layout">布局</string>
+    <string name="overlay_layout_horizontal">水平</string>
+    <string name="overlay_layout_vertical">垂直</string>
+    <string name="overlay_label_configuration">配置</string>
+    <string name="overlay_update_interval">更新间隔</string>
+    <string name="overlay_update_interval_desc">调整悬浮窗中指标的刷新频率</string>
+    <string name="overlay_label_appearance">外观</string>
+    <string name="overlay_text_color">文字颜色</string>
+    <string name="overlay_text_size">文字大小</string>
+    <string name="overlay_bg_opacity">背景不透明度</string>
+    <string name="overlay_padding">内边距</string>
+    <string name="overlay_corner_radius">圆角半径</string>
+    <string name="overlay_permission_required">需要“在其他应用上层显示”权限</string>
+
+    <!-- Rust Library Screen -->
+    <string name="title_rust_library">Rust 库</string>
+    <string name="rust_library_name">librvsystem_monitor.so</string>
+    <string name="rust_library_version">版本：v%1$s</string>
+    <string name="rust_public_methods">公共方法</string>
+    <string name="rust_public_method_detail">公共方法详情</string>
+    <string name="rust_method_desc_get_version">返回 Cargo.toml 中定义的原生库语义化版本。</string>
+    <string name="rust_method_desc_get_vulkan">查询系统 Vulkan 驱动，并返回格式化的 API 和驱动版本。</string>
+    <string name="rust_method_desc_get_gpu_temp">通过内核 sysfs 节点读取 GPU 温度传感器。</string>
+    <string name="rust_method_desc_get_memory">通过一次 JNI 调用批量获取完整的 RAM 和 ZRAM 指标。</string>
+    <string name="rust_method_desc_get_ram">返回详细的 RAM 统计信息（总量、可用、缓存等）。</string>
+    <string name="rust_method_desc_get_zram">返回 ZRAM 专属指标，包括压缩率和交换空间使用情况。</string>
+    <string name="rust_method_desc_get_all_freq">获取所有在线 CPU 核心的当前时钟频率。</string>
+    <string name="rust_method_desc_get_core_count">返回内核检测到的 CPU 核心总数。</string>
+    <string name="rust_method_desc_get_core_freq">返回指定核心 ID 的特定频率类型（当前、最小、最大）。</string>
+    <string name="rust_method_desc_get_governor">返回指定 CPU 核心当前使用的频率调节器。</string>
+    <string name="rust_method_desc_get_cpu_temp">获取 CPU 封装/复合温度。</string>
+    <string name="rust_method_desc_get_all_temps">返回每个 CPU 核心的温度数组。</string>
+    <string name="rust_method_desc_get_dynamic">批量获取温度和频率，以便与界面同步。</string>
+    <string name="rust_method_desc_calculate_load">解析 /proc/stat 字符串，通过与之前的状态比较计算总 CPU 和各核心的负载百分比。</string>
+
+    <!-- Setup Screen -->
+    <string name="setup_continue">继续</string>
+    <string name="setup_grant_permission">授予权限</string>
+    <string name="setup_finish">完成设置</string>
+    <string name="setup_permission_granted_footer">权限已授予。继续下一步。</string>
+    <string name="setup_permission_required_footer">显示监控悬浮窗所需</string>
+    <string name="setup_updates_footer">始终保持最新</string>
+    <string name="setup_theme_footer">之后可以在设置中更改</string>
+    <string name="setup_overlay_title">显示在顶部</string>
+    <string name="setup_overlay_description">要在使用其他应用时显示 FPS、RAM 使用量和温度，RvSystem Monitor 需要在其他应用上层显示的权限。</string>
+    <string name="setup_updates_title">检查更新</string>
+    <string name="setup_updates_description">启动时自动检查应用更新，以便及时使用最新功能。</string>
+    <string name="setup_auto_update">自动更新</string>
+    <string name="setup_check_on_startup">启动时检查</string>
+    <string name="setup_theme_title">选择主题</string>
+    <string name="setup_theme_description">选择你偏好的应用视觉样式。</string>
+    <string name="setup_backup_title">恢复设置</string>
+    <string name="setup_backup_description">导入之前导出的备份文件以恢复配置。</string>
+    <string name="setup_skip">跳过</string>
+    <string name="setup_restore">恢复备份</string>
+    <string name="setup_backup_footer">之后也可以在应用设置中导入备份</string>
+
+    <!-- Update Dialog -->
+    <string name="update_available_title">有可用更新</string>
+    <string name="downloading_update_title">正在下载更新</string>
+    <string name="downloading_update_subtitle">请保持应用打开，直到 APK 准备就绪。</string>
+    <string name="download_progress_label">下载进度</string>
+    <string name="update_ready_title">更新已准备就绪</string>
+    <string name="update_ready_subtitle">APK 已下载完成，现在可以安装。</string>
+    <string name="install_description">Android 将为此文件打开安装程序。</string>
+    <string name="update_failed_title">更新失败</string>
+    <string name="update_failed_subtitle">更新未能完成。</string>
+    <string name="error_details_title">错误详情</string>
+    <string name="cancel_download_dialog_title">取消下载？</string>
+    <string name="cancel_download_dialog_message">更新仍在下载中。如果现在取消，稍后需要重新开始下载。</string>
+    <string name="whats_new_title">更新内容</string>
+    <string name="no_changelog_message">此版本没有提供更新日志。</string>
+    <string name="pause_for_dialog_title">暂停时长…</string>
+    <string name="pause_3_hours">3 小时</string>
+    <string name="pause_6_hours">6 小时</string>
+    <string name="pause_12_hours">12 小时</string>
+    <string name="pause_24_hours">24 小时</string>
+
+    <!-- SettingsSliderCard -->
+    <string name="default_value_label_refresh_rate">刷新率</string>
+
+    <!-- HelpBottomSheet -->
+    <string name="help_default_title">数据来源</string>
+
+    <!-- SystemOverlayService -->
+    <string name="overlay_position">位置</string>
+    <string name="overlay_position_free">自由（可拖动）</string>
+    <string name="overlay_position_top_left">左上</string>
+    <string name="overlay_position_top_center">顶部居中</string>
+    <string name="overlay_position_top_right">右上</string>
+    <string name="notification_channel_overlay">悬浮窗服务</string>
+    <string name="notification_title_overlay_active">悬浮窗已启用</string>
+    <string name="notification_text_overlay">正在监控系统性能（FPS 和 RAM）</string>
+    <string name="overlay_format_fps">FPS：%1$d</string>
+    <string name="overlay_format_ram_gb_percent">RAM：%1$.1f/%2$.1f GB（%3$.0f%%）</string>
+    <string name="overlay_format_ram_gb">RAM：%1$.1f/%2$.1f GB</string>
+    <string name="overlay_format_ram_percent">RAM：%1$.0f%%</string>
+    <string name="overlay_format_cpu_temp">CPU：%1$.1f°C</string>
+    <string name="overlay_format_battery_temp">电池：%1$.1f°C</string>
+
+    <!-- BatteryUtils -->
+    <string name="battery_health_good">良好</string>
+    <string name="battery_health_overheat">过热</string>
+    <string name="battery_health_dead">故障</string>
+    <string name="battery_health_over_voltage">过压</string>
+    <string name="battery_health_unspecified_failure">未指定故障</string>
+    <string name="battery_health_cold">过冷</string>
+    <string name="battery_status_charging">充电中</string>
+    <string name="battery_status_discharging">放电中</string>
+    <string name="battery_status_full">已充满</string>
+    <string name="battery_status_not_charging">未充电</string>
+    <string name="battery_power_source_ac">交流充电器</string>
+    <string name="battery_power_source_usb">USB 端口</string>
+    <string name="battery_power_source_wireless">无线充电</string>
+    <string name="battery_power_source_battery">电池</string>
+
+    <!-- DisplayUtils -->
+    <string name="hdr_type_dolby_vision">Dolby Vision</string>
+    <string name="hdr_type_hdr10">HDR10</string>
+    <string name="hdr_type_hlg">HLG</string>
+    <string name="hdr_type_hdr10_plus">HDR10+</string>
+
+    <!-- OSUtils -->
+    <string name="dessert_name_cinnamon_bun">肉桂面包</string>
+    <string name="dessert_name_baklava">巴克拉瓦</string>
+    <string name="dessert_name_vanilla_ice_cream">香草冰淇淋</string>
+    <string name="dessert_name_upside_down_cake">倒置蛋糕</string>
+</resources>

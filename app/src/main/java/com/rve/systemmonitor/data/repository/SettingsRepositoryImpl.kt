@@ -1,6 +1,8 @@
 package com.rve.systemmonitor.data.repository
 
 import android.app.Application
+import android.app.LocaleManager
+import android.os.LocaleList
 import androidx.datastore.preferences.core.edit
 import com.rve.systemmonitor.domain.model.AppSettings
 import com.rve.systemmonitor.domain.model.BackupSettings
@@ -8,6 +10,7 @@ import com.rve.systemmonitor.domain.model.MonitoringSettings
 import com.rve.systemmonitor.domain.model.OverlayPosition
 import com.rve.systemmonitor.domain.model.OverlaySettings
 import com.rve.systemmonitor.domain.repository.SettingsRepository
+import com.rve.systemmonitor.utils.AppLanguage
 import com.rve.systemmonitor.utils.OverlayPreferences
 import com.rve.systemmonitor.utils.SettingsPreferences
 import com.rve.systemmonitor.utils.ThemeMode
@@ -32,6 +35,8 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
     }
 
     override val themeMode: Flow<ThemeMode> = settingsPreferences.themeModeFlow
+
+    override val language: Flow<AppLanguage> = settingsPreferences.languageFlow
 
     override val amoledMode: Flow<Boolean> = settingsPreferences.amoledModeFlow
 
@@ -61,6 +66,12 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
 
     override suspend fun setThemeMode(mode: ThemeMode) {
         settingsPreferences.saveThemeMode(mode)
+    }
+
+    override suspend fun setLanguage(language: AppLanguage) {
+        settingsPreferences.saveLanguage(language)
+        application.getSystemService(LocaleManager::class.java).applicationLocales =
+            language.languageTag?.let { LocaleList.forLanguageTags(it) } ?: LocaleList.getEmptyLocaleList()
     }
 
     override suspend fun setAmoledMode(enabled: Boolean) {
@@ -124,6 +135,9 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
                 themeMode =
                     appPrefs[SettingsPreferences.THEME_MODE_KEY]?.let { runCatching { ThemeMode.valueOf(it) }.getOrNull() }
                         ?: ThemeMode.SYSTEM,
+                language =
+                    appPrefs[SettingsPreferences.LANGUAGE_KEY]?.let { runCatching { AppLanguage.valueOf(it) }.getOrNull() }
+                        ?: AppLanguage.SYSTEM,
                 amoledMode = appPrefs[SettingsPreferences.AMOLED_MODE_KEY] ?: false,
                 isSetupCompleted = appPrefs[SettingsPreferences.IS_SETUP_COMPLETED_KEY] ?: false,
                 hapticFeedbackEnabled = appPrefs[SettingsPreferences.HAPTIC_FEEDBACK_ENABLED_KEY] ?: true,
@@ -174,6 +188,7 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
 
         application.dataStore.edit { prefs ->
             prefs[SettingsPreferences.THEME_MODE_KEY] = backup.app.themeMode.name
+            prefs[SettingsPreferences.LANGUAGE_KEY] = backup.app.language.name
             prefs[SettingsPreferences.AMOLED_MODE_KEY] = backup.app.amoledMode
             prefs[SettingsPreferences.IS_SETUP_COMPLETED_KEY] = backup.app.isSetupCompleted
             prefs[SettingsPreferences.HAPTIC_FEEDBACK_ENABLED_KEY] = backup.app.hapticFeedbackEnabled
@@ -189,6 +204,9 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
             prefs[SettingsPreferences.BATTERY_REFRESH_DELAY_KEY] = backup.monitoring.batteryRefreshDelay
             prefs[SettingsPreferences.BATTERY_GRAPH_HISTORY_KEY] = backup.monitoring.batteryGraphHistorySeconds
         }
+
+        application.getSystemService(LocaleManager::class.java).applicationLocales =
+            backup.app.language.languageTag?.let { LocaleList.forLanguageTags(it) } ?: LocaleList.getEmptyLocaleList()
 
         application.overlayDataStore.edit { prefs ->
             prefs[OverlayPreferences.IS_OVERLAY_ENABLED_KEY] = backup.overlay.isOverlayEnabled

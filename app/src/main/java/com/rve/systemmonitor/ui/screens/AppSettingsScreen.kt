@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,18 +33,23 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -64,6 +70,7 @@ import com.rve.systemmonitor.R
 import com.rve.systemmonitor.ui.components.ExitUntilCollapsedMediumTopAppBar
 import com.rve.systemmonitor.ui.components.haptic.hapticClickable
 import com.rve.systemmonitor.ui.viewmodel.SettingsViewModel
+import com.rve.systemmonitor.utils.AppLanguage
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.launch
@@ -72,16 +79,19 @@ import kotlinx.coroutines.launch
 fun AppSettingsScreen(viewModel: SettingsViewModel = hiltViewModel(), onNavigateBack: () -> Unit, onNavigateToSetup: () -> Unit) {
     val context = LocalContext.current
     val autoUpdateEnabled by viewModel.autoUpdateEnabled.collectAsStateWithLifecycle()
+    val language by viewModel.language.collectAsStateWithLifecycle()
     val useShizuku by viewModel.useShizuku.collectAsStateWithLifecycle()
     val isShizukuAvailable by viewModel.isShizukuAvailable.collectAsStateWithLifecycle()
     val hasShizukuPermission by viewModel.hasShizukuPermission.collectAsStateWithLifecycle()
 
     AppSettingsScreenContent(
         autoUpdateEnabled = autoUpdateEnabled,
+        language = language,
         useShizuku = useShizuku,
         isShizukuAvailable = isShizukuAvailable,
         hasShizukuPermission = hasShizukuPermission,
         onAutoUpdateChange = { viewModel.setAutoUpdateEnabled(it) },
+        onLanguageChange = { viewModel.setLanguage(it) },
         onUseShizukuChange = { viewModel.setUseShizuku(it) },
         onRefreshShizukuStatus = { viewModel.refreshShizukuState() },
         onRequestShizukuPermission = { viewModel.requestShizukuPermission() },
@@ -96,10 +106,12 @@ fun AppSettingsScreen(viewModel: SettingsViewModel = hiltViewModel(), onNavigate
 @Composable
 private fun AppSettingsScreenContent(
     autoUpdateEnabled: Boolean,
+    language: AppLanguage,
     useShizuku: Boolean,
     isShizukuAvailable: Boolean,
     hasShizukuPermission: Boolean,
     onAutoUpdateChange: (Boolean) -> Unit,
+    onLanguageChange: (AppLanguage) -> Unit,
     onUseShizukuChange: (Boolean) -> Unit,
     onRefreshShizukuStatus: () -> Unit,
     onRequestShizukuPermission: () -> Unit,
@@ -177,6 +189,13 @@ private fun AppSettingsScreenContent(
             ),
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
+            item {
+                LanguageSetting(
+                    language = language,
+                    onLanguageChange = onLanguageChange,
+                )
+            }
+
             if (BuildConfig.ENABLE_UPDATER) {
                 item {
                     Column(
@@ -619,4 +638,143 @@ private fun AppSettingsScreenContent(
             }
         }
     }
+}
+
+@Composable
+private fun LanguageSetting(language: AppLanguage, onLanguageChange: (AppLanguage) -> Unit) {
+    var showLanguageDialog by rememberSaveable { mutableStateOf(false) }
+    val languageOptions = listOf(
+        AppLanguage.SYSTEM to R.string.language_system,
+        AppLanguage.ENGLISH to R.string.language_english,
+        AppLanguage.RUSSIAN to R.string.language_russian,
+        AppLanguage.UKRAINIAN to R.string.language_ukrainian,
+        AppLanguage.CHINESE_SIMPLIFIED to R.string.language_chinese_simplified,
+    )
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text(
+            text = stringResource(R.string.label_language),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 12.dp, start = 8.dp),
+        )
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .hapticClickable { showLanguageDialog = true }
+                    .padding(horizontal = 20.dp, vertical = 20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.language_filled),
+                        contentDescription = stringResource(R.string.settings_language),
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                    )
+                }
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.settings_language),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = stringResource(R.string.settings_language_description),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text(
+                        text = stringResource(languageLabelRes(language)),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Icon(
+                        painter = painterResource(R.drawable.arrow_forward_ios_new),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
+            }
+        }
+    }
+
+    if (showLanguageDialog) {
+        AlertDialog(
+            onDismissRequest = { showLanguageDialog = false },
+            title = {
+                Text(text = stringResource(R.string.settings_language))
+            },
+            text = {
+                Column {
+                    languageOptions.forEach { (option, labelRes) ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .hapticClickable {
+                                    showLanguageDialog = false
+                                    onLanguageChange(option)
+                                }
+                                .padding(vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(
+                                selected = language == option,
+                                onClick = {
+                                    showLanguageDialog = false
+                                    onLanguageChange(option)
+                                },
+                            )
+                            Text(
+                                text = stringResource(labelRes),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(start = 8.dp),
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showLanguageDialog = false }) {
+                    Text(text = stringResource(R.string.button_close))
+                }
+            },
+        )
+    }
+}
+
+private fun languageLabelRes(language: AppLanguage): Int = when (language) {
+    AppLanguage.SYSTEM -> R.string.language_system
+    AppLanguage.ENGLISH -> R.string.language_english
+    AppLanguage.RUSSIAN -> R.string.language_russian
+    AppLanguage.UKRAINIAN -> R.string.language_ukrainian
+    AppLanguage.CHINESE_SIMPLIFIED -> R.string.language_chinese_simplified
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rve.systemmonitor.domain.repository.SettingsRepository
 import com.rve.systemmonitor.shizuku.ShizukuManager
+import com.rve.systemmonitor.utils.AppLanguage
 import com.rve.systemmonitor.utils.ThemeMode
 import com.rve.systemmonitor.utils.VibrationIntensity
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,6 +40,13 @@ class SettingsViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = ThemeMode.SYSTEM,
+        )
+
+    val language: StateFlow<AppLanguage> = settingsRepository.language
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = AppLanguage.SYSTEM,
         )
 
     val amoledMode: StateFlow<Boolean> = settingsRepository.amoledMode
@@ -121,6 +129,12 @@ class SettingsViewModel @Inject constructor(
     fun setThemeMode(mode: ThemeMode) {
         viewModelScope.launch {
             settingsRepository.setThemeMode(mode)
+        }
+    }
+
+    fun setLanguage(language: AppLanguage) {
+        viewModelScope.launch {
+            settingsRepository.setLanguage(language)
         }
     }
 

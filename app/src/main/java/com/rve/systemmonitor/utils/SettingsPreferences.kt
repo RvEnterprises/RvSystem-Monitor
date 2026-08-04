@@ -15,6 +15,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 class SettingsPreferences(private val context: Context) {
     companion object {
         val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
+        val LANGUAGE_KEY = stringPreferencesKey("language")
         val AMOLED_MODE_KEY = booleanPreferencesKey("amoled_mode")
         val IS_SETUP_COMPLETED_KEY = booleanPreferencesKey("is_setup_completed")
         val CPU_REFRESH_DELAY_KEY = longPreferencesKey("cpu_refresh_delay")
@@ -35,6 +36,7 @@ class SettingsPreferences(private val context: Context) {
     val updatesPausedUntilFlow: Flow<Long> = context.dataStore.getValueFlow(UPDATES_PAUSED_UNTIL_KEY, 0L)
     val blurEffectEnabledFlow: Flow<Boolean> = context.dataStore.getValueFlow(BLUR_EFFECT_ENABLED_KEY, true)
     val themeModeFlow: Flow<ThemeMode> = context.dataStore.getEnumFlow(THEME_MODE_KEY, ThemeMode.SYSTEM) { ThemeMode.valueOf(it) }
+    val languageFlow: Flow<AppLanguage> = context.dataStore.getEnumFlow(LANGUAGE_KEY, AppLanguage.SYSTEM) { AppLanguage.valueOf(it) }
     val amoledModeFlow: Flow<Boolean> = context.dataStore.getValueFlow(AMOLED_MODE_KEY, false)
     val vibrationIntensityFlow: Flow<VibrationIntensity> = context.dataStore.getEnumFlow(
         VIBRATION_INTENSITY_KEY,
@@ -49,6 +51,7 @@ class SettingsPreferences(private val context: Context) {
     val batteryGraphHistorySecondsFlow: Flow<Int> = context.dataStore.getValueFlow(BATTERY_GRAPH_HISTORY_KEY, 60)
 
     suspend fun saveThemeMode(mode: ThemeMode) = context.dataStore.setEnum(THEME_MODE_KEY, mode)
+    suspend fun saveLanguage(language: AppLanguage) = context.dataStore.setEnum(LANGUAGE_KEY, language)
     suspend fun saveAmoledMode(enabled: Boolean) = context.dataStore.setValue(AMOLED_MODE_KEY, enabled)
     suspend fun saveSetupCompleted(completed: Boolean) = context.dataStore.setValue(IS_SETUP_COMPLETED_KEY, completed)
     suspend fun saveCpuRefreshDelay(delayMillis: Long) = context.dataStore.setValue(CPU_REFRESH_DELAY_KEY, delayMillis)
