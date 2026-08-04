@@ -5,12 +5,6 @@
     native <methods>;
 }
 
-# 2. Battery: Keep reflection targets for internal PowerProfile
--keep class com.android.internal.os.PowerProfile {
-    public <init>(android.content.Context);
-    public double getBatteryCapacity();
-}
-
 # 5. Standard Android/Compose attributes
 -keepattributes Signature,InnerClasses,EnclosingMethod,AnnotationDefault,*Annotation*
 
