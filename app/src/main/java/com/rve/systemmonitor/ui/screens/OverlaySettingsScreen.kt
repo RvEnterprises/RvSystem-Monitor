@@ -366,7 +366,7 @@ fun OverlaySettingsScreen(
                     shape = RoundedCornerShape(32.dp),
                     onClick = rememberHapticOnClick {
                         onNavigateToAutoToggle()
-                    }
+                    },
                 ) {
                     Row(
                         modifier = Modifier

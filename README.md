@@ -4,6 +4,7 @@
 [![Downloads](https://img.shields.io/github/downloads/Rve27/RvSystem-Monitor/total?logo=github&color=FF69B4)](https://github.com/Rve27/RvSystem-Monitor/releases)
 [![IzzyOnDroid](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.rve.systemmonitor&label=IzzyOnDroid)](https://apt.izzysoft.de/fdroid/index/apk/com.rve.systemmonitor)
 [![IzzyOnDroid Yearly Downloads](https://img.shields.io/badge/dynamic/json?url=https://dlstats.izzyondroid.org/iod-stats-collector/stats/basic/yearly/rolling.json&query=$.['com.rve.systemmonitor']&label=IzzyOnDroid%20yearly%20downloads)](https://apt.izzysoft.de/packages/com.rve.systemmonitor)
+[![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?logo=ko-fi&logoColor=white&style=flat)](https://ko-fi.com/rve27)
 
 **RvSystem Monitor** is a high-performance system monitoring solution for Android, merging the expressive power of **Jetpack Compose** with the raw efficiency of **Rust**. It provides low-level hardware insights while maintaining a modern, buttery-smooth user experience.
 
@@ -117,6 +118,7 @@ We welcome contributions from the community! Whether you are fixing a bug, addin
 ## 💬 Support
 - **Issues**: [GitHub Issues](https://github.com/Rve27/RvSystem-Monitor/issues) for bug reports and feature requests.
 - **Discussions**: [Telegram Group](https://t.me/rve_enterprises) for questions and ideas.
+- **Donate**: [Support the project on Ko-fi](https://ko-fi.com/rve27)
 
 ## 📜 License
 This project is licensed under the **GNU General Public License v3.0**. See the [LICENSE](LICENSE) file for details.

@@ -168,6 +168,9 @@
     <string name="label_project_owner">Project Owner</string>
     <string name="about_owner_name">Radika</string>
     <string name="about_owner_role">Lead Developer &amp; Architect</string>
+    <string name="label_support">Support</string>
+    <string name="about_sponsor_title">Donate &amp; Sponsor</string>
+    <string name="about_sponsor_desc">Support the development of RvSystem Monitor</string>
     <string name="label_contributors">Contributors</string>
     <string name="error_no_internet">No internet connection</string>
     <string name="action_try_again">Try Again</string>

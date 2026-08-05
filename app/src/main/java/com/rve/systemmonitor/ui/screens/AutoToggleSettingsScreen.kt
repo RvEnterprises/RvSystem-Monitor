@@ -3,6 +3,7 @@ package com.rve.systemmonitor.ui.screens
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -49,8 +51,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.animation.Crossfade
-import androidx.compose.material3.Icon
 import com.rve.systemmonitor.R
 import com.rve.systemmonitor.service.SystemOverlayService
 import com.rve.systemmonitor.ui.components.ExitUntilCollapsedMediumTopAppBar
