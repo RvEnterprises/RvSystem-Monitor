@@ -177,7 +177,7 @@
     <string name="badge_kotlin">Kotlin</string>
     <string name="badge_material3_expressive">Material 3 Expressive</string>
     <string name="about_app_description">Високопродуктивний моніторинг системи для Android</string>
-    <string name="contributors_count">Внесок: %1$d</string>
+
 
     <!-- App Settings Screen -->
     <string name="title_app">Додаток</string>

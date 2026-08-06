@@ -181,7 +181,7 @@
     <string name="badge_kotlin">Kotlin</string>
     <string name="badge_material3_expressive">Material 3 Expressive</string>
     <string name="about_app_description">High-performance system monitoring for Android</string>
-    <string name="contributors_count">%1$d contributions</string>
+
     <string name="error_no_browser">No web browser found</string>
 
 

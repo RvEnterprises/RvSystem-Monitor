@@ -537,11 +537,6 @@ fun ContributorRow(contributor: GitHubContributor, onClick: () -> Unit) {
                     )
                 }
             }
-            Text(
-                text = stringResource(R.string.contributors_count, contributor.contributions),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
     }
 }
