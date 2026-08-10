@@ -686,7 +686,7 @@ private fun LanguageSetting(language: AppLanguage, onLanguageChange: (AppLanguag
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.language_filled),
+                        painter = painterResource(R.drawable.translate),
                         contentDescription = stringResource(R.string.settings_language),
                         tint = MaterialTheme.colorScheme.onPrimary,
                     )
