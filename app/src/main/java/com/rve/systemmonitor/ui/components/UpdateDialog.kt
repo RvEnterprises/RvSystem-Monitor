@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.ToggleButtonShapes
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -541,7 +543,7 @@ private fun PauseUpdatesDialog(onDismiss: () -> Unit, onConfirm: (Int) -> Unit) 
 
                 Column(verticalArrangement = Arrangement.spacedBy((-6).dp)) {
                     options.forEachIndexed { index, (hours, label) ->
-                        val shape = when (index) {
+                        val shape: Shape = when (index) {
                             0 -> (ButtonGroupDefaults.connectedMiddleButtonShapes().shape as RoundedCornerShape)
                                 .copy(topStart = CornerSize(100), topEnd = CornerSize(100))
 
@@ -556,9 +558,10 @@ private fun PauseUpdatesDialog(onDismiss: () -> Unit, onConfirm: (Int) -> Unit) 
                         ToggleButton(
                             checked = selectedOption == hours,
                             onCheckedChange = { if (it) hapticAction() },
-                            shapes = ToggleButtonDefaults.shapes(
+                            shapes = ToggleButtonShapes(
                                 shape = shape,
-                                checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape,
+                                pressedShape = shape,
+                                checkedShape = ButtonGroupDefaults.connectedButtonCheckedShape
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
