@@ -705,24 +705,6 @@ private fun LanguageSetting(language: AppLanguage, onLanguageChange: (AppLanguag
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Text(
-                        text = stringResource(languageLabelRes(language)),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Icon(
-                        painter = painterResource(R.drawable.arrow_forward_ios_new),
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                }
             }
         }
     }
