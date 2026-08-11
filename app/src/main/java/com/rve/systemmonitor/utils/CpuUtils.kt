@@ -149,6 +149,12 @@ object CpuUtils {
         "Unknown"
     }.getOrElse { "Unknown" }
 
+    fun getAbi(): String = runCatching {
+        val abi = Build.SUPPORTED_ABIS.firstOrNull() ?: "Unknown"
+        val bitness = if (abi.contains("64")) "64-bit" else "32-bit"
+        "$abi ($bitness)"
+    }.getOrElse { "Unknown" }
+
     fun getCoreCount(): Int = runCatching {
         getCoreCountNative()
     }.getOrElse {
