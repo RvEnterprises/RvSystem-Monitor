@@ -68,7 +68,7 @@ class CpuRepositoryImpl @Inject constructor(
                 val coreDetails = ArrayList<CoreDetail>(cores)
 
                 var isShizukuSuccess = false
-                val cpuLoads = if (shizukuReady ) {
+                val cpuLoads = if (shizukuReady) {
                     val procStat = shizukuManager.executeCommand("cat /proc/stat")
                     if (procStat.isNotEmpty() && !procStat.startsWith("ERROR:")) {
                         val loads = CpuUtils.calculateCpuLoad(procStat)
