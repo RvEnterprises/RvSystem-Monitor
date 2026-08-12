@@ -65,7 +65,7 @@
     <string name="home_help_processor_title">Processor (CPU)</string>
     <string name="home_help_processor_desc">Detailed hardware info, including core count and architecture, is parsed from Linux kernel files (/proc/cpuinfo) using the high-performance Rust backend.</string>
     <string name="home_help_graphics_title">Graphics (GPU)</string>
-    <string name="home_help_graphics_desc">The graphics renderer, vendor, and OpenGL ES version are retrieved directly from the device\'s GPU through the EGL context.</string>
+    <string name="home_help_graphics_desc">The graphics renderer, vendor, and OpenGL ES version are retrieved directly from the device\'s GPU through the EGL context. For Vulkan, detailed hardware specifications—including API version, driver, device type, hardware limits, and supported extensions—are extracted by dynamically loading the native libvulkan.so shared library and directly invoking Vulkan C APIs.</string>
 
     <!-- CPU Screen -->
     <string name="cpu_cores_section_title">Cores</string>
