@@ -331,7 +331,7 @@ fun AppearanceSettingsScreen(viewModel: SettingsViewModel = hiltViewModel(), onN
                                         contentAlignment = Alignment.Center,
                                     ) {
                                         Icon(
-                                            painter = painterResource(R.drawable.layers_filled),
+                                            painter = painterResource(R.drawable.lens_blur),
                                             contentDescription = stringResource(R.string.settings_blur_effect),
                                             tint = MaterialTheme.colorScheme.onPrimary,
                                         )
@@ -562,7 +562,7 @@ fun AppearanceSettingsScreen(viewModel: SettingsViewModel = hiltViewModel(), onN
                                         contentAlignment = Alignment.Center,
                                     ) {
                                         Icon(
-                                            painter = painterResource(R.drawable.layers_filled),
+                                            painter = painterResource(R.drawable.lens_blur),
                                             contentDescription = stringResource(R.string.settings_nav_bar_blur_effect),
                                             tint = MaterialTheme.colorScheme.onPrimary,
                                         )
