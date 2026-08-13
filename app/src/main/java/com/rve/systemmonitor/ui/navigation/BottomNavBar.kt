@@ -56,6 +56,7 @@ import com.kyant.backdrop.effects.lens
 import com.kyant.backdrop.effects.vibrancy
 import com.rve.systemmonitor.R
 import com.rve.systemmonitor.ui.components.haptic.hapticClickable
+import com.rve.systemmonitor.ui.theme.LocalNavBarBlurEffectEnabled
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -66,7 +67,8 @@ object BottomNavBar {
     fun BottomNavigationBar(pagerState: PagerState, coroutineScope: CoroutineScope, backdrop: Backdrop, modifier: Modifier = Modifier) {
         val backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.5f)
         val solidBackgroundColor = MaterialTheme.colorScheme.surfaceContainer
-        val navBarBlurEffectEnabled = com.rve.systemmonitor.ui.theme.LocalNavBarBlurEffectEnabled.current
+        val solidIndicatorColor = MaterialTheme.colorScheme.secondaryContainer
+        val navBarBlurEffectEnabled = LocalNavBarBlurEffectEnabled.current
         val context = LocalContext.current
 
         val items = remember(context) {
@@ -155,10 +157,7 @@ object BottomNavBar {
                                         },
                                     )
                                 } else {
-                                    Modifier.drawBehind {
-                                        drawRect(indicatorBackgroundColor, blendMode = BlendMode.Hue)
-                                        drawRect(indicatorBackgroundColor.copy(alpha = 0.75f))
-                                    }
+                                    Modifier.background(solidIndicatorColor)
                                 },
                             ),
                     )
@@ -213,9 +212,15 @@ object BottomNavBar {
 
     @Composable
     private fun BottomNavItem(item: NavItem, isSelected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+        val navBarBlurEffectEnabled = LocalNavBarBlurEffectEnabled.current
+
         val contentColor by animateColorAsState(
             targetValue = if (isSelected) {
-                MaterialTheme.colorScheme.primary
+                if (navBarBlurEffectEnabled) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSecondaryContainer
+                }
             } else {
                 MaterialTheme.colorScheme.onSurfaceVariant
             },
