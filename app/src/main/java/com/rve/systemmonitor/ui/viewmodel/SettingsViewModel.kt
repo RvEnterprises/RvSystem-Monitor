@@ -71,11 +71,10 @@ class SettingsViewModel @Inject constructor(
         )
 
     val blurEffectEnabled: StateFlow<Boolean> = settingsRepository.blurEffectEnabled
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = true,
-        )
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+
+    val navBarBlurEffectEnabled: StateFlow<Boolean> = settingsRepository.navBarBlurEffectEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
     val cpuRefreshDelay: StateFlow<Long> = settingsRepository.cpuRefreshDelay
         .stateIn(
@@ -159,6 +158,12 @@ class SettingsViewModel @Inject constructor(
     fun setBlurEffectEnabled(enabled: Boolean) {
         viewModelScope.launch {
             settingsRepository.setBlurEffectEnabled(enabled)
+        }
+    }
+
+    fun setNavBarBlurEffectEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setNavBarBlurEffectEnabled(enabled)
         }
     }
 

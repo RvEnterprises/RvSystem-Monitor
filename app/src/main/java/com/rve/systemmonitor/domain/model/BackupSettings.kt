@@ -24,6 +24,7 @@ data class AppSettings(
     val useShizuku: Boolean = false,
     val updatesPausedUntil: Long = 0L,
     val blurEffectEnabled: Boolean = true,
+    val navBarBlurEffectEnabled: Boolean = true,
 )
 
 @Serializable

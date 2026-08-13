@@ -23,6 +23,7 @@ class MainViewModel @Inject constructor(settingsRepository: SettingsRepository) 
         settingsRepository.vibrationIntensity,
         settingsRepository.autoUpdateEnabled,
         settingsRepository.blurEffectEnabled,
+        settingsRepository.navBarBlurEffectEnabled,
     ) { args ->
         MainUiState.Success(
             themeMode = args[0] as ThemeMode,
@@ -32,6 +33,7 @@ class MainViewModel @Inject constructor(settingsRepository: SettingsRepository) 
             vibrationIntensity = args[4] as VibrationIntensity,
             autoUpdateEnabled = args[5] as Boolean,
             blurEffectEnabled = args[6] as Boolean,
+            navBarBlurEffectEnabled = args[7] as Boolean,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -52,5 +54,6 @@ sealed interface MainUiState {
         val vibrationIntensity: VibrationIntensity,
         val autoUpdateEnabled: Boolean,
         val blurEffectEnabled: Boolean,
+        val navBarBlurEffectEnabled: Boolean,
     ) : MainUiState
 }

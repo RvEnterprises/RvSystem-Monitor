@@ -38,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -64,6 +65,8 @@ object BottomNavBar {
     @Composable
     fun BottomNavigationBar(pagerState: PagerState, coroutineScope: CoroutineScope, backdrop: Backdrop, modifier: Modifier = Modifier) {
         val backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.5f)
+        val solidBackgroundColor = MaterialTheme.colorScheme.surfaceContainer
+        val navBarBlurEffectEnabled = com.rve.systemmonitor.ui.theme.LocalNavBarBlurEffectEnabled.current
         val context = LocalContext.current
 
         val items = remember(context) {
@@ -94,15 +97,21 @@ object BottomNavBar {
         Box(
             modifier = modifier
                 .clip(CircleShape)
-                .drawBackdrop(
-                    backdrop = backdrop,
-                    shape = { CircleShape },
-                    effects = {
-                        vibrancy()
-                        blur(4f.dp.toPx())
-                        lens(16f.dp.toPx(), 32f.dp.toPx(), chromaticAberration = true)
+                .then(
+                    if (navBarBlurEffectEnabled) {
+                        Modifier.drawBackdrop(
+                            backdrop = backdrop,
+                            shape = { CircleShape },
+                            effects = {
+                                vibrancy()
+                                blur(4f.dp.toPx())
+                                lens(16f.dp.toPx(), 32f.dp.toPx(), chromaticAberration = true)
+                            },
+                            onDrawSurface = { drawRect(backgroundColor) },
+                        )
+                    } else {
+                        Modifier.background(solidBackgroundColor)
                     },
-                    onDrawSurface = { drawRect(backgroundColor) },
                 ),
         ) {
             Box(
@@ -131,16 +140,25 @@ object BottomNavBar {
                                 translationX = offset * (itemWidthPx + spacingPx)
                             }
                             .clip(CircleShape)
-                            .drawBackdrop(
-                                backdrop = backdrop,
-                                shape = { CircleShape },
-                                effects = {
-                                    blur(4f.dp.toPx())
-                                    lens(10f.dp.toPx(), 14f.dp.toPx(), chromaticAberration = true)
-                                },
-                                onDrawSurface = {
-                                    drawRect(indicatorBackgroundColor, blendMode = BlendMode.Hue)
-                                    drawRect(indicatorBackgroundColor.copy(alpha = 0.75f))
+                            .then(
+                                if (navBarBlurEffectEnabled) {
+                                    Modifier.drawBackdrop(
+                                        backdrop = backdrop,
+                                        shape = { CircleShape },
+                                        effects = {
+                                            blur(4f.dp.toPx())
+                                            lens(10f.dp.toPx(), 14f.dp.toPx(), chromaticAberration = true)
+                                        },
+                                        onDrawSurface = {
+                                            drawRect(indicatorBackgroundColor, blendMode = BlendMode.Hue)
+                                            drawRect(indicatorBackgroundColor.copy(alpha = 0.75f))
+                                        },
+                                    )
+                                } else {
+                                    Modifier.drawBehind {
+                                        drawRect(indicatorBackgroundColor, blendMode = BlendMode.Hue)
+                                        drawRect(indicatorBackgroundColor.copy(alpha = 0.75f))
+                                    }
                                 },
                             ),
                     )
