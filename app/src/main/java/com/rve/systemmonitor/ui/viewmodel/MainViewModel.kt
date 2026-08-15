@@ -24,6 +24,7 @@ class MainViewModel @Inject constructor(settingsRepository: SettingsRepository) 
         settingsRepository.autoUpdateEnabled,
         settingsRepository.blurEffectEnabled,
         settingsRepository.navBarBlurEffectEnabled,
+        settingsRepository.navBarIsFloating,
     ) { args ->
         MainUiState.Success(
             themeMode = args[0] as ThemeMode,
@@ -34,6 +35,7 @@ class MainViewModel @Inject constructor(settingsRepository: SettingsRepository) 
             autoUpdateEnabled = args[5] as Boolean,
             blurEffectEnabled = args[6] as Boolean,
             navBarBlurEffectEnabled = args[7] as Boolean,
+            navBarIsFloating = args[8] as Boolean,
         )
     }.stateIn(
         scope = viewModelScope,
@@ -55,5 +57,6 @@ sealed interface MainUiState {
         val autoUpdateEnabled: Boolean,
         val blurEffectEnabled: Boolean,
         val navBarBlurEffectEnabled: Boolean,
+        val navBarIsFloating: Boolean,
     ) : MainUiState
 }

@@ -76,6 +76,9 @@ class SettingsViewModel @Inject constructor(
     val navBarBlurEffectEnabled: StateFlow<Boolean> = settingsRepository.navBarBlurEffectEnabled
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
+    val navBarIsFloating: StateFlow<Boolean> = settingsRepository.navBarIsFloating
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
     val cpuRefreshDelay: StateFlow<Long> = settingsRepository.cpuRefreshDelay
         .stateIn(
             scope = viewModelScope,
@@ -164,6 +167,15 @@ class SettingsViewModel @Inject constructor(
     fun setNavBarBlurEffectEnabled(enabled: Boolean) {
         viewModelScope.launch {
             settingsRepository.setNavBarBlurEffectEnabled(enabled)
+            if (enabled) {
+                settingsRepository.setNavBarIsFloating(true)
+            }
+        }
+    }
+
+    fun setNavBarIsFloating(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setNavBarIsFloating(enabled)
         }
     }
 

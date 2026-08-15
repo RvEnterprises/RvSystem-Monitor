@@ -136,14 +136,23 @@ fun RvSystemMonitorApp(onNavigateToSettings: () -> Unit, onNavigateToGPU: () -> 
                 }
             }
 
+            val navBarIsFloating = com.rve.systemmonitor.ui.theme.LocalNavBarIsFloating.current
+
             BottomNavigationBar(
                 pagerState = pagerState,
                 coroutineScope = coroutineScope,
                 backdrop = backdrop,
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(16.dp)
-                    .windowInsetsPadding(WindowInsets.navigationBars),
+                    .then(
+                        if (navBarIsFloating) {
+                            Modifier
+                                .padding(16.dp)
+                                .windowInsetsPadding(WindowInsets.navigationBars)
+                        } else {
+                            Modifier
+                        },
+                    ),
             )
         }
     }

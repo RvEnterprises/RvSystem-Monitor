@@ -25,6 +25,7 @@ import com.rve.systemmonitor.utils.VibrationIntensity
 
 val LocalBlurEffectEnabled = compositionLocalOf { true }
 val LocalNavBarBlurEffectEnabled = compositionLocalOf { true }
+val LocalNavBarIsFloating = compositionLocalOf { false }
 
 @Composable
 fun RvSystemMonitorTheme(
@@ -34,6 +35,7 @@ fun RvSystemMonitorTheme(
     vibrationIntensity: VibrationIntensity = VibrationIntensity.LIGHT,
     blurEffectEnabled: Boolean = true,
     navBarBlurEffectEnabled: Boolean = true,
+    navBarIsFloating: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
@@ -68,6 +70,7 @@ fun RvSystemMonitorTheme(
                 LocalVibrationIntensity provides vibrationIntensity,
                 LocalBlurEffectEnabled provides blurEffectEnabled,
                 LocalNavBarBlurEffectEnabled provides navBarBlurEffectEnabled,
+                LocalNavBarIsFloating provides navBarIsFloating,
             ) {
                 content()
             }

@@ -63,6 +63,7 @@ import kotlinx.coroutines.launch
 object BottomNavBar {
     data class NavItem(val label: String, val iconUnselected: Int, val iconSelected: Int)
 
+    @androidx.annotation.OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
     @Composable
     fun BottomNavigationBar(pagerState: PagerState, coroutineScope: CoroutineScope, backdrop: Backdrop, modifier: Modifier = Modifier) {
         val backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.5f)
@@ -96,14 +97,44 @@ object BottomNavBar {
             )
         }
 
+        val navBarIsFloating = com.rve.systemmonitor.ui.theme.LocalNavBarIsFloating.current
+
+        if (!navBarIsFloating) {
+            androidx.compose.material3.ShortNavigationBar(modifier = modifier) {
+                items.forEachIndexed { index, item ->
+                    val isSelected = pagerState.currentPage == index
+                    androidx.compose.material3.ShortNavigationBarItem(
+                        selected = isSelected,
+                        onClick = {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(if (isSelected) item.iconSelected else item.iconUnselected),
+                                contentDescription = item.label,
+                            )
+                        },
+                        label = {
+                            Text(text = item.label)
+                        }
+                    )
+                }
+            }
+            return
+        }
+
+        val barShape = CircleShape
+
         Box(
             modifier = modifier
-                .clip(CircleShape)
+                .clip(barShape)
                 .then(
                     if (navBarBlurEffectEnabled) {
                         Modifier.drawBackdrop(
                             backdrop = backdrop,
-                            shape = { CircleShape },
+                            shape = { barShape },
                             effects = {
                                 vibrancy()
                                 blur(4f.dp.toPx())

@@ -25,6 +25,7 @@ data class AppSettings(
     val updatesPausedUntil: Long = 0L,
     val blurEffectEnabled: Boolean = true,
     val navBarBlurEffectEnabled: Boolean = true,
+    val navBarIsFloating: Boolean = false,
 )
 
 @Serializable

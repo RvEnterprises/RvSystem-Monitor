@@ -30,6 +30,7 @@ class SettingsPreferences(private val context: Context) {
         val UPDATES_PAUSED_UNTIL_KEY = longPreferencesKey("updates_paused_until")
         val BLUR_EFFECT_ENABLED_KEY = booleanPreferencesKey("blur_effect_enabled")
         val NAV_BAR_BLUR_EFFECT_ENABLED_KEY = booleanPreferencesKey("nav_bar_blur_effect_enabled")
+        val NAV_BAR_IS_FLOATING_KEY = booleanPreferencesKey("nav_bar_is_floating")
     }
 
     val autoUpdateEnabledFlow: Flow<Boolean> = context.dataStore.getValueFlow(AUTO_UPDATE_ENABLED_KEY, true)
@@ -37,6 +38,7 @@ class SettingsPreferences(private val context: Context) {
     val updatesPausedUntilFlow: Flow<Long> = context.dataStore.getValueFlow(UPDATES_PAUSED_UNTIL_KEY, 0L)
     val blurEffectEnabledFlow: Flow<Boolean> = context.dataStore.getValueFlow(BLUR_EFFECT_ENABLED_KEY, true)
     val navBarBlurEffectEnabledFlow: Flow<Boolean> = context.dataStore.getValueFlow(NAV_BAR_BLUR_EFFECT_ENABLED_KEY, true)
+    val navBarIsFloatingFlow: Flow<Boolean> = context.dataStore.getValueFlow(NAV_BAR_IS_FLOATING_KEY, false)
     val themeModeFlow: Flow<ThemeMode> = context.dataStore.getEnumFlow(THEME_MODE_KEY, ThemeMode.SYSTEM) { ThemeMode.valueOf(it) }
     val languageFlow: Flow<AppLanguage> = context.dataStore.getEnumFlow(LANGUAGE_KEY, AppLanguage.SYSTEM) { AppLanguage.valueOf(it) }
     val amoledModeFlow: Flow<Boolean> = context.dataStore.getValueFlow(AMOLED_MODE_KEY, false)
@@ -68,4 +70,5 @@ class SettingsPreferences(private val context: Context) {
     suspend fun saveUpdatesPausedUntil(timestamp: Long) = context.dataStore.setValue(UPDATES_PAUSED_UNTIL_KEY, timestamp)
     suspend fun saveBlurEffectEnabled(enabled: Boolean) = context.dataStore.setValue(BLUR_EFFECT_ENABLED_KEY, enabled)
     suspend fun saveNavBarBlurEffectEnabled(enabled: Boolean) = context.dataStore.setValue(NAV_BAR_BLUR_EFFECT_ENABLED_KEY, enabled)
+    suspend fun saveNavBarIsFloating(enabled: Boolean) = context.dataStore.setValue(NAV_BAR_IS_FLOATING_KEY, enabled)
 }

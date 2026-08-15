@@ -87,6 +87,7 @@ fun AppearanceSettingsScreen(viewModel: SettingsViewModel = hiltViewModel(), onN
     val amoledMode by viewModel.amoledMode.collectAsStateWithLifecycle()
     val blurEffectEnabled by viewModel.blurEffectEnabled.collectAsStateWithLifecycle()
     val navBarBlurEffectEnabled by viewModel.navBarBlurEffectEnabled.collectAsStateWithLifecycle()
+    val navBarIsFloating by viewModel.navBarIsFloating.collectAsStateWithLifecycle()
     val hapticEnabled by viewModel.hapticFeedbackEnabled.collectAsStateWithLifecycle()
     val vibrationIntensity by viewModel.vibrationIntensity.collectAsStateWithLifecycle()
 
@@ -535,7 +536,7 @@ fun AppearanceSettingsScreen(viewModel: SettingsViewModel = hiltViewModel(), onN
                     ) {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(24.dp),
+                            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp, bottomStart = 8.dp, bottomEnd = 8.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
                             ),
@@ -594,6 +595,106 @@ fun AppearanceSettingsScreen(viewModel: SettingsViewModel = hiltViewModel(), onN
                                             targetState = navBarBlurEffectEnabled,
                                             animationSpec = MaterialTheme.motionScheme.slowEffectsSpec(),
                                             label = "NavBar Blur Switch Icon",
+                                        ) { enabled ->
+                                            Icon(
+                                                painter = painterResource(
+                                                    if (enabled) R.drawable.check_rounded else R.drawable.close_rounded,
+                                                ),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                                            )
+                                        }
+                                    },
+                                )
+                            }
+                        }
+
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp, bottomStart = 24.dp, bottomEnd = 24.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = if (navBarBlurEffectEnabled) 0.3f else 0.7f),
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .then(
+                                        if (!navBarBlurEffectEnabled) {
+                                            Modifier.hapticClickable { viewModel.setNavBarIsFloating(!navBarIsFloating) }
+                                        } else {
+                                            Modifier
+                                        },
+                                    )
+                                    .padding(horizontal = 20.dp, vertical = 20.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                    modifier = Modifier.weight(1f),
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .background(
+                                                if (navBarBlurEffectEnabled) {
+                                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                                                } else {
+                                                    MaterialTheme.colorScheme.primary
+                                                },
+                                            ),
+                                        contentAlignment = Alignment.Center,
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.bottom_navigation),
+                                            contentDescription = stringResource(R.string.settings_nav_bar_floating),
+                                            tint = if (navBarBlurEffectEnabled) {
+                                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                                            } else {
+                                                MaterialTheme.colorScheme.onPrimary
+                                            },
+                                        )
+                                    }
+
+                                    Column {
+                                        Text(
+                                            text = stringResource(R.string.settings_nav_bar_floating),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = if (navBarBlurEffectEnabled) {
+                                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                                            } else {
+                                                MaterialTheme.colorScheme.onSurface
+                                            },
+                                        )
+                                        Text(
+                                            text = stringResource(R.string.settings_nav_bar_floating_description),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = if (navBarBlurEffectEnabled) {
+                                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
+                                            } else {
+                                                MaterialTheme.colorScheme.onSurfaceVariant
+                                            },
+                                        )
+                                    }
+                                }
+
+                                Switch(
+                                    checked = navBarIsFloating,
+                                    onCheckedChange = { viewModel.setNavBarIsFloating(it) },
+                                    enabled = !navBarBlurEffectEnabled,
+                                    colors = SwitchDefaults.colors(
+                                        checkedIconColor = MaterialTheme.colorScheme.primary,
+                                    ),
+                                    thumbContent = {
+                                        Crossfade(
+                                            targetState = navBarIsFloating,
+                                            animationSpec = MaterialTheme.motionScheme.slowEffectsSpec(),
+                                            label = "NavBar Floating Switch Icon",
                                         ) { enabled ->
                                             Icon(
                                                 painter = painterResource(

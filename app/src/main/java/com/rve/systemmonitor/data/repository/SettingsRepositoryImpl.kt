@@ -64,6 +64,7 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
 
     override val blurEffectEnabled: Flow<Boolean> = settingsPreferences.blurEffectEnabledFlow
     override val navBarBlurEffectEnabled: Flow<Boolean> = settingsPreferences.navBarBlurEffectEnabledFlow
+    override val navBarIsFloating: Flow<Boolean> = settingsPreferences.navBarIsFloatingFlow
 
     override suspend fun setThemeMode(mode: ThemeMode) {
         settingsPreferences.saveThemeMode(mode)
@@ -131,6 +132,10 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
         settingsPreferences.saveNavBarBlurEffectEnabled(enabled)
     }
 
+    override suspend fun setNavBarIsFloating(enabled: Boolean) {
+        settingsPreferences.saveNavBarIsFloating(enabled)
+    }
+
     override suspend fun exportSettings(): String {
         val appPrefs = application.dataStore.data.first()
         val overlayPrefs = application.overlayDataStore.data.first()
@@ -156,6 +161,7 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
                 updatesPausedUntil = appPrefs[SettingsPreferences.UPDATES_PAUSED_UNTIL_KEY] ?: 0L,
                 blurEffectEnabled = appPrefs[SettingsPreferences.BLUR_EFFECT_ENABLED_KEY] ?: true,
                 navBarBlurEffectEnabled = appPrefs[SettingsPreferences.NAV_BAR_BLUR_EFFECT_ENABLED_KEY] ?: true,
+                navBarIsFloating = appPrefs[SettingsPreferences.NAV_BAR_IS_FLOATING_KEY] ?: false,
             ),
             monitoring = MonitoringSettings(
                 cpuRefreshDelay = appPrefs[SettingsPreferences.CPU_REFRESH_DELAY_KEY] ?: 3000L,
@@ -204,6 +210,7 @@ class SettingsRepositoryImpl @Inject constructor(private val application: Applic
             prefs[SettingsPreferences.UPDATES_PAUSED_UNTIL_KEY] = backup.app.updatesPausedUntil
             prefs[SettingsPreferences.BLUR_EFFECT_ENABLED_KEY] = backup.app.blurEffectEnabled
             prefs[SettingsPreferences.NAV_BAR_BLUR_EFFECT_ENABLED_KEY] = backup.app.navBarBlurEffectEnabled
+            prefs[SettingsPreferences.NAV_BAR_IS_FLOATING_KEY] = backup.app.navBarIsFloating
 
             prefs[SettingsPreferences.CPU_REFRESH_DELAY_KEY] = backup.monitoring.cpuRefreshDelay
             prefs[SettingsPreferences.MEMORY_REFRESH_DELAY_KEY] = backup.monitoring.memoryRefreshDelay
