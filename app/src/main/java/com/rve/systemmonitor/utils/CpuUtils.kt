@@ -73,7 +73,12 @@ object CpuUtils {
     }.getOrElse { DoubleArray(0) }
 
     fun formatFrequency(freqKhz: Long): String {
-        return String.format(Locale.US, "%.2f GHz", freqKhz / 1_000_000.0)
+
+        return if (freqKhz >= 1_000_000) {
+            String.format(Locale.US, "%.2f GHz", freqKhz / 1_000_000.0)
+        } else {
+            "${freqKhz / 1000} MHz"
+        }
     }
 
     fun getSocManufacturer(): String = runCatching {

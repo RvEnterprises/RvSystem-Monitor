@@ -86,7 +86,11 @@ private fun CPUScreenContent(cpuInfo: CPU) {
 @Composable
 private fun CPUOverviewCard(cpu: CPU) {
     val peakFreqKhz = cpu.coreDetails.maxOfOrNull { it.maxFreqKhz } ?: 0L
-    val peakFrequency = String.format(Locale.US, "%.2f GHz", peakFreqKhz / 1_000_000.0)
+    val peakFrequency = if (peakFreqKhz >= 1_000_000) {
+        String.format(Locale.US, "%.2f GHz", peakFreqKhz / 1_000_000.0)
+    } else {
+        "${peakFreqKhz / 1000} MHz"
+    }
 
     OverviewCard(
         iconResId = R.drawable.memory,
