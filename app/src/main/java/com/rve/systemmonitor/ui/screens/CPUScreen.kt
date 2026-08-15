@@ -185,8 +185,10 @@ private fun CPUOverviewCard(cpu: CPU) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CoreDetailCard(core: CoreDetail, isLoadAvailable: Boolean) {
-    val progress = remember(core.currentFreqKhz, core.minFreqKhz, core.maxFreqKhz) {
-        if (core.maxFreqKhz > core.minFreqKhz) {
+    val progress = remember(core.currentFreqKhz, core.minFreqKhz, core.maxFreqKhz, isLoadAvailable, core.load) {
+        if (isLoadAvailable && core.load >= 0.0) {
+            (core.load / 100.0).toFloat().coerceIn(0f, 1f)
+        } else if (core.maxFreqKhz > core.minFreqKhz) {
             ((core.currentFreqKhz - core.minFreqKhz).toFloat() / (core.maxFreqKhz - core.minFreqKhz)).coerceIn(0f, 1f)
         } else {
             0f
@@ -196,7 +198,7 @@ private fun CoreDetailCard(core: CoreDetail, isLoadAvailable: Boolean) {
     val animatedProgress by animateFloatAsState(
         targetValue = progress,
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
-        label = "FreqProgress",
+        label = "Progress",
     )
 
     StandardCard(
