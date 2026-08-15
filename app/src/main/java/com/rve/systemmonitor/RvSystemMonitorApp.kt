@@ -16,13 +16,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -42,28 +37,9 @@ fun RvSystemMonitorApp(onNavigateToSettings: () -> Unit, onNavigateToGPU: () -> 
     val pagerState = rememberPagerState(pageCount = { 4 })
     val coroutineScope = rememberCoroutineScope()
 
-    val pageHistory = remember { mutableStateListOf(0) }
-    var isNavigatingBack by remember { mutableStateOf(false) }
-
-    LaunchedEffect(pagerState.currentPage) {
-        if (isNavigatingBack) {
-            isNavigatingBack = false
-        } else {
-            val currentPage = pagerState.currentPage
-
-            if (pageHistory.lastOrNull() != currentPage) {
-                pageHistory.remove(currentPage)
-                pageHistory.add(currentPage)
-            }
-        }
-    }
-
-    BackHandler(enabled = pageHistory.size > 1) {
+    BackHandler(enabled = pagerState.currentPage != 0) {
         coroutineScope.launch {
-            isNavigatingBack = true
-            pageHistory.removeAt(pageHistory.lastIndex)
-            val previousPage = pageHistory.last()
-            pagerState.animateScrollToPage(previousPage)
+            pagerState.animateScrollToPage(0)
         }
     }
 

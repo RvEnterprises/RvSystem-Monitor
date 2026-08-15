@@ -118,7 +118,7 @@ object BottomNavBar {
                         },
                         label = {
                             Text(text = item.label)
-                        }
+                        },
                     )
                 }
             }
